@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import 'normalize.css';
+@import '@blueprintjs/core/lib/css/blueprint.css';
+@import '@blueprintjs/icons/lib/css/blueprint-icons.css';
+@import '@blueprintjs/colors/lib/scss/colors';
+@import '@blueprintjs/core/src/common/variables';
+@import '@blueprintjs/core/src/common/mixins';
+@import '@blueprintjs/table/lib/css/table.css';
+
+$main: #ffffff00;
+$primary: $blue4;
+$success: $green4;
+$warning: $orange4;
+$danger: $red4;
+
+body {
+  background-color: $dark-gray2;
+}
+
+// Override
+:focus {
+  outline: none;
+}
+
+.bp5-input {
+  box-shadow: none !important;
+  border: 1px solid rgba($main, 0.2);
+
+  &:focus {
+    border: 1px solid rgba($main, 0.5);
+  }
+}
+
+.bp5-intent-danger {
+  .bp5-input {
+    color: $danger !important;
+    box-shadow: none !important;
+    border: 1px solid rgba($danger, 0.5);
+
+    &::placeholder {
+      color: $danger !important;
+    }
+
+    &:focus {
+      border: 1px solid $danger;
+    }
+  }
+}
