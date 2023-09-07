@@ -46,8 +46,6 @@ export default function Index() {
     } catch (error) {
       console.log('='.repeat(20));
       console.log(error);
-    } finally {
-      console.log(123);
     }
   };
 

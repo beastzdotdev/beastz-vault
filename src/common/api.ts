@@ -1,11 +1,12 @@
 import axios, { AxiosError, CreateAxiosDefaults, InternalAxiosRequestConfig } from 'axios';
 import { constants } from './constants';
 import { redirect } from '../helper';
+import { ExceptionSchema } from '../models/exception.schema';
+import { ExceptionMessageCode } from '../models/enum/exception-message-code.enum';
+import { bus } from '../bus';
 
 class AuthRespDto {
   accessToken: string;
-  refreshToken: string;
-  hasEmailVerified?: boolean;
 }
 
 const axiosConfigs: CreateAxiosDefaults = {
@@ -59,24 +60,18 @@ async function handleAxiosResponseError(error: unknown) {
 
         const data = await refreshingFunc;
 
-        console.log(data);
-
-        if (!data) return Promise.reject(error);
+        if (!data) {
+          return Promise.reject(error);
+        }
 
         localStorage.setItem(constants.names.localStorageAccessToken, data.accessToken);
-        localStorage.setItem(constants.names.localStorageRefreshToken, data.refreshToken);
         originalConfig.headers.Authorization = `Bearer ${data.accessToken}`;
 
         // retry original request
-        try {
-          return await api.request(originalConfig);
-        } catch (e) {
-          console.log(e);
-        }
+        return await api.request(originalConfig);
       }
     } catch (error) {
-      localStorage.removeItem(constants.names.localStorageAccessToken);
-      localStorage.removeItem(constants.names.localStorageRefreshToken);
+      console.log(error);
     } finally {
       refreshingFunc = undefined;
     }
@@ -103,6 +98,20 @@ async function handleRefresh() {
 
     return data;
   } catch (error) {
+    if (error instanceof AxiosError) {
+      const responseBody = error.response?.data;
+      const exceptionBody = ExceptionSchema.safeParse(responseBody);
+
+      // this is exception thrown from backend api and also exception made for front end
+      if (responseBody && exceptionBody.success) {
+        //TODO check reuse also
+        if (exceptionBody.data.messageCode === ExceptionMessageCode.REFRESH_EXPIRED_TOKEN) {
+          bus.emit('show-alert', 'Session expired');
+        }
+      }
+    }
+
+    console.log(error);
     return null;
   }
 }
