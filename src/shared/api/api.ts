@@ -32,10 +32,10 @@ async function handleAxiosResponseError(error: unknown) {
 
     const exceptionBody = await ExceptionSchema.passthrough().safeParseAsync(responseBody);
 
-    console.log(123);
-    console.log('='.repeat(20));
-    console.log(responseBody);
-    console.log(exceptionBody);
+    // console.log(123);
+    // console.log('='.repeat(20));
+    // console.log(responseBody);
+    // console.log(exceptionBody);
 
     if (exceptionBody.success && originalConfig) {
       const needsRefresh =

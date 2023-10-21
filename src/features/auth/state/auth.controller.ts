@@ -2,6 +2,7 @@ import { inject } from 'inversify';
 import { Singleton } from '../../../app/ioc';
 import { toast } from '../../../helper/toast';
 import { AuthApiService } from '../../../shared/api';
+import { router } from '../../../router';
 
 @Singleton
 export class AuthController {
@@ -19,19 +20,18 @@ export class AuthController {
   async signIn(params: { email: string; password: string; isDemo?: boolean }) {
     const { email, password, isDemo } = params;
 
-    try {
-      console.log('='.repeat(20));
-      console.log(params);
+    const { error, success } = await this.authApiService.signIn({ email, password });
 
-      await this.authApiService.signIn({ email, password });
-
-      // router.navigate('/');
-    } catch (e: unknown) {
+    if (error) {
       if (isDemo) {
         toast.error('Demo user does not exist');
       } else {
         toast.error('Email or password incorrect');
       }
+    }
+
+    if (success) {
+      router.navigate('/');
     }
   }
 }

@@ -53,7 +53,7 @@ export const AuthSignIn = (): React.JSX.Element => {
     validationSchema: userSchema,
     onSubmit: values => {
       const { email, password } = values;
-      userForm.resetForm();
+      // userForm.resetForm();
       authController.signIn({ email, password });
     },
   });
