@@ -4,11 +4,6 @@ export const constants = {
     signIn: '/auth/sign-in',
   },
 
-  names: {
-    localStorageAccessToken: 'access_token',
-    localStorageRefreshToken: 'refresh_token',
-  },
-
   statusCodes: {
     FORBIDDEN: 403,
     UNAUTHORIZED: 401,

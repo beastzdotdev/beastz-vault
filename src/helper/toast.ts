@@ -5,29 +5,31 @@ const AuthToaster = OverlayToaster.create({
   position: Position.TOP_RIGHT,
 });
 
-const CenterToat = OverlayToaster.create({
+const CenterToast = OverlayToaster.create({
   className: 'global center toast',
   canEscapeKeyClear: false,
   autoFocus: true,
 });
 
-export const showErrorMessage = (message: string) => {
-  AuthToaster.show({
-    message,
-    intent: 'danger',
-    icon: 'warning-sign',
-    timeout: 2000,
-  });
-};
+export const toast = Object.freeze({
+  error(message: string) {
+    AuthToaster.show({
+      message,
+      intent: 'danger',
+      icon: 'warning-sign',
+      timeout: 2000,
+    });
+  },
 
-export const showDefaultMessage = (message: string) => {
-  CenterToat.show({
-    message,
-    intent: 'primary',
-    icon: 'warning-sign',
-    timeout: 200000,
-    onDismiss: didTimeoutExpire => {
-      console.log(didTimeoutExpire);
-    },
-  });
-};
+  showDefaultMessage(message: string) {
+    CenterToast.show({
+      message,
+      intent: 'primary',
+      icon: 'warning-sign',
+      timeout: 200000,
+      onDismiss: didTimeoutExpire => {
+        console.log(didTimeoutExpire);
+      },
+    });
+  },
+});

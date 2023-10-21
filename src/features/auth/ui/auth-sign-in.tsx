@@ -1,3 +1,4 @@
+import * as Yup from 'yup';
 import {
   Button,
   Classes,
@@ -9,41 +10,39 @@ import {
   Text,
   Tooltip,
 } from '@blueprintjs/core';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useFormik } from 'formik';
-import { fields } from '../helper';
-import * as Yup from 'yup';
-import { useNavigate } from 'react-router-dom';
-import { showErrorMessage } from '../helper/toast';
-import { FormErrorMessage } from '../helper/components/error-message';
+import { fields } from '../../../helper';
+import { FormErrorMessage } from '../../../helper/components/error-message';
+import { useInjection } from 'inversify-react';
+import { AuthController } from '../state/auth.controller';
+import axios from 'axios';
+import { api } from '../../../shared/api';
 
 const userSchema = Yup.object().shape({
   email: Yup.string().required('Field required'),
-  password: Yup.string().required('Field required'),
+  password: Yup.string()
+    .required('Field required')
+    .min(6, 'Password must be at least 6 characters long')
+    .test(
+      'has-uppercase',
+      'Password must contain at least 4 lowercase characters',
+      function (value) {
+        const lowercaseCount = (value.match(/[a-z]/g) || []).length;
+        return lowercaseCount >= 4;
+      }
+    )
+    .test('has-number', 'Password must contain at least 1 number', function (value) {
+      return /\d/.test(value);
+    })
+    .test('has-symbol', 'Password must contain at least 1 symbol', function (value) {
+      const symbolCount = (value.match(/[!@#$%^&*]/g) || []).length;
+      return symbolCount >= 1;
+    }),
 });
 
-export const AuthSignIn = () => {
-  const navigate = useNavigate();
-  const [showPassword, setShowPassword] = useState(false);
-
-  const UserSignIn = async (email: string, password: string, cb?: CallableFunction) => {
-    try {
-      // await signIn(email, password);
-      navigate('/');
-    } catch (e: unknown) {
-      // showErrorMessage(handleFirebaseError(e));
-    } finally {
-      if (cb) cb();
-    }
-  };
-
-  const DemoSignIn = async () => {
-    try {
-      await UserSignIn('demo@demo.com', 'password');
-    } catch (error) {
-      showErrorMessage('Demo user does not exist');
-    }
-  };
+export const AuthSignIn = (): React.JSX.Element => {
+  const authController = useInjection(AuthController);
 
   const userForm = useFormik({
     initialValues: {
@@ -52,9 +51,15 @@ export const AuthSignIn = () => {
     },
     validateOnChange: true,
     validationSchema: userSchema,
-    onSubmit: async (values, clbck) => UserSignIn(values.email, values.password, clbck.resetForm),
+    onSubmit: values => {
+      const { email, password } = values;
+      userForm.resetForm();
+      authController.signIn({ email, password });
+    },
   });
+
   const userFormFields = fields<(typeof userForm)['initialValues']>();
+  const [showPassword, setShowPassword] = useState(false);
 
   const lockButton = (
     <Tooltip content={`${showPassword ? 'Hide' : 'Show'} Password`}>
@@ -69,6 +74,16 @@ export const AuthSignIn = () => {
 
   return (
     <div style={{ margin: '100px auto', width: 'fit-content' }}>
+      <Button
+        rightIcon="log-in"
+        text="Submit"
+        onClick={() => {
+          api.get('user/current').then(e => {
+            console.log(e.data);
+          });
+        }}
+      />
+
       <H2>Sign in</H2>
       <br />
 
@@ -109,7 +124,12 @@ export const AuthSignIn = () => {
           <Text className="bp5-text-muted mb-2">
             Don't have account, say no more use out demo account
           </Text>
-          <Button rightIcon="user" intent="primary" text="Demo sign in" onClick={DemoSignIn} />
+          <Button
+            rightIcon="user"
+            intent="primary"
+            text="Demo sign in"
+            onClick={() => authController.demoSignIn()}
+          />
         </div>
       </ControlGroup>
     </div>

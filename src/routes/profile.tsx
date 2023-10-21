@@ -1,6 +1,6 @@
 import { Button } from '@blueprintjs/core';
 import { useNavigate } from 'react-router-dom';
-import { constants } from '../common/constants';
+import { constants } from '../shared/constants';
 
 export const Profile = () => {
   const navigate = useNavigate();

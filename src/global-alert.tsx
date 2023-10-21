@@ -62,14 +62,14 @@ export const GlobalAlertProvider = ({ children }: any) => {
   };
 
   useEffect(() => {
-    console.log('='.repeat(20));
-    console.log('hello');
+    // console.log('='.repeat(20));
+    // console.log('hello');
 
     bus.addListener('show-alert', (message: string) => {
       showAlert(message);
     });
 
-    console.log(bus);
+    // console.log(bus);
   }, []);
 
   return (
