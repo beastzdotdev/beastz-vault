@@ -16,6 +16,7 @@ export default function Index() {
         .then(e => {
           console.log('='.repeat(20) + 1);
           console.log(e);
+          console.log(e.data.id);
         })
         .catch(e => {
           console.log('='.repeat(20) + 2);
@@ -54,16 +55,13 @@ export default function Index() {
   };
 
   const login = async () => {
-    const { data } = await apiWithoutAuth.post<AuthenticationPayloadResponseDto>(
-      'authentication/sign-in',
-      {
-        email: 'giorgi@gmail.com',
-        password: 'password',
-      }
-    );
+    const { data } = await apiWithoutAuth.post<AuthenticationPayloadResponseDto>('auth/sign-in', {
+      email: 'demo@gmail.com',
+      password: 'jsbyangtjt37*',
+    });
 
-    localStorage.setItem(constants.names.localStorageAccessToken, data.accessToken);
-    localStorage.setItem(constants.names.localStorageRefreshToken, data.refreshToken);
+    // localStorage.setItem(constants.names.localStorageAccessToken, data.accessToken);
+    // localStorage.setItem(constants.names.localStorageRefreshToken, data.refreshToken);
 
     console.log(data);
   };

@@ -8,7 +8,9 @@
 @import '@blueprintjs/colors/lib/scss/colors';
 @import '@blueprintjs/core/src/common/variables';
 @import '@blueprintjs/core/src/common/mixins';
+
 @import '@blueprintjs/table/lib/css/table.css';
+@import '@blueprintjs/datetime2/src/blueprint-datetime2.scss';
 
 $main: #ffffff00;
 $primary: $blue4;
@@ -48,4 +50,23 @@ body {
       border: 1px solid $danger;
     }
   }
+}
+
+.bp5-datepicker {
+  padding: 5px;
+
+  .bp5-datepicker-content > .bp5-divider {
+    margin: 0;
+    width: calc(100% - 5px);
+  }
+
+  .rdp-month {
+    margin: 0px;
+  }
+}
+
+.danger-select select {
+  color: #e76a6e !important;
+  box-shadow: none !important;
+  border: 1px solid rgba(231, 106, 110, 0.5);
 }

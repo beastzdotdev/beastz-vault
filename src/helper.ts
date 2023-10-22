@@ -11,10 +11,6 @@ export function fields<T>(): { [P in keyof T]: P } {
   };
 }
 
-export function redirect(url: string) {
-  window.location.href = url;
-}
-
 //! for dicebear
 // diceBear: {
 //   async genderAccurateAvatar(params: { gender: Gender; firstName: string; lastName: string }) {

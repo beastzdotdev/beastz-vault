@@ -1,4 +1,4 @@
-import { Singleton } from '../../../app/ioc';
+import { Singleton } from '../../../shared/ioc';
 
 @Singleton
 export class AuthStore {}

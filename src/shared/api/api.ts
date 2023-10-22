@@ -1,15 +1,13 @@
-import axios, { AxiosError, CreateAxiosDefaults } from 'axios';
+import axios, { AxiosError, CreateAxiosDefaults, HttpStatusCode } from 'axios';
 import { constants } from '../constants';
 import { ExceptionSchema } from '../../models/exception.schema';
 import { ExceptionMessageCode } from '../../models/enum/exception-message-code.enum';
 import { bus } from '../../bus';
-
-class AuthRespDto {
-  accessToken: string;
-}
+import { ClientApiError } from '../../models/client-error.schema';
+import { router } from '../../router';
 
 const axiosConfigs: CreateAxiosDefaults = {
-  baseURL: constants.path.backend,
+  baseURL: constants.path.backend.url,
   headers: { platform: 'WEB' },
   withCredentials: true,
 };
@@ -19,7 +17,6 @@ export const api = axios.create(axiosConfigs);
 
 api.interceptors.response.use(r => r, handleAxiosResponseError);
 
-let refreshingFunc: Promise<AuthRespDto | null> | undefined = undefined;
 /**
  * @description when status is forbidden then post refresh and get new access/refresh tokens
  *              and restart last api request, if refresh has any type of problem we do not care
@@ -29,67 +26,75 @@ async function handleAxiosResponseError(error: unknown) {
   if (error instanceof AxiosError) {
     const originalConfig = error.config;
     const responseBody = error.response?.data;
-
     const exceptionBody = await ExceptionSchema.passthrough().safeParseAsync(responseBody);
-
-    // console.log(123);
-    // console.log('='.repeat(20));
-    // console.log(responseBody);
-    // console.log(exceptionBody);
 
     if (exceptionBody.success && originalConfig) {
       const needsRefresh =
-        exceptionBody.data.code === ExceptionMessageCode.ACCESS_EXPIRED_TOKEN &&
-        exceptionBody.data.status === constants.statusCodes.UNAUTHORIZED;
+        exceptionBody.data.message === ExceptionMessageCode.ACCESS_EXPIRED_TOKEN &&
+        exceptionBody.data.statusCode === HttpStatusCode.Unauthorized;
 
-      try {
-        if (needsRefresh) {
-          if (!refreshingFunc) refreshingFunc = handleRefresh();
+      const clientAPiError = new ClientApiError(
+        exceptionBody.data.statusCode,
+        exceptionBody.data.message,
+        error
+      );
 
-          const data = await refreshingFunc;
+      if (needsRefresh) {
+        const data = await handleRefresh();
 
-          if (!data) {
-            return Promise.reject(error);
+        if (!data.success) {
+          // redirect page
+          await router.navigate(constants.path.signIn);
+
+          switch (data.message) {
+            case ExceptionMessageCode.USER_NOT_VERIFIED:
+              bus.emit('show-alert', 'User not verified');
+              break;
+            case ExceptionMessageCode.USER_BLOCKED:
+              bus.emit('show-alert', 'User is blocked, please contact our support');
+              //TODO redirect to user blocked page
+              break;
+            case ExceptionMessageCode.USER_LOCKED:
+              bus.emit('show-alert', 'User is locked, please verify account again');
+              break;
+            default:
+              bus.emit('show-alert', 'Session expired');
+              break;
           }
 
-          // retry original request
-          return await api.request(originalConfig);
+          return Promise.reject(clientAPiError);
         }
-      } catch (error) {
-        console.log(error);
-      } finally {
-        refreshingFunc = undefined;
+
+        // retry original request
+        return await api.request(originalConfig);
       }
+
+      return Promise.reject(clientAPiError);
     }
   }
 
-  return Promise.reject(error);
+  return Promise.reject(
+    new ClientApiError(
+      HttpStatusCode.InternalServerError,
+      ExceptionMessageCode.CLIENT_OR_INTERNAL_ERROR,
+      error
+    )
+  );
 }
 
 /**
  * @description handle refresh call everything must go smoothly. any type of problem must
  *              be met with localstorage clear and redirect to sign in page
  */
-async function handleRefresh() {
+async function handleRefresh(): Promise<{ success: boolean; message?: ExceptionMessageCode }> {
   try {
-    const { data } = await apiWithoutAuth.post<AuthRespDto>('auth/refresh');
-
-    return data;
+    await apiWithoutAuth.post<void>('auth/refresh');
+    return { success: true };
   } catch (error) {
     if (error instanceof AxiosError) {
-      const responseBody = error.response?.data;
-      const exceptionBody = ExceptionSchema.safeParse(responseBody);
-
-      // this is exception thrown from backend api and also exception made for front end
-      if (responseBody && exceptionBody.success) {
-        //TODO check reuse also
-        if (exceptionBody.data.code === ExceptionMessageCode.REFRESH_EXPIRED_TOKEN) {
-          bus.emit('show-alert', 'Session expired');
-        }
-      }
+      return { success: false, message: error.response?.data?.message };
     }
 
-    console.log(error);
-    return null;
+    return { success: false };
   }
 }

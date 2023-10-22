@@ -1,3 +1,3 @@
-export type SignInResponse = {
+export type SignInAndSignUpResponse = {
   isAccountVerified: boolean;
 };

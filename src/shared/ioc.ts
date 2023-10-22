@@ -1,6 +1,6 @@
 import { Container } from 'inversify';
 import { decorate, injectable } from 'inversify';
-import { GeneralClass } from '../model/general';
+import { GeneralClass } from '../models/general';
 
 export class IocContainer {
   private static _IocContainer: Container = new Container();

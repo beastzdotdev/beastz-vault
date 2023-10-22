@@ -1,8 +1,14 @@
-import { ExceptionResponse } from './exception.schema';
+import { ClientApiError } from './client-error.schema';
 
 export type AxiosApiResponse<T> = {
-  success?: {
-    data: T;
-  };
-  error?: ExceptionResponse;
+  data?: T;
+  error?: ClientApiError;
+};
+
+export type GeneralClass<T> = {
+  new (...args: never[]): T;
+};
+
+export type MappedRecord<T> = {
+  [key in keyof T]: T[key];
 };

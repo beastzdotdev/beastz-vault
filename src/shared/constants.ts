@@ -1,11 +1,12 @@
-export const constants = {
+export const constants = Object.freeze({
   path: {
-    backend: import.meta.env.VITE_BACKEND_URL,
     signIn: '/auth/sign-in',
-  },
+    signUp: '/auth/sign-up',
+    verify: '/auth/acc-verify',
+    verifyMessage: '/auth/acc-verify-message',
 
-  statusCodes: {
-    FORBIDDEN: 403,
-    UNAUTHORIZED: 401,
+    backend: {
+      url: import.meta.env.VITE_BACKEND_URL,
+    },
   },
-};
+});

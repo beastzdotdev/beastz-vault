@@ -1,14 +1,15 @@
 import { createBrowserRouter } from 'react-router-dom';
-import { booksLoader, rootLoader } from './loader';
 import Root from './routes/root';
 import Index from './routes';
-import { Books } from './routes/books';
 import ErrorPage from './routes/error';
-import { AuthSignUp } from './routes/auth-sign-up';
+import { rootLoader } from './loader';
+import { Books } from './routes/books';
+import { AuthSignUp } from './features/auth/ui/auth-sign-up';
 import { Profile } from './routes/profile';
 import { Test } from './routes/test';
 import { constants } from './shared/constants';
 import { AuthSignIn } from './features/auth';
+import { AuthVerifyMessage } from './features/auth/ui/auth-verify-messages';
 
 export const router = createBrowserRouter([
   {
@@ -23,7 +24,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'books',
-        loader: booksLoader,
+        // loader: booksLoader,
         element: <Books />,
       },
       {
@@ -41,7 +42,11 @@ export const router = createBrowserRouter([
     element: <AuthSignIn />,
   },
   {
-    path: 'auth/sign-up',
+    path: constants.path.signUp,
     element: <AuthSignUp />,
+  },
+  {
+    path: constants.path.verifyMessage,
+    element: <AuthVerifyMessage />,
   },
 ]);

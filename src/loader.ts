@@ -1,48 +1,18 @@
-import { LoaderFunctionArgs, redirect } from 'react-router-dom';
-import { Book } from './store/store.type';
-
-// export type RootLoaderType = {
-//   user: User;
-// };
+import { LoaderFunctionArgs } from 'react-router-dom';
+import { IocContainer } from './shared/ioc';
+import { UserController } from './features/user/state/user.controller';
 
 export const rootLoader = async (_args: LoaderFunctionArgs) => {
-  // const user = await new Promise<User | null>((res, _rej) => {
-  //   onAuthStateChanged(
-  //     auth,
-  //     currentUser => {
-  //       res(currentUser);
-  //     },
-  //     err => {
-  //       console.log('='.repeat(20));
-  //       console.log(err);
-  //     }
-  //   );
-  // });
+  const userController = IocContainer.getContainer().get(UserController);
 
-  // console.log('+++');
-  // console.log(user);
+  // api will automatically redirect if refresh token expires
+  userController.setCurrentUser();
 
-  // if (!user) {
-  //   return redirect('/auth/sign-in');
+  // if () {
+
   // }
 
-  return {
-    message: 123,
-  };
-};
+  //TODO check for user lock, user block, user not verified
 
-export const booksLoader = async (): Promise<{ books: Book[] }> => {
-  const booksStr = localStorage.getItem('books');
-
-  if (!booksStr) {
-    return {
-      books: [],
-    };
-  }
-
-  const books = JSON.parse(booksStr) as Book[];
-
-  return {
-    books,
-  };
+  return 'ok';
 };

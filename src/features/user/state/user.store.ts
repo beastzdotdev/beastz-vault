@@ -1,0 +1,20 @@
+import { makeAutoObservable } from 'mobx';
+import { User } from '../../../entities/user';
+import { Singleton } from '../../../shared/ioc';
+
+@Singleton
+export class UserStore {
+  private _user: User;
+
+  constructor() {
+    makeAutoObservable(this);
+  }
+
+  setUser(user: User) {
+    this._user = user;
+  }
+
+  get user(): User {
+    return this._user;
+  }
+}
