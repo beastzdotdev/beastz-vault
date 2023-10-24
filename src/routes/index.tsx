@@ -1,6 +1,5 @@
 import { Button } from '@blueprintjs/core';
 import { api, apiWithoutAuth } from '../shared/api/api';
-import { constants } from '../shared/constants';
 
 class AuthenticationPayloadResponseDto {
   accessToken: string;

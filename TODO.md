@@ -8,10 +8,10 @@ TODO dicebear
 
 
 TODO
-  register
-  confirm password
-  reset password
-  account verify page (redirect links from sing-in, sign-up)
+  verify (uncompleted)
+  register (needs thorough testing)
+  recover password (not started)
+  account verify page (redirect links from sing-in)
 
 
 http://demo.casaos.io/#/

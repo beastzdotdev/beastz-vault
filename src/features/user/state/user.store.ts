@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx';
 import { User } from '../../../entities/user';
-import { Singleton } from '../../../shared/ioc';
+import { Singleton } from '../../../shared/decorators';
 
 @Singleton
 export class UserStore {

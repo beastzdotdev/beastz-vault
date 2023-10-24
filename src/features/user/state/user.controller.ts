@@ -1,10 +1,10 @@
 import { inject } from 'inversify';
 import { UserApiService } from '../../../shared/api/user/user-api';
-import { Singleton } from '../../../shared/ioc';
 import { UserStore } from './user.store';
 import { ExceptionMessageCode } from '../../../models/enum/exception-message-code.enum';
-import { router } from '../../../router';
+import { router } from '../../../shared/router';
 import { constants } from '../../../shared/constants';
+import { Singleton } from '../../../shared/decorators';
 
 @Singleton
 export class UserController {
@@ -18,7 +18,7 @@ export class UserController {
 
     if (error) {
       if (error.message === ExceptionMessageCode.USER_NOT_VERIFIED) {
-        router.navigate(constants.path.verify);
+        router.navigate(constants.path.authVerify);
         return;
       }
 

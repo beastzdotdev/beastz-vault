@@ -12,3 +12,9 @@ export type GeneralClass<T> = {
 export type MappedRecord<T> = {
   [key in keyof T]: T[key];
 };
+
+export type BusPayload<T = unknown> = {
+  message: string;
+  data?: T;
+  uuid?: string;
+};

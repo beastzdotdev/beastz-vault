@@ -2,9 +2,8 @@ import axios, { AxiosError, CreateAxiosDefaults, HttpStatusCode } from 'axios';
 import { constants } from '../constants';
 import { ExceptionSchema } from '../../models/exception.schema';
 import { ExceptionMessageCode } from '../../models/enum/exception-message-code.enum';
-import { bus } from '../../bus';
 import { ClientApiError } from '../../models/client-error.schema';
-import { router } from '../../router';
+import { handleUserExceptions } from '../helper';
 
 const axiosConfigs: CreateAxiosDefaults = {
   baseURL: constants.path.backend.url,
@@ -43,24 +42,8 @@ async function handleAxiosResponseError(error: unknown) {
         const data = await handleRefresh();
 
         if (!data.success) {
-          // redirect page
-          await router.navigate(constants.path.signIn);
-
-          switch (data.message) {
-            case ExceptionMessageCode.USER_NOT_VERIFIED:
-              bus.emit('show-alert', 'User not verified');
-              break;
-            case ExceptionMessageCode.USER_BLOCKED:
-              bus.emit('show-alert', 'User is blocked, please contact our support');
-              //TODO redirect to user blocked page
-              break;
-            case ExceptionMessageCode.USER_LOCKED:
-              bus.emit('show-alert', 'User is locked, please verify account again');
-              break;
-            default:
-              bus.emit('show-alert', 'Session expired');
-              break;
-          }
+          // show alert and redirect
+          await handleUserExceptions(data.message);
 
           return Promise.reject(clientAPiError);
         }

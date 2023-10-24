@@ -1,9 +1,9 @@
 import { LoaderFunctionArgs } from 'react-router-dom';
-import { IocContainer } from './shared/ioc';
-import { UserController } from './features/user/state/user.controller';
+import { UserController } from '../features/user/state/user.controller';
+import { ioc } from './ioc';
 
 export const rootLoader = async (_args: LoaderFunctionArgs) => {
-  const userController = IocContainer.getContainer().get(UserController);
+  const userController = ioc.getContainer().get(UserController);
 
   // api will automatically redirect if refresh token expires
   userController.setCurrentUser();

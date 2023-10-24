@@ -1,21 +1,24 @@
 import { Container } from 'inversify';
-import { decorate, injectable } from 'inversify';
-import { GeneralClass } from '../models/general';
 
-export class IocContainer {
-  private static _IocContainer: Container = new Container();
+class IocContainer {
+  private static _instance: IocContainer;
+  private iocContainer: Container;
 
-  public static getContainer() {
-    return this._IocContainer;
+  private constructor() {
+    this.iocContainer = new Container();
+  }
+
+  public static get instance() {
+    if (!IocContainer._instance) {
+      IocContainer._instance = new IocContainer();
+    }
+
+    return IocContainer._instance;
+  }
+
+  public getContainer() {
+    return this.iocContainer;
   }
 }
 
-export function Singleton<T>(cls: GeneralClass<T>) {
-  IocContainer.getContainer()?.bind(cls).toSelf().inSingletonScope();
-  decorate(injectable(), cls);
-}
-
-export function Injectable<T>(cls: GeneralClass<T>) {
-  IocContainer.getContainer()?.bind(cls).toSelf();
-  decorate(injectable(), cls);
-}
+export const ioc = IocContainer.instance;

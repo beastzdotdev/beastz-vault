@@ -13,13 +13,15 @@ import {
 import moment from 'moment';
 import { useState } from 'react';
 import { useFormik } from 'formik';
-import { fields } from '../../../helper';
+import { fields } from '../../../shared/helper';
 import { FormErrorMessage } from '../../../components/error-message';
 import { signUpFieldsSchema } from '../validation/auth-sign-up-validation-schema';
 import { useInjection } from 'inversify-react';
 import { AuthController } from '../state/auth.controller';
 import { DateInput3 } from '@blueprintjs/datetime2';
 import { Gender } from '../../../models/enum/gender.enum';
+import { Link } from 'react-router-dom';
+import { constants } from '../../../shared/constants';
 
 export const AuthSignUp = (): React.JSX.Element => {
   const authController = useInjection(AuthController);
@@ -61,7 +63,7 @@ export const AuthSignUp = (): React.JSX.Element => {
   );
 
   return (
-    <div style={{ margin: '100px auto', width: 'fit-content' }}>
+    <div style={{ margin: '50px auto 100px auto', width: 'fit-content' }}>
       <H2>Sign up</H2>
       <br />
 
@@ -175,11 +177,27 @@ export const AuthSignUp = (): React.JSX.Element => {
           {showErrorMessage && <FormErrorMessage message={userForm.errors.birthDate} />}
         </FormGroup>
 
-        <h1>{JSON.stringify(userForm.errors)}</h1>
+        <p className="mt-4 ml-auto bp5-text-muted">
+          Already have an account ?{' '}
+          <Link to={constants.path.signIn} className="font-bold">
+            Sign in
+          </Link>{' '}
+          here.
+        </p>
 
-        <br />
+        <p className="mt-2 ml-auto bp5-text-muted">
+          Forgot your{' '}
+          <Link to={constants.path.authRecoverPassword} className="font-bold">
+            password
+          </Link>{' '}
+          ?
+        </p>
+
+        <hr className="!my-3 !border-slate-500" />
+
         <div className={Classes.FOCUS_STYLE_MANAGER_IGNORE}>
           <Button
+            className="min-w-20"
             rightIcon="log-in"
             text="Sign up"
             onClick={() => {
@@ -188,6 +206,14 @@ export const AuthSignUp = (): React.JSX.Element => {
             }}
           />
         </div>
+
+        <p className="mt-2 ml-auto bp5-text-muted">
+          Need help ? contact our{' '}
+          <Link to={constants.path.support} className="font-bold">
+            Support
+          </Link>
+          .
+        </p>
       </ControlGroup>
     </div>
   );

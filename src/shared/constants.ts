@@ -2,8 +2,13 @@ export const constants = Object.freeze({
   path: {
     signIn: '/auth/sign-in',
     signUp: '/auth/sign-up',
-    verify: '/auth/acc-verify',
-    verifyMessage: '/auth/acc-verify-message',
+    authVerify: '/auth/verify',
+    authVerifyMessage: '/auth/acc-verify-message',
+    authUserBlocked: '/auth/user-blocked',
+    authUserLocked: '/auth/user-locked',
+    authUserNotVerified: '/auth/user-not-verified',
+    authRecoverPassword: '/auth/user-recover-password',
+    support: '/support',
 
     backend: {
       url: import.meta.env.VITE_BACKEND_URL,

@@ -1,5 +1,5 @@
 import { Alert, Intent } from '@blueprintjs/core';
-import { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import { bus } from './bus';
 
 const GlobalAlert = ({
@@ -28,20 +28,9 @@ const GlobalAlert = ({
 };
 
 // Create a context for the global alert
-const GlobalAlertContext = createContext(null);
+export const GlobalAlertContext = createContext(null);
 
-export const useGlobalAlert = () => {
-  return useContext(GlobalAlertContext);
-};
-
-//? use case for up hook
-// const { showAlert } = useGlobalAlert();
-
-// const handleButtonClick = () => {
-//   showAlert('This is a global alert from MyComponent!');
-// };
-
-export const GlobalAlertProvider = ({ children }: any) => {
+export const GlobalAlertProvider = ({ children }: { children: React.JSX.Element }) => {
   const [globalAlert, setGlobalAlert] = useState({
     isOpen: false,
     message: '',
@@ -62,14 +51,9 @@ export const GlobalAlertProvider = ({ children }: any) => {
   };
 
   useEffect(() => {
-    // console.log('='.repeat(20));
-    // console.log('hello');
-
     bus.addListener('show-alert', (message: string) => {
       showAlert(message);
     });
-
-    // console.log(bus);
   }, []);
 
   return (
