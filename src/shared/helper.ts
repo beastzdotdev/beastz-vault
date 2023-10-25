@@ -1,8 +1,3 @@
-import { bus } from './bus';
-import { ExceptionMessageCode } from '../models/enum/exception-message-code.enum';
-import { router } from './router';
-import { constants } from './constants';
-
 export function fields<T>(): { [P in keyof T]: P } {
   return new Proxy(
     {},
@@ -14,31 +9,6 @@ export function fields<T>(): { [P in keyof T]: P } {
   ) as {
     [P in keyof T]: P;
   };
-}
-
-export async function handleUserExceptions(message: ExceptionMessageCode | undefined) {
-  if (!message) {
-    return;
-  }
-
-  // redirect page
-  await router.navigate(constants.path.signIn);
-
-  switch (message) {
-    case ExceptionMessageCode.USER_NOT_VERIFIED:
-      bus.emit('show-alert', 'User not verified');
-      break;
-    case ExceptionMessageCode.USER_BLOCKED:
-      bus.emit('show-alert', 'User is blocked, please contact our support');
-      //TODO redirect to user blocked page
-      break;
-    case ExceptionMessageCode.USER_LOCKED:
-      bus.emit('show-alert', 'User is locked, please verify account again');
-      break;
-    default:
-      bus.emit('show-alert', 'Session expired');
-      break;
-  }
 }
 
 //! for dicebear

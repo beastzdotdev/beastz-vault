@@ -15,10 +15,17 @@ export const AuthUserNotVerified = (): React.JSX.Element => {
         <div className="flex justify-center">
           <div className={Classes.FOCUS_STYLE_MANAGER_IGNORE}>
             <Button
-              icon="link"
-              text="Redirect"
+              icon="badge"
+              text="Verify"
               intent={Intent.PRIMARY}
               onClick={() => router.navigate(constants.path.authVerify)}
+            />
+            <Button
+              icon="log-in"
+              text="Sign in"
+              intent={Intent.NONE}
+              className="ml-2"
+              onClick={() => router.navigate(constants.path.signIn)}
             />
           </div>
         </div>

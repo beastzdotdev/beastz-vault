@@ -1,3 +1,7 @@
+//TODO on every unauthenticated routes like auth/ needs to be checks user identity status
+//TODO on every unauthentication use apiPure not api
+
+
 TODO refresh flow needs full refactor and correct testing
 TODO correct error handling in refresh token flow
 

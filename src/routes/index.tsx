@@ -1,5 +1,5 @@
 import { Button } from '@blueprintjs/core';
-import { api, apiWithoutAuth } from '../shared/api/api';
+import { api, apiPure } from '../shared/api/api';
 
 class AuthenticationPayloadResponseDto {
   accessToken: string;
@@ -7,7 +7,7 @@ class AuthenticationPayloadResponseDto {
   hasEmailVerified?: boolean;
 }
 
-export default function Index() {
+export const Index = () => {
   const getUsers = async () => {
     const promises = [1, 2, 3].map(x =>
       api
@@ -54,7 +54,7 @@ export default function Index() {
   };
 
   const login = async () => {
-    const { data } = await apiWithoutAuth.post<AuthenticationPayloadResponseDto>('auth/sign-in', {
+    const { data } = await apiPure.post<AuthenticationPayloadResponseDto>('auth/sign-in', {
       email: 'demo@gmail.com',
       password: 'jsbyangtjt37*',
     });
@@ -74,4 +74,4 @@ export default function Index() {
       <Button icon="log-out" intent="none" text="Login" onClick={login} />
     </div>
   );
-}
+};

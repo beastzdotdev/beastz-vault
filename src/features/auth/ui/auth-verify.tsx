@@ -28,7 +28,7 @@ export const AuthVerify = (): React.JSX.Element => {
     validationSchema: verifyFieldsSchema,
     onSubmit: async (values, { resetForm }) => {
       resetForm();
-      authController.accountVerifyAgain(values.email);
+      authController.accountVerify({ email: values.email });
     },
   });
 

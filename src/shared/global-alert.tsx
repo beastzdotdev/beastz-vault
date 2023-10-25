@@ -1,6 +1,6 @@
 import { Alert, Intent } from '@blueprintjs/core';
 import React, { createContext, useEffect, useState } from 'react';
-import { bus } from './bus';
+import { bus } from './bus/bus';
 
 const GlobalAlert = ({
   isOpen,
@@ -8,8 +8,8 @@ const GlobalAlert = ({
   onClose,
 }: {
   isOpen: boolean;
-  message: string;
-  onClose: any;
+  message: string | null;
+  onClose: () => void;
 }) => {
   return (
     <Alert
@@ -20,7 +20,6 @@ const GlobalAlert = ({
       confirmButtonText="OK"
       canEscapeKeyCancel={false}
       canOutsideClickCancel={false}
-      //TODO onClosed={} send event back
     >
       {message}
     </Alert>
@@ -31,28 +30,38 @@ const GlobalAlert = ({
 export const GlobalAlertContext = createContext(null);
 
 export const GlobalAlertProvider = ({ children }: { children: React.JSX.Element }) => {
-  const [globalAlert, setGlobalAlert] = useState({
+  const [globalAlert, setGlobalAlert] = useState<{
+    isOpen: boolean;
+    message: string | null;
+    onClose: (() => void) | null;
+  }>({
     isOpen: false,
-    message: '',
+    message: null,
+    onClose: null,
   });
 
-  const showAlert = (message: string) => {
+  const showAlert = (message: string, onClose: (() => void) | null) => {
     setGlobalAlert({
       isOpen: true,
       message,
+      onClose,
     });
   };
 
   const closeAlert = () => {
+    // callback function is exists
+    globalAlert.onClose?.();
+
     setGlobalAlert({
       isOpen: false,
-      message: '',
+      message: null,
+      onClose: null,
     });
   };
 
   useEffect(() => {
-    bus.addListener('show-alert', (message: string) => {
-      showAlert(message);
+    bus.addListener('show-alert', ({ message, onClose }) => {
+      showAlert(message, onClose ?? null);
     });
   }, []);
 

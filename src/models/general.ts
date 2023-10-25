@@ -5,7 +5,7 @@ export type AxiosApiResponse<T> = {
   error?: ClientApiError;
 };
 
-export type GeneralClass<T> = {
+export type GeneralClass<T = unknown> = {
   new (...args: never[]): T;
 };
 

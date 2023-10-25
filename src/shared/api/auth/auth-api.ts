@@ -35,4 +35,13 @@ export class AuthApiService {
       return { error: e as ClientApiError };
     }
   }
+
+  async verify(params: { email: string }): Promise<AxiosApiResponse<void>> {
+    try {
+      const result: AxiosResponse = await api.post('auth/account-verify/send', params);
+      return { data: result.data };
+    } catch (e: unknown) {
+      return { error: e as ClientApiError };
+    }
+  }
 }

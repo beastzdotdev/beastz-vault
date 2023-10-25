@@ -9,6 +9,7 @@ export const constants = Object.freeze({
     authUserNotVerified: '/auth/user-not-verified',
     authRecoverPassword: '/auth/user-recover-password',
     support: '/support',
+    oops: '/oops',
 
     backend: {
       url: import.meta.env.VITE_BACKEND_URL,

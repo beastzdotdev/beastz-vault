@@ -1,18 +1,22 @@
 import { LoaderFunctionArgs } from 'react-router-dom';
 import { UserController } from '../features/user/state/user.controller';
+import { AppController } from '../features/app/state/app.controller';
+import { UserApiService } from './api/user/user-api';
 import { ioc } from './ioc';
 
 export const rootLoader = async (_args: LoaderFunctionArgs) => {
   const userController = ioc.getContainer().get(UserController);
+  const appController = ioc.getContainer().get(AppController);
+  const userApiService = ioc.getContainer().get(UserApiService);
 
-  // api will automatically redirect if refresh token expires
-  userController.setCurrentUser();
+  const { data } = await userApiService.getCurrentUser();
 
-  // if () {
+  // Api call will make sure whether user is locked, blocked or not verified
+  appController.setShouldRender(data ? true : false);
 
-  // }
-
-  //TODO check for user lock, user block, user not verified
+  if (data) {
+    userController.setUser(data);
+  }
 
   return 'ok';
 };

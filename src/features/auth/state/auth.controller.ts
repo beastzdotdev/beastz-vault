@@ -6,10 +6,6 @@ import { ExceptionMessageCode } from '../../../models/enum/exception-message-cod
 import { constants } from '../../../shared/constants';
 import { Singleton } from '../../../shared/decorators';
 
-//TODO account verify problem needs to be solved
-//TODO on every unauthenticated routes like auth/ needs to be checks user identity status
-//TODO add account verify, recover password, sign up routes on sign up and sign in pages
-
 @Singleton
 export class AuthController {
   @inject(AuthApiService)
@@ -68,19 +64,20 @@ export class AuthController {
     }
   }
 
-  async accountVerifyAgain(_email: string) {
-    // const { error, data } = await this.authApiService.signUp(params);
-    // if (error) {
-    //   if (error.message === ExceptionMessageCode.USER_EMAIL_EXISTS) {
-    //     toast.error('User email already exists');
-    //     return;
-    //   }
-    //   toast.error('Error on sign up');
-    // }
-    // if (data && data.isAccountVerified) {
-    //   router.navigate('/');
-    // } else {
-    //   router.navigate(constants.path.verifyMessage);
-    // }
+  async accountVerify(params: { email: string }) {
+    const { error } = await this.authApiService.verify(params);
+
+    if (error) {
+      if (error.message === ExceptionMessageCode.USER_EMAIL_EXISTS) {
+        toast.error('User email already exists');
+        return;
+      }
+      if (error.message === ExceptionMessageCode.USER_NOT_FOUND) {
+        toast.error('User not found');
+        return;
+      }
+
+      toast.error('Error on verify');
+    }
   }
 }

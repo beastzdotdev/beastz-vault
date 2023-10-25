@@ -7,7 +7,14 @@ dns.setDefaultResultOrder('verbatim');
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), checker({ typescript: true })],
+  plugins: [
+    react(),
+    checker({
+      typescript: true,
+      enableBuild: true,
+      overlay: false,
+    }),
+  ],
   build: {
     sourcemap: true,
   },

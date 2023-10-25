@@ -1,6 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
-import Root from '../routes/root';
-import Index from '../routes';
+import { Root } from '../routes/root';
+import { Index } from '../routes';
 import { ErrorPage } from '../features/error/ui/error';
 import { rootLoader } from './loader';
 import { Books } from '../routes/books';
@@ -16,6 +16,7 @@ import { AuthUserLockedPage } from '../features/auth/ui/auth-user-locked';
 import { Support } from '../features/support/ui/support';
 import { AuthVerify } from '../features/auth/ui/auth-verify';
 import { AuthRecoverPassword } from '../features/auth/ui/auth-recover-password';
+import { Oops } from '../features/auth/ui/oop';
 
 export const router = createBrowserRouter([
   {
@@ -77,5 +78,9 @@ export const router = createBrowserRouter([
   {
     path: constants.path.support,
     element: <Support />,
+  },
+  {
+    path: constants.path.oops,
+    element: <Oops />,
   },
 ]);
