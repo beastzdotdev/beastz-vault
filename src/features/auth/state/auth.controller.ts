@@ -5,6 +5,7 @@ import { router } from '../../../shared/router';
 import { ExceptionMessageCode } from '../../../models/enum/exception-message-code.enum';
 import { constants } from '../../../shared/constants';
 import { Singleton } from '../../../shared/decorators';
+import { bus } from '../../../shared/bus/bus';
 
 @Singleton
 export class AuthController {
@@ -60,7 +61,7 @@ export class AuthController {
     if (data && data.isAccountVerified) {
       router.navigate('/');
     } else {
-      router.navigate(constants.path.authVerifyMessage);
+      bus.emit('show-alert', { message: 'We have sent you account verification on you email' });
     }
   }
 

@@ -182,13 +182,13 @@ export const AuthSignUp = (): React.JSX.Element => {
           <Link to={constants.path.signIn} className="font-bold">
             Sign in
           </Link>{' '}
-          here.
+          here
         </p>
 
         <p className="mt-2 ml-auto bp5-text-muted">
           Forgot your{' '}
           <Link to={constants.path.authRecoverPassword} className="font-bold">
-            password
+            Password
           </Link>{' '}
           ?
         </p>
@@ -208,11 +208,17 @@ export const AuthSignUp = (): React.JSX.Element => {
         </div>
 
         <p className="mt-2 ml-auto bp5-text-muted">
+          Get verified{' '}
+          <Link to={constants.path.authVerify} className="font-bold">
+            Here
+          </Link>
+        </p>
+
+        <p className="mt-2 ml-auto bp5-text-muted">
           Need help ? contact our{' '}
           <Link to={constants.path.support} className="font-bold">
             Support
           </Link>
-          .
         </p>
       </ControlGroup>
     </div>

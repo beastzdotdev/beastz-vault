@@ -9,7 +9,6 @@ import { Profile } from '../routes/profile';
 import { Test } from '../routes/test';
 import { constants } from './constants';
 import { AuthSignIn } from '../features/auth';
-import { AuthVerifyMessage } from '../features/auth/ui/auth-verify-messages';
 import { AuthUserNotVerified } from '../features/auth/ui/auth-user-not-verified';
 import { AuthUserBlockedPage } from '../features/auth/ui/auth-user-blocked';
 import { AuthUserLockedPage } from '../features/auth/ui/auth-user-locked';
@@ -54,10 +53,6 @@ export const router = createBrowserRouter([
   {
     path: constants.path.authVerify,
     element: <AuthVerify />,
-  },
-  {
-    path: constants.path.authVerifyMessage,
-    element: <AuthVerifyMessage />,
   },
   {
     path: constants.path.authUserNotVerified,

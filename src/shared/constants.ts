@@ -3,7 +3,6 @@ export const constants = Object.freeze({
     signIn: '/auth/sign-in',
     signUp: '/auth/sign-up',
     authVerify: '/auth/verify',
-    authVerifyMessage: '/auth/acc-verify-message',
     authUserBlocked: '/auth/user-blocked',
     authUserLocked: '/auth/user-locked',
     authUserNotVerified: '/auth/user-not-verified',
