@@ -5,6 +5,7 @@ import { router } from '../router';
 import { ExceptionSchema } from '../../models/exception.schema';
 import { ExceptionMessageCode } from '../../models/enum/exception-message-code.enum';
 import { ClientApiError } from '../../models/client-error.schema';
+import { HandleRefreshType } from '../../models/general';
 
 const axiosConfigs: CreateAxiosDefaults = {
   baseURL: constants.path.backend.url,
@@ -17,76 +18,88 @@ export const api = axios.create(axiosConfigs);
 
 api.interceptors.response.use(r => r, handleAxiosResponseError);
 
+// needs to be like this
+let refreshingFunc: Promise<HandleRefreshType> | undefined;
+
 /**
  * @description when status is forbidden then post refresh and get new access/refresh tokens
  *              and restart last api request, if refresh has any type of problem we do not care
  *              it should not happen if everything is correctly done
  */
 async function handleAxiosResponseError(error: unknown) {
-  if (error instanceof AxiosError) {
-    const originalConfig = error.config;
-    const responseBody = error.response?.data;
-    const exceptionBody = await ExceptionSchema.passthrough().safeParseAsync(responseBody);
+  try {
+    if (error instanceof AxiosError) {
+      const originalConfig = error.config;
+      const responseBody = error.response?.data;
+      const exceptionBody = await ExceptionSchema.passthrough().safeParseAsync(responseBody);
 
-    // this should not happen, navigate to oops
-    if (!originalConfig) {
-      router.navigate(constants.path.oops);
-      return Promise.reject(
-        new ClientApiError(
-          HttpStatusCode.InternalServerError,
-          ExceptionMessageCode.CLIENT_OR_INTERNAL_ERROR,
-          error
-        )
-      );
-    }
-
-    if (exceptionBody.success) {
-      const needsRefresh =
-        exceptionBody.data.message === ExceptionMessageCode.ACCESS_EXPIRED_TOKEN &&
-        exceptionBody.data.statusCode === HttpStatusCode.Unauthorized;
-
-      const clientAPiError = new ClientApiError(
-        exceptionBody.data.statusCode,
-        exceptionBody.data.message,
-        error
-      );
-
-      if (needsRefresh) {
-        const data = await handleRefresh();
-
-        // refresh token unsuccessfull
-        if (!data.success) {
-          // show alert and redirect
-          handleUserExceptionsInRefresh(data.message);
-          return Promise.reject(clientAPiError);
-        }
-
-        // refresh was successfull, retry original request
-        return await api.request(originalConfig);
+      // this should not happen, navigate to oops
+      if (!originalConfig) {
+        router.navigate(constants.path.oops);
+        return Promise.reject(
+          new ClientApiError(
+            HttpStatusCode.InternalServerError,
+            ExceptionMessageCode.CLIENT_OR_INTERNAL_ERROR,
+            error
+          )
+        );
       }
 
-      // here if refresh was not needed but returned error
-      handleUserExceptionsInAccess(exceptionBody.data.message);
-      return Promise.reject(clientAPiError);
-    }
-  }
+      if (exceptionBody.success) {
+        const needsRefresh =
+          exceptionBody.data.message === ExceptionMessageCode.ACCESS_EXPIRED_TOKEN &&
+          exceptionBody.data.statusCode === HttpStatusCode.Unauthorized;
 
-  // unknown error, navigate to oops
-  router.navigate(constants.path.oops);
-  return Promise.reject(
-    new ClientApiError(
-      HttpStatusCode.InternalServerError,
-      ExceptionMessageCode.CLIENT_OR_INTERNAL_ERROR,
-      error
-    )
-  );
+        const clientAPiError = new ClientApiError(
+          exceptionBody.data.statusCode,
+          exceptionBody.data.message,
+          error
+        );
+
+        if (needsRefresh) {
+          // const data = await handleRefresh();
+          if (!refreshingFunc) refreshingFunc = handleRefresh();
+
+          const data = await refreshingFunc;
+
+          // refresh token unsuccessfull
+          if (!data.success) {
+            // show alert and redirect
+            handleUserExceptionsInRefresh(data.message);
+            return Promise.reject(clientAPiError);
+          }
+
+          // refresh was successfull, retry original request
+          return await api.request(originalConfig);
+        }
+
+        // here if refresh was not needed but returned error
+        handleUserExceptionsInAccess(exceptionBody.data.message);
+        return Promise.reject(clientAPiError);
+      }
+    }
+
+    // unknown error, navigate to oops
+    router.navigate(constants.path.oops);
+    return Promise.reject(
+      new ClientApiError(
+        HttpStatusCode.InternalServerError,
+        ExceptionMessageCode.CLIENT_OR_INTERNAL_ERROR,
+        error
+      )
+    );
+  } catch (error) {
+    console.log(error);
+  } finally {
+    refreshingFunc = undefined;
+  }
 }
 
 /**
  * @description handle refresh call everything must go smoothly. any type of problem must
  *              be met with localstorage clear and redirect to sign in page
  */
-async function handleRefresh(): Promise<{ success: boolean; message?: ExceptionMessageCode }> {
+async function handleRefresh(): Promise<HandleRefreshType> {
   try {
     await apiPure.post<void>('auth/refresh');
     return { success: true };
@@ -180,6 +193,10 @@ function handleUserExceptionsInAccess(message?: ExceptionMessageCode) {
         message: 'User is locked, please verify account again',
         onClose: () => router.navigate(constants.path.authUserLocked),
       });
+      break;
+    case ExceptionMessageCode.MISSING_TOKEN:
+    case ExceptionMessageCode.INVALID_TOKEN:
+      router.navigate(constants.path.signIn);
       break;
   }
 }

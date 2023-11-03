@@ -14,4 +14,7 @@ export enum ExceptionMessageCode {
   // for backend general
   INTERNAL_ERROR = 'INTERNAL_ERROR',
   HTTP_EXCEPTION = 'HTTP_EXCEPTION',
+
+  MISSING_TOKEN = 'MISSING_TOKEN',
+  INVALID_TOKEN = 'INVALID_TOKEN',
 }

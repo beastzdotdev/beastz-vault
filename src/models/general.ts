@@ -1,4 +1,5 @@
 import { ClientApiError } from './client-error.schema';
+import { ExceptionMessageCode } from './enum/exception-message-code.enum';
 
 export type AxiosApiResponse<T> = {
   data?: T;
@@ -17,4 +18,9 @@ export type BusPayload<T = unknown> = {
   message: string;
   data?: T;
   uuid?: string;
+};
+
+export type HandleRefreshType = {
+  success: boolean;
+  message?: ExceptionMessageCode;
 };
