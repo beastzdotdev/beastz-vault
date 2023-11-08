@@ -6,6 +6,7 @@ import { ExceptionSchema } from '../../models/exception.schema';
 import { ExceptionMessageCode } from '../../models/enum/exception-message-code.enum';
 import { ClientApiError } from '../../models/client-error.schema';
 import { HandleRefreshType } from '../../models/general';
+import { createSearchParams } from 'react-router-dom';
 
 const axiosConfigs: CreateAxiosDefaults = {
   baseURL: constants.path.backend.url,
@@ -27,6 +28,12 @@ let refreshingFunc: Promise<HandleRefreshType> | undefined;
  *              it should not happen if everything is correctly done
  */
 async function handleAxiosResponseError(error: unknown) {
+  const generalClientError = new ClientApiError(
+    HttpStatusCode.InternalServerError,
+    ExceptionMessageCode.CLIENT_OR_INTERNAL_ERROR,
+    error
+  );
+
   try {
     if (error instanceof AxiosError) {
       const originalConfig = error.config;
@@ -77,17 +84,19 @@ async function handleAxiosResponseError(error: unknown) {
         handleUserExceptionsInAccess(exceptionBody.data.message);
         return Promise.reject(clientAPiError);
       }
+
+      if (error.code === AxiosError.ERR_NETWORK) {
+        router.navigate({
+          pathname: constants.path.oops,
+          search: createSearchParams({ text: 'Network error' }).toString(),
+        });
+        return Promise.reject(generalClientError);
+      }
     }
 
     // unknown error, navigate to oops
-    router.navigate(constants.path.oops);
-    return Promise.reject(
-      new ClientApiError(
-        HttpStatusCode.InternalServerError,
-        ExceptionMessageCode.CLIENT_OR_INTERNAL_ERROR,
-        error
-      )
-    );
+    router.navigate({ pathname: constants.path.oops });
+    return Promise.reject(generalClientError);
   } catch (error) {
     console.log(error);
   } finally {
