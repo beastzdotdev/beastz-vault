@@ -6,7 +6,7 @@ import { rootLoader } from './loader';
 import { Books } from '../routes/books';
 import { AuthSignUp } from '../features/auth/ui/auth-sign-up';
 import { Profile } from '../routes/profile';
-import { Test } from '../routes/test';
+import { Test as SecureTest } from '../routes/test';
 import { constants } from './constants';
 import { AuthSignIn } from '../features/auth';
 import { AuthUserNotVerified } from '../features/auth/ui/auth-user-not-verified';
@@ -15,9 +15,12 @@ import { AuthUserLockedPage } from '../features/auth/ui/auth-user-locked';
 import { Support } from '../features/support/ui/support';
 import { AuthVerify } from '../features/auth/ui/auth-verify';
 import { AuthRecoverPassword } from '../features/auth/ui/auth-recover-password';
-import { Oops } from '../features/auth/ui/oop';
+import { Oops } from '../features/auth/ui/oops';
+import { FileEncryptionTest } from '../features/experimental/ui/file-encryption-test';
+import { ExperimentalRoot } from '../features/experimental/ui/root';
 
 export const router = createBrowserRouter([
+  // under / every page is under auth protection
   {
     path: '/',
     element: <Root />,
@@ -37,8 +40,8 @@ export const router = createBrowserRouter([
         element: <Profile />,
       },
       {
-        path: 'test',
-        element: <Test />,
+        path: 'secure/test',
+        element: <SecureTest />,
       },
     ],
   },
@@ -77,5 +80,15 @@ export const router = createBrowserRouter([
   {
     path: constants.path.oops,
     element: <Oops />,
+  },
+  {
+    path: 'experimental',
+    element: <ExperimentalRoot />,
+    children: [
+      {
+        path: 'file-encryption',
+        element: <FileEncryptionTest />,
+      },
+    ],
   },
 ]);

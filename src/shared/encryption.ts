@@ -1,6 +1,6 @@
-const stringEncode = (text: string): Uint8Array => new TextEncoder().encode(text);
-const stringDecode = (buffer: ArrayBuffer): string => new TextDecoder().decode(buffer);
-const base64Decode = (t: string) => {
+export const stringEncode = (text: string): Uint8Array => new TextEncoder().encode(text);
+export const stringDecode = (buffer: ArrayBuffer): string => new TextDecoder().decode(buffer);
+export const base64Decode = (t: string) => {
   return new Uint8Array(
     atob(t)
       .split('')
@@ -8,8 +8,33 @@ const base64Decode = (t: string) => {
   );
 };
 
-export const encryption = Object.freeze({
+const privateEncryption = Object.freeze({
   pbkdf2: {
+    async derive(masterKey: string) {
+      const encoder = new TextEncoder();
+      const passwordBuffer = encoder.encode(masterKey);
+
+      const key = await crypto.subtle.importKey('raw', passwordBuffer, { name: 'PBKDF2' }, false, [
+        'deriveKey',
+      ]);
+
+      // Derive a key using PBKDF2 and use it for AES-256-CTR
+      const aesKey = await crypto.subtle.deriveKey(
+        {
+          name: 'PBKDF2',
+          salt: crypto.getRandomValues(new Uint8Array(16)),
+          iterations: 100000,
+          hash: 'SHA-256',
+        },
+        key,
+        { name: 'AES-CTR', length: 256 },
+        true,
+        ['encrypt', 'decrypt']
+      );
+
+      return aesKey;
+    },
+
     async importKey(secret: Uint8Array) {
       return crypto.subtle.importKey('raw', secret, { name: 'PBKDF2' }, false, [
         'deriveBits',
@@ -17,26 +42,26 @@ export const encryption = Object.freeze({
       ]);
     },
 
-    async sync(secret: Uint8Array, salt: Uint8Array) {
-      const subtleKey = await encryption.pbkdf2.importKey(secret);
+    async deriveBits(secret: Uint8Array, salt: Uint8Array) {
+      const subtleKey = await privateEncryption.pbkdf2.importKey(secret);
       const keyLength = 32;
 
       return crypto.subtle.deriveBits(
-        { name: 'PBKDF2', salt, iterations: 2145, hash: 'SHA-512' },
+        { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-512' },
         subtleKey,
         keyLength * 8 // Convert bytes to bits
       );
     },
 
     async deriveKey(secret: Uint8Array, salt: Uint8Array) {
-      const subtleKey = await encryption.pbkdf2.importKey(secret);
+      const subtleKey = await privateEncryption.pbkdf2.importKey(secret);
       const keyLength = 32;
 
       return crypto.subtle.deriveKey(
         {
           name: 'PBKDF2',
           salt,
-          iterations: 2145,
+          iterations: 100000,
           hash: 'SHA-512',
         },
         subtleKey,
@@ -48,17 +73,14 @@ export const encryption = Object.freeze({
   },
 
   aes256gcm: {
-    async decryptWebCrypto(encryptedText: string, secret: string) {
-      // base64 decoding
-      const encryptedBuffer = base64Decode(encryptedText);
-
+    async decrypt(buffer: Uint8Array, secret: string): Promise<Uint8Array> {
       // Convert data to buffers
-      const salt = encryptedBuffer.slice(0, 64);
-      const iv = encryptedBuffer.slice(64, 80);
-      const authTag = encryptedBuffer.slice(80, 96);
-      const text = encryptedBuffer.slice(96);
+      const salt = buffer.slice(0, 64);
+      const iv = buffer.slice(64, 80);
+      const authTag = buffer.slice(80, 96);
+      const text = buffer.slice(96);
 
-      const key = await encryption.pbkdf2.sync(stringEncode(secret), salt);
+      const key = await privateEncryption.pbkdf2.deriveBits(stringEncode(secret), salt);
 
       const importedKey = await crypto.subtle.importKey(
         'raw',
@@ -75,24 +97,20 @@ export const encryption = Object.freeze({
         new Uint8Array([...text, ...authTag])
       );
 
-      return stringDecode(decrypted);
+      return new Uint8Array(decrypted);
     },
 
-    async encryptWithWebCrypto(text: string, secret: string) {
+    async encrypt(buffer: Uint8Array, secret: string): Promise<Uint8Array> {
       // Generate a random salt
       const salt = crypto.getRandomValues(new Uint8Array(64));
 
       // Generate a random initialization vector (IV)
       const iv = crypto.getRandomValues(new Uint8Array(16));
 
-      const derivedKey = await encryption.pbkdf2.deriveKey(stringEncode(secret), salt);
+      const derivedKey = await privateEncryption.pbkdf2.deriveKey(stringEncode(secret), salt);
 
       // Encrypt the text using AES-GCM
-      const encrypted = await crypto.subtle.encrypt(
-        { name: 'AES-GCM', iv },
-        derivedKey,
-        stringEncode(text)
-      );
+      const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, derivedKey, buffer);
 
       const [value, authTag] = [
         encrypted.slice(0, encrypted.byteLength - 16),
@@ -108,7 +126,32 @@ export const encryption = Object.freeze({
       data.set(new Uint8Array(authTag), salt.byteLength + iv.byteLength);
       data.set(new Uint8Array(value), salt.byteLength + iv.byteLength + authTag.byteLength);
 
-      return btoa(String.fromCharCode(...data));
+      return data;
+    },
+  },
+});
+
+/**
+ * @description This object is public use of browser encryption on string, buffer, etc
+ */
+export const encryption = Object.freeze({
+  aes256gcm: {
+    async encryptBuffer(buffer: Uint8Array, secret: string): Promise<Uint8Array> {
+      return privateEncryption.aes256gcm.encrypt(buffer, secret);
+    },
+
+    async decryptBuffer(buffer: Uint8Array, secret: string): Promise<Uint8Array> {
+      return privateEncryption.aes256gcm.decrypt(buffer, secret);
+    },
+
+    async encryptString(text: string, secret: string): Promise<string> {
+      const encrypted = await privateEncryption.aes256gcm.encrypt(stringEncode(text), secret);
+      return btoa(String.fromCharCode(...encrypted));
+    },
+
+    async decryptString(text: string, secret: string): Promise<string> {
+      const decrypted = await privateEncryption.aes256gcm.decrypt(base64Decode(text), secret);
+      return stringDecode(decrypted);
     },
   },
 });
