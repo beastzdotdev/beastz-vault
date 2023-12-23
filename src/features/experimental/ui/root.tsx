@@ -10,7 +10,7 @@ export const ExperimentalRoot = (): React.JSX.Element => {
             <Link to="/">Home</Link>
           </Card>
           <Card>
-            <Link to="/experimental/file-encryption">File encryption</Link>
+            <Link to="/experimental/encryption">Encryption</Link>
           </Card>
           <Card>some future link 1</Card>
           <Card>some future link 2</Card>

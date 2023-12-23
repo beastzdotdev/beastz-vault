@@ -16,7 +16,7 @@ import { Support } from '../features/support/ui/support';
 import { AuthVerify } from '../features/auth/ui/auth-verify';
 import { AuthRecoverPassword } from '../features/auth/ui/auth-recover-password';
 import { Oops } from '../features/auth/ui/oops';
-import { FileEncryptionTest } from '../features/experimental/ui/file-encryption-test';
+import { EncryptionTest } from '../features/experimental/ui/encryption-test';
 import { ExperimentalRoot } from '../features/experimental/ui/root';
 
 export const router = createBrowserRouter([
@@ -86,8 +86,8 @@ export const router = createBrowserRouter([
     element: <ExperimentalRoot />,
     children: [
       {
-        path: 'file-encryption',
-        element: <FileEncryptionTest />,
+        path: 'encryption',
+        element: <EncryptionTest />,
       },
     ],
   },
