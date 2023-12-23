@@ -10,29 +10,9 @@ export const base64Decode = (t: string) => {
 
 const privateEncryption = Object.freeze({
   pbkdf2: {
-    async derive(masterKey: string) {
-      const encoder = new TextEncoder();
-      const passwordBuffer = encoder.encode(masterKey);
-
-      const key = await crypto.subtle.importKey('raw', passwordBuffer, { name: 'PBKDF2' }, false, [
-        'deriveKey',
-      ]);
-
-      // Derive a key using PBKDF2 and use it for AES-256-CTR
-      const aesKey = await crypto.subtle.deriveKey(
-        {
-          name: 'PBKDF2',
-          salt: crypto.getRandomValues(new Uint8Array(16)),
-          iterations: 100000,
-          hash: 'SHA-256',
-        },
-        key,
-        { name: 'AES-CTR', length: 256 },
-        true,
-        ['encrypt', 'decrypt']
-      );
-
-      return aesKey;
+    constants: {
+      pbkdf2IterationCountOnSHA512: 210000, // recommended amount
+      keyLengthInBits: 256, // 32 * 8 - must be multiplied by 8 for bit conversion
     },
 
     async importKey(secret: Uint8Array) {
@@ -44,28 +24,34 @@ const privateEncryption = Object.freeze({
 
     async deriveBits(secret: Uint8Array, salt: Uint8Array) {
       const subtleKey = await privateEncryption.pbkdf2.importKey(secret);
-      const keyLength = 32;
 
       return crypto.subtle.deriveBits(
-        { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-512' },
+        {
+          name: 'PBKDF2',
+          salt,
+          iterations: privateEncryption.pbkdf2.constants.pbkdf2IterationCountOnSHA512,
+          hash: 'SHA-512',
+        },
         subtleKey,
-        keyLength * 8 // Convert bytes to bits
+        privateEncryption.pbkdf2.constants.keyLengthInBits
       );
     },
 
     async deriveKey(secret: Uint8Array, salt: Uint8Array) {
       const subtleKey = await privateEncryption.pbkdf2.importKey(secret);
-      const keyLength = 32;
 
       return crypto.subtle.deriveKey(
         {
           name: 'PBKDF2',
           salt,
-          iterations: 100000,
+          iterations: privateEncryption.pbkdf2.constants.pbkdf2IterationCountOnSHA512,
           hash: 'SHA-512',
         },
         subtleKey,
-        { name: 'AES-GCM', length: keyLength * 8 },
+        {
+          name: 'AES-GCM',
+          length: privateEncryption.pbkdf2.constants.keyLengthInBits,
+        },
         true,
         ['encrypt', 'decrypt']
       );
@@ -85,14 +71,21 @@ const privateEncryption = Object.freeze({
       const importedKey = await crypto.subtle.importKey(
         'raw',
         key,
-        { name: 'AES-GCM', length: 128 },
+        {
+          name: 'AES-GCM',
+          length: 128,
+        },
         true,
         ['decrypt', 'encrypt']
       );
 
       // try decryption
       const decrypted = await crypto.subtle.decrypt(
-        { name: 'AES-GCM', tagLength: 128, iv },
+        {
+          name: 'AES-GCM',
+          tagLength: 128,
+          iv,
+        },
         importedKey,
         new Uint8Array([...text, ...authTag])
       );
