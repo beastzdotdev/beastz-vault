@@ -1,5 +1,5 @@
 import { Button } from '@blueprintjs/core';
-import { api, apiPure } from '../shared/api/api';
+import { api, apiPure } from '../../../shared/api/api';
 
 class AuthenticationPayloadResponseDto {
   accessToken: string;
@@ -7,7 +7,7 @@ class AuthenticationPayloadResponseDto {
   hasEmailVerified?: boolean;
 }
 
-export const Index = () => {
+export const Root = () => {
   const getUsers = async () => {
     const promises = [1, 2, 3].map(x =>
       api

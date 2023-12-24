@@ -1,15 +1,14 @@
-import { inject } from 'inversify';
 import { toast } from '../../../shared/toast';
 import { AuthApiService } from '../../../shared/api';
 import { router } from '../../../shared/router';
 import { ExceptionMessageCode } from '../../../models/enum/exception-message-code.enum';
 import { constants } from '../../../shared/constants';
-import { Singleton } from '../../../shared/decorators';
 import { bus } from '../../../shared/bus/bus';
+import { Inject, Singleton } from '../../../shared';
 
 @Singleton
 export class AuthController {
-  @inject(AuthApiService)
+  @Inject(AuthApiService)
   private readonly authApiService: AuthApiService;
 
   async demoSignIn() {

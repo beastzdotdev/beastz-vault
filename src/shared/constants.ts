@@ -1,5 +1,7 @@
 export const constants = Object.freeze({
   path: {
+    profile: 'profile',
+
     signIn: 'auth/sign-in',
     signUp: 'auth/sign-up',
     authVerify: 'auth/verify',

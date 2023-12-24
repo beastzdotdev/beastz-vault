@@ -1,9 +1,9 @@
 import { makeAutoObservable } from 'mobx';
 import { User } from '../../../entities/user';
-import { Singleton } from '../../../shared/decorators';
+import { Singleton } from '../../../shared';
 
 @Singleton
-export class UserStore {
+export class ProfileStore {
   private _user: User;
 
   constructor() {

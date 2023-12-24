@@ -4,7 +4,7 @@ export class User {
   id: number;
   email: string;
   userName: string;
-  birthDate: Date;
+  birthDate: string;
   gender: Gender;
   createdAt: Date;
   isOnline: boolean;

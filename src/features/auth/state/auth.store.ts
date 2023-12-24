@@ -1,4 +1,4 @@
-import { Singleton } from '../../../shared/decorators';
+import { Singleton } from '../../../shared';
 
 @Singleton
 export class AuthStore {}

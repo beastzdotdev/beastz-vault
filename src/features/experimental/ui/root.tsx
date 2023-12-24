@@ -12,6 +12,12 @@ export const ExperimentalRoot = (): React.JSX.Element => {
           <Card>
             <Link to="/experimental/encryption">Encryption</Link>
           </Card>
+          <Card>
+            <Link to="/experimental/tree-node">Tree node</Link>
+          </Card>
+          <Card>
+            <Link to="/experimental/table">Tree node</Link>
+          </Card>
           <Card>some future link 1</Card>
           <Card>some future link 2</Card>
         </CardList>

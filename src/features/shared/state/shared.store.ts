@@ -1,8 +1,8 @@
 import { makeAutoObservable } from 'mobx';
-import { Singleton } from '../../../shared/decorators';
+import { Singleton } from '../../../shared';
 
 @Singleton
-export class AppStore {
+export class SharedStore {
   private _shouldRender: boolean;
 
   constructor() {

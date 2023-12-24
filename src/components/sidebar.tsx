@@ -68,17 +68,11 @@ const INITIAL_STATE: SidebarNodeInfo[] = [
     id: 0,
     icon: 'book',
     label: 'Books',
-    nodeData: {
-      link: '/books',
-    },
   },
   {
     id: 1,
     icon: 'lab-test',
     label: <ContextMenu content={<div>Hello there!</div>}>Test</ContextMenu>,
-    nodeData: {
-      link: '/test',
-    },
   },
   // {
   //   id: 1,
