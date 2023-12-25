@@ -1,7 +1,17 @@
 import { ZodError, z } from 'zod';
 import { FormikValidationError } from '.';
 
-export function fields<T>(): { [P in keyof T]: P } {
+export const stringEncode = (text: string): Uint8Array => new TextEncoder().encode(text);
+export const stringDecode = (buffer: ArrayBuffer): string => new TextDecoder().decode(buffer);
+export const base64Decode = (t: string) => {
+  return new Uint8Array(
+    atob(t)
+      .split('')
+      .map(c => c.charCodeAt(0))
+  );
+};
+
+export const fields = <T>(): { [P in keyof T]: P } => {
   return new Proxy(
     {},
     {
@@ -12,11 +22,11 @@ export function fields<T>(): { [P in keyof T]: P } {
   ) as {
     [P in keyof T]: P;
   };
-}
+};
 
-export function zodFormikErrorAdapter<T>(schema: z.Schema<T>): {
-  validate: (obj: T) => Promise<void>;
-} {
+export const zodFormikErrorAdapter = <T>(
+  schema: z.Schema<T>
+): { validate: (obj: T) => Promise<void> } => {
   return {
     async validate(obj: T) {
       try {
@@ -41,4 +51,4 @@ export function zodFormikErrorAdapter<T>(schema: z.Schema<T>): {
       }
     },
   };
-}
+};

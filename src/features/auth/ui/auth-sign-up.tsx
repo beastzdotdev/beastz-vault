@@ -38,12 +38,10 @@ export const AuthSignUp = (): React.JSX.Element => {
     validateOnChange: true,
     validationSchema: zodFormikErrorAdapter(signUpFieldsSchema),
     onSubmit: async (values, { resetForm }) => {
-      console.log('='.repeat(20));
-      console.log(values);
-      // const { repeatPassword: _, ...data } = values;
-      // resetForm();
+      const { repeatPassword: _, ...data } = values;
+      resetForm();
 
-      // authController.signUp(data);
+      authController.signUp(data);
     },
   });
 

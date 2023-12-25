@@ -1,12 +1,4 @@
-export const stringEncode = (text: string): Uint8Array => new TextEncoder().encode(text);
-export const stringDecode = (buffer: ArrayBuffer): string => new TextDecoder().decode(buffer);
-export const base64Decode = (t: string) => {
-  return new Uint8Array(
-    atob(t)
-      .split('')
-      .map(c => c.charCodeAt(0))
-  );
-};
+import { stringEncode, base64Decode, stringDecode } from '.';
 
 const privateEncryption = Object.freeze({
   pbkdf2: {

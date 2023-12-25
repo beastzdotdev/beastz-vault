@@ -2,16 +2,16 @@ import { decorate, inject, injectable } from 'inversify';
 import { ioc } from './ioc';
 import { GeneralClass } from '../types';
 
-export function Singleton<T>(cls: GeneralClass<T>) {
+export const Singleton = <T>(cls: GeneralClass<T>) => {
   ioc.getContainer()?.bind(cls).toSelf().inSingletonScope();
   decorate(injectable(), cls);
-}
+};
 
-export function Injectable<T>(cls: GeneralClass<T>) {
+export const Injectable = <T>(cls: GeneralClass<T>) => {
   ioc.getContainer()?.bind(cls).toSelf();
   decorate(injectable(), cls);
-}
+};
 
-export function Inject<T>(cls: GeneralClass<T>) {
+export const Inject = <T>(cls: GeneralClass<T>) => {
   return inject(cls);
-}
+};
