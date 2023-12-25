@@ -1,5 +1,6 @@
 //TODO on every unauthenticated routes like auth/ needs to be checks user identity status
 //TODO on every unauthentication use apiPure not api
+//TODO profile pics are in src/assest/images/prfile/*** use that on user account creation
 
 
 TODO refresh flow needs full refactor and correct testing
