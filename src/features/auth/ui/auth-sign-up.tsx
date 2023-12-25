@@ -13,13 +13,13 @@ import {
 import moment from 'moment';
 import { useState } from 'react';
 import { useFormik } from 'formik';
-import { FormErrorMessage } from '../../../components/error-message';
+import { FormErrorMessage } from '../../../components/form-error-message';
 import { signUpFieldsSchema } from '../validation/auth-sign-up-validation-schema';
 import { useInjection } from 'inversify-react';
 import { AuthController } from '../state/auth.controller';
 import { DateInput3 } from '@blueprintjs/datetime2';
 import { Link } from 'react-router-dom';
-import { fields, Gender, constants } from '../../../shared';
+import { fields, Gender, constants, zodFormikErrorAdapter } from '../../../shared';
 
 export const AuthSignUp = (): React.JSX.Element => {
   const authController = useInjection(AuthController);
@@ -36,12 +36,14 @@ export const AuthSignUp = (): React.JSX.Element => {
       gender: '',
     },
     validateOnChange: true,
-    validationSchema: signUpFieldsSchema,
+    validationSchema: zodFormikErrorAdapter(signUpFieldsSchema),
     onSubmit: async (values, { resetForm }) => {
-      const { repeatPassword: _, ...data } = values;
-      resetForm();
+      console.log('='.repeat(20));
+      console.log(values);
+      // const { repeatPassword: _, ...data } = values;
+      // resetForm();
 
-      authController.signUp(data);
+      // authController.signUp(data);
     },
   });
 

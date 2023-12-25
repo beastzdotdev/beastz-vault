@@ -11,12 +11,12 @@ import {
 } from '@blueprintjs/core';
 import { useState } from 'react';
 import { useFormik } from 'formik';
-import { FormErrorMessage } from '../../../components/error-message';
+import { FormErrorMessage } from '../../../components/form-error-message';
 import { useInjection } from 'inversify-react';
 import { AuthController } from '../state/auth.controller';
 import { signInFieldsSchema } from '../validation/auth-sign-in-validation-schema';
 import { Link } from 'react-router-dom';
-import { fields, constants } from '../../../shared';
+import { fields, constants, zodFormikErrorAdapter } from '../../../shared';
 
 export const AuthSignIn = (): React.JSX.Element => {
   const authController = useInjection(AuthController);
@@ -26,8 +26,8 @@ export const AuthSignIn = (): React.JSX.Element => {
       email: '',
       password: '',
     },
+    validationSchema: zodFormikErrorAdapter(signInFieldsSchema),
     validateOnChange: true,
-    validationSchema: signInFieldsSchema,
     onSubmit: (values, { resetForm }) => {
       resetForm();
       authController.signIn(values);

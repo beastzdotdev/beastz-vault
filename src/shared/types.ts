@@ -24,3 +24,8 @@ export type HandleRefreshType = {
   success: boolean;
   message?: ExceptionMessageCode;
 };
+
+export type FormikValidationError = {
+  name: 'ValidationError';
+  inner: Array<{ path: string; message: string }>;
+};

@@ -1,5 +1,5 @@
-import * as yup from 'yup';
+import { z } from 'zod';
 
-export const verifyFieldsSchema = yup.object().shape({
-  email: yup.string().required('Field required').max(255),
+export const verifyFieldsSchema = z.object({
+  email: z.string({ required_error: 'Field required' }).max(255),
 });

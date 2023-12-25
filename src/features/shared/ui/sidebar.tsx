@@ -1,4 +1,4 @@
-import { TreeNodeInfo, Tree, ContextMenu } from '@blueprintjs/core';
+import { TreeNodeInfo, Tree, ContextMenu, Tooltip, Icon, Intent, Classes } from '@blueprintjs/core';
 import { useCallback, useEffect, useReducer } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -74,54 +74,54 @@ const INITIAL_STATE: SidebarNodeInfo[] = [
     icon: 'lab-test',
     label: <ContextMenu content={<div>Hello there!</div>}>Test</ContextMenu>,
   },
-  // {
-  //   id: 1,
-  //   icon: 'folder-close',
-  //   isExpanded: true,
-  //   label: (
-  //     <ContextMenu2 content={<div>Hello there!</div>}>
-  //       <Tooltip2 content="I'm a folder <3" placement="right">
-  //         Folder 1
-  //       </Tooltip2>
-  //     </ContextMenu2>
-  //   ),
-  //   childNodes: [
-  //     {
-  //       id: 2,
-  //       icon: 'document',
-  //       label: 'Item 0',
-  //       secondaryLabel: (
-  //         <Tooltip2 content="An eye!">
-  //           <Icon icon="eye-open" />
-  //         </Tooltip2>
-  //       ),
-  //     },
-  //     {
-  //       id: 3,
-  //       icon: <Icon icon="tag" intent={Intent.PRIMARY} className={Classes.TREE_NODE_ICON} />,
-  //       label: 'Organic meditation gluten-free, sriracha VHS drinking vinegar beard man.',
-  //     },
-  //     {
-  //       id: 300,
-  //       label: 'Something',
-  //       nodeData: {
-  //         link: '/profile',
-  //       },
-  //     },
-  //     {
-  //       id: 4,
-  //       hasCaret: true,
-  //       icon: 'folder-close',
-  //       label: (
-  //         <ContextMenu2 content={<div>Hello there!</div>}>
-  //           <Tooltip2 content="foo" placement="right">
-  //             Folder 2
-  //           </Tooltip2>
-  //         </ContextMenu2>
-  //       ),
-  //     },
-  //   ],
-  // },
+  {
+    id: 2,
+    icon: 'folder-close',
+    isExpanded: true,
+    label: (
+      <ContextMenu content={<div>Hello there!</div>}>
+        <Tooltip content="I'm a folder <3" placement="right">
+          Folder 1
+        </Tooltip>
+      </ContextMenu>
+    ),
+    childNodes: [
+      {
+        id: 2,
+        icon: 'document',
+        label: 'Item 0',
+        secondaryLabel: (
+          <Tooltip content="An eye!">
+            <Icon icon="eye-open" />
+          </Tooltip>
+        ),
+      },
+      {
+        id: 3,
+        icon: <Icon icon="tag" intent={Intent.PRIMARY} className={Classes.TREE_NODE_ICON} />,
+        label: 'Organic meditation gluten-free, sriracha VHS drinking vinegar beard man.',
+      },
+      {
+        id: 300,
+        label: 'Something',
+        nodeData: {
+          link: '/profile',
+        },
+      },
+      {
+        id: 4,
+        hasCaret: true,
+        icon: 'folder-close',
+        label: (
+          <ContextMenu content={<div>Hello there!</div>}>
+            <Tooltip content="foo" placement="right">
+              Folder 2
+            </Tooltip>
+          </ContextMenu>
+        ),
+      },
+    ],
+  },
 ];
 
 export const Sidebar = () => {

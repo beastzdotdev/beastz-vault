@@ -1,15 +1,15 @@
 import { useNavigate } from 'react-router-dom';
 import { Alignment, Button, Navbar } from '@blueprintjs/core';
 
-export const RootNavbar = () => {
+export const TopBar = () => {
   const navigate = useNavigate();
 
   return (
     <>
       <Navbar>
         <Navbar.Group align={Alignment.LEFT}>
-          <Navbar.Heading onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-            Firebase & Redux & Blueprint
+          <Navbar.Heading onClick={() => navigate('/')} style={{ cursor: 'pointer', fontSize: 30 }}>
+            🦍
           </Navbar.Heading>
           <Navbar.Divider />
 
