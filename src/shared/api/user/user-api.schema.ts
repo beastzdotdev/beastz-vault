@@ -1,4 +1,4 @@
-import { Gender } from '../../../models/enum/gender.enum';
+import { Gender } from '../../enum/gender.enum';
 
 export class UserResponseDto {
   id: number;

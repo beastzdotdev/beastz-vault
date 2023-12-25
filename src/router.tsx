@@ -1,23 +1,23 @@
 import { createBrowserRouter } from 'react-router-dom';
-import { App } from '../features/app';
-import { Root } from '../features/root/ui/root';
-import { ErrorPage } from '../features/error/ui/error';
-import { rootLoader } from './loader';
-import { TableTest } from '../features/experimental/ui/table-test';
-import { AuthSignUp } from '../features/auth/ui/auth-sign-up';
-import { Profile } from '../features/profile/ui/profile';
-import { TreeNodesTest } from '../features/experimental/ui/tree-node-test';
-import { constants } from './constants';
-import { AuthUserNotVerified } from '../features/auth/ui/auth-user-not-verified';
-import { AuthUserBlockedPage } from '../features/auth/ui/auth-user-blocked';
-import { AuthUserLockedPage } from '../features/auth/ui/auth-user-locked';
-import { Support } from '../features/support/ui/support';
-import { AuthVerify } from '../features/auth/ui/auth-verify';
-import { AuthRecoverPassword } from '../features/auth/ui/auth-recover-password';
-import { Oops } from '../features/auth/ui/oops';
-import { EncryptionTest } from '../features/experimental/ui/encryption-test';
-import { ExperimentalRoot } from '../features/experimental/ui/root';
-import { AuthSignIn } from '../features/auth/ui/auth-sign-in';
+import { App } from './features/app';
+import { Root } from './features/root/ui/root';
+import { ErrorPage } from './features/error/ui/error';
+import { rootLoader } from './features/app-loader';
+import { TableTest } from './features/experimental/ui/table-test';
+import { AuthSignUp } from './features/auth/ui/auth-sign-up';
+import { Profile } from './features/profile/ui/profile';
+import { TreeNodesTest } from './features/experimental/ui/tree-node-test';
+import { AuthUserNotVerified } from './features/auth/ui/auth-user-not-verified';
+import { AuthUserBlockedPage } from './features/auth/ui/auth-user-blocked';
+import { AuthUserLockedPage } from './features/auth/ui/auth-user-locked';
+import { Support } from './features/support/ui/support';
+import { AuthVerify } from './features/auth/ui/auth-verify';
+import { AuthRecoverPassword } from './features/auth/ui/auth-recover-password';
+import { Oops } from './features/auth/ui/oops';
+import { EncryptionTest } from './features/experimental/ui/encryption-test';
+import { ExperimentalRoot } from './features/experimental/ui/root';
+import { AuthSignIn } from './features/auth/ui/auth-sign-in';
+import { constants } from './shared';
 
 export const router = createBrowserRouter([
   // under / every page is under auth protection

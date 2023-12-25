@@ -13,15 +13,13 @@ import {
 import moment from 'moment';
 import { useState } from 'react';
 import { useFormik } from 'formik';
-import { fields } from '../../../shared/helper';
 import { FormErrorMessage } from '../../../components/error-message';
 import { signUpFieldsSchema } from '../validation/auth-sign-up-validation-schema';
 import { useInjection } from 'inversify-react';
 import { AuthController } from '../state/auth.controller';
 import { DateInput3 } from '@blueprintjs/datetime2';
-import { Gender } from '../../../models/enum/gender.enum';
 import { Link } from 'react-router-dom';
-import { constants } from '../../../shared/constants';
+import { fields, Gender, constants } from '../../../shared';
 
 export const AuthSignUp = (): React.JSX.Element => {
   const authController = useInjection(AuthController);

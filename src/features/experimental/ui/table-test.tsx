@@ -66,11 +66,11 @@ export const TableTest = (): JSX.Element => {
             selectionModes={SelectionModes.NONE}
           >
             <Column
-              cellRenderer={rowIndex => <Cell>{'hello' + rowIndex ?? ''}</Cell>}
+              cellRenderer={rowIndex => <Cell>{'hello' + rowIndex}</Cell>}
               columnHeaderCellRenderer={ColumnHeader}
             />
             <Column
-              cellRenderer={rowIndex => <Cell>{10 + rowIndex ?? ''}</Cell>}
+              cellRenderer={rowIndex => <Cell>{10 + rowIndex}</Cell>}
               columnHeaderCellRenderer={ColumnHeader}
             />
             <Column

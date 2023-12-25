@@ -1,4 +1,4 @@
-import { ExceptionMessageCode } from './enum/exception-message-code.enum';
+import { ExceptionMessageCode } from '../enum/exception-message-code.enum';
 
 export class ClientApiError {
   constructor(

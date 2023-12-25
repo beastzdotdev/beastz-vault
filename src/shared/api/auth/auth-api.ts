@@ -1,9 +1,9 @@
 import { AxiosResponse } from 'axios';
 import { api } from '..';
-import { AxiosApiResponse } from '../../../models/general';
+import { AxiosApiResponse } from '../../types';
 import { SignInAndSignUpResponse } from './auth-api-schema';
-import { ClientApiError } from '../../../models/client-error.schema';
-import { Singleton } from '../../decorators';
+import { ClientApiError } from '../../errors/client-error.schema';
+import { Singleton } from '../../ioc';
 
 @Singleton
 export class AuthApiService {

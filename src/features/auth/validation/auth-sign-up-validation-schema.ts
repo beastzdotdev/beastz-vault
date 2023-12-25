@@ -1,6 +1,6 @@
 import * as yup from 'yup';
-import { Gender } from '../../../models/enum/gender.enum';
 import { passwordSchema } from './password-validation-schema';
+import { Gender } from '../../../shared';
 
 export const signUpFieldsSchema = yup.object().shape({
   userName: yup.string().required('Field required').max(255),

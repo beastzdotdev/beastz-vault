@@ -1,8 +1,7 @@
 import { LoaderFunctionArgs } from 'react-router-dom';
-import { ProfileController } from '../features/profile/state/profile.controller';
-import { SharedController } from '../features/shared/state/shared.controller';
-import { UserApiService } from './api/user/user-api';
-import { ioc } from './ioc';
+import { ProfileController } from './profile/state/profile.controller';
+import { ioc, UserApiService } from '../shared';
+import { SharedController } from './shared/state/shared.controller';
 
 export const rootLoader = async (_args: LoaderFunctionArgs) => {
   const profile = ioc.getContainer().get(ProfileController);

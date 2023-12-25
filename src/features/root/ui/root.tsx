@@ -1,5 +1,5 @@
 import { Button } from '@blueprintjs/core';
-import { api, apiPure } from '../../../shared/api/api';
+import { api, apiPure } from '../../../shared';
 
 class AuthenticationPayloadResponseDto {
   accessToken: string;

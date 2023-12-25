@@ -1,9 +1,9 @@
 import { AxiosResponse } from 'axios';
 import { api } from '..';
-import { AxiosApiResponse } from '../../../models/general';
-import { ClientApiError } from '../../../models/client-error.schema';
+import { AxiosApiResponse } from '../../types';
+import { ClientApiError } from '../../errors/client-error.schema';
 import { UserResponseDto } from './user-api.schema';
-import { Singleton } from '../../decorators';
+import { Singleton } from '../../ioc';
 
 @Singleton
 export class UserApiService {

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ExceptionMessageCode } from './enum/exception-message-code.enum';
+import { ExceptionMessageCode } from '../enum/exception-message-code.enum';
 
 export const ExceptionSchema = z.object({
   message: z.nativeEnum(ExceptionMessageCode),

@@ -1,15 +1,14 @@
 import 'reflect-metadata';
 import ReactDOM from 'react-dom';
 import { RouterProvider } from 'react-router-dom';
-import { router } from './shared/router';
+import { router } from './router';
 import { FocusStyleManager, HotkeysProvider } from '@blueprintjs/core';
 
 // styles
 import './index.scss';
-import { GlobalAlertProvider } from './shared/global-alert';
 import { Provider } from 'inversify-react';
 import { configure } from 'mobx';
-import { ioc } from './shared/ioc';
+import { ioc, GlobalAlertProvider } from './shared';
 
 // misc
 FocusStyleManager.onlyShowFocusOnTabs();

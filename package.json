@@ -12,11 +12,10 @@
   },
   "type": "module",
   "scripts": {
-    "dev": "vite --open",
+    "start": "vite --open",
     "build": "tsc && vite build",
     "build:run": "vite preview",
     "lint": "npm run use:nvm && eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "==================": "==================",
     "modules:update:check": "npm run use:nvm && npx npm-check-updates",
     "modules:update": "npm run use:nvm && npx npm-check-updates -u",
     "use:nvm": "source ~/.nvm/nvm.sh && nvm use",

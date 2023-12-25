@@ -1,4 +1,4 @@
-import { ClientApiError } from './client-error.schema';
+import { ClientApiError } from './errors/client-error.schema';
 import { ExceptionMessageCode } from './enum/exception-message-code.enum';
 
 export type AxiosApiResponse<T> = {

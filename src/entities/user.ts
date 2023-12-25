@@ -1,4 +1,4 @@
-import { Gender } from '../models/enum/gender.enum';
+import { Gender } from '../shared';
 
 export class User {
   id: number;

@@ -1,6 +1,6 @@
 import { Button, H2, Icon, Intent } from '@blueprintjs/core';
 import { NavLink, useRouteError } from 'react-router-dom';
-import { router } from '../../../shared/router';
+import { router } from '../../../router';
 
 export const ErrorPage = (): React.JSX.Element => {
   const error = useRouteError();

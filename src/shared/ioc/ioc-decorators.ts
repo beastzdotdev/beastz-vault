@@ -1,6 +1,6 @@
 import { decorate, inject, injectable } from 'inversify';
-import { GeneralClass } from '../models/general';
 import { ioc } from './ioc';
+import { GeneralClass } from '../types';
 
 export function Singleton<T>(cls: GeneralClass<T>) {
   ioc.getContainer()?.bind(cls).toSelf().inSingletonScope();

@@ -1,6 +1,6 @@
 import { Alert, Intent } from '@blueprintjs/core';
 import React, { createContext, useEffect, useState } from 'react';
-import { bus } from './bus/bus';
+import { bus } from '../../bus/bus';
 
 const GlobalAlert = ({
   isOpen,

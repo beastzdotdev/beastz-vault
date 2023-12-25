@@ -1,5 +1,5 @@
 import Nanobus from 'nanobus';
-import { MappedRecord } from '../../models/general';
+import { MappedRecord } from '../types';
 import { BusEvents } from './bus.schema';
 
 class BusContainer {

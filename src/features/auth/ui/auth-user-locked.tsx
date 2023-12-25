@@ -1,6 +1,6 @@
 import { Button, Classes, H2, Icon, Intent } from '@blueprintjs/core';
-import { router } from '../../../shared/router';
-import { constants } from '../../../shared/constants';
+import { router } from '../../../router';
+import { constants } from '../../../shared';
 
 export const AuthUserLockedPage = (): React.JSX.Element => {
   return (

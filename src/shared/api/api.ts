@@ -1,11 +1,11 @@
 import axios, { AxiosError, CreateAxiosDefaults, HttpStatusCode } from 'axios';
 import { constants } from '../constants';
 import { bus } from '../bus/bus';
-import { router } from '../router';
-import { ExceptionSchema } from '../../models/exception.schema';
-import { ExceptionMessageCode } from '../../models/enum/exception-message-code.enum';
-import { ClientApiError } from '../../models/client-error.schema';
-import { HandleRefreshType } from '../../models/general';
+import { router } from '../../router';
+import { ExceptionSchema } from '../errors/exception.schema';
+import { ExceptionMessageCode } from '../enum/exception-message-code.enum';
+import { ClientApiError } from '../errors/client-error.schema';
+import { HandleRefreshType } from '../types';
 import { createSearchParams } from 'react-router-dom';
 
 const axiosConfigs: CreateAxiosDefaults = {

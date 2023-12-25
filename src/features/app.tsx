@@ -15,7 +15,7 @@ export const App = observer((): React.JSX.Element => {
           <RootNavbar />
 
           <div className="flex">
-            <div className="w-[250px] bg-slate-600 h-svh">
+            <div className="w-[250px] bg-slate-900 h-screen">
               <Sidebar />
             </div>
 
