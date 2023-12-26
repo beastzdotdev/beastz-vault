@@ -9,9 +9,11 @@ import {
   MenuDivider,
   MenuItem,
   Popover,
+  Icon,
 } from '@blueprintjs/core';
-import { useCallback, useEffect, useReducer } from 'react';
+import { useCallback, useEffect, useReducer, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import logo from '../../../assets/images/profile/doodle-man-1.svg';
 
 type NodeCustomData = { link: string | null };
 type SidebarNodeInfo = TreeNodeInfo<NodeCustomData>;
@@ -131,6 +133,7 @@ export const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [nodes, dispatch] = useReducer(treeExampleReducer, INITIAL_STATE);
+  const [showBookmarks, setShowBookmarks] = useState(true);
 
   // listen to route changes
   useEffect(() => {
@@ -157,12 +160,6 @@ export const Sidebar = () => {
       dispatch({
         type: 'DESELECT_ALL',
       });
-
-      // const toggleExpanded = !node.isExpanded;
-      // dispatch({
-      //   payload: { path: nodePath, isExpanded: toggleExpanded },
-      //   type: 'SET_IS_EXPANDED',
-      // });
       dispatch({
         payload: { path: nodePath, isSelected: true },
         type: 'SET_IS_SELECTED',
@@ -191,8 +188,24 @@ export const Sidebar = () => {
 
   return (
     <>
+      <div className="gorilla-profile flex items-center justify-between py-2 mt-2 mx-1.5 mb-1 cursor-pointer">
+        <div className="flex items-center">
+          <img width={24} height={24} src={logo} alt="" className="rounded-sm ml-1.5" />
+
+          <p className="ml-2 font-medium">Giorgi Kumelashvili</p>
+        </div>
+
+        <Icon icon="expand-all" className="justify-self-end mr-2.5" />
+      </div>
+
       <div>
-        <ButtonGroup fill minimal vertical alignText="left" className="gorilla-sidebar-buttons">
+        <ButtonGroup
+          fill
+          minimal
+          vertical
+          alignText="left"
+          className="px-1.5 pb-1.5 gorilla-sidebar-buttons"
+        >
           <Popover
             content={
               <Menu>
@@ -218,15 +231,23 @@ export const Sidebar = () => {
       <br />
       <br />
       <br />
-      <p className="text-xs text-zinc-500 font-bold pl-[7px] pb-1">Bookmarks</p>
 
-      <Tree
-        className="gorilla-sidebar-tree-nodes"
-        contents={nodes}
-        onNodeClick={handleNodeClick}
-        onNodeCollapse={handleNodeCollapse}
-        onNodeExpand={handleNodeExpand}
-      />
+      <div
+        className="hover:bg-zinc-800 active:bg-zinc-700 w-fit ml-1"
+        onClick={() => setShowBookmarks(!showBookmarks)}
+      >
+        <p className=" text-xs text-zinc-500 font-bold px-1 cursor-pointer">Bookmarks</p>
+      </div>
+
+      {showBookmarks && (
+        <Tree
+          className="gorilla-sidebar-tree-nodes p-1.5"
+          contents={nodes}
+          onNodeClick={handleNodeClick}
+          onNodeCollapse={handleNodeCollapse}
+          onNodeExpand={handleNodeExpand}
+        />
+      )}
     </>
   );
 };

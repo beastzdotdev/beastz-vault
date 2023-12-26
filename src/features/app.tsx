@@ -49,7 +49,7 @@ export const App = observer((): React.JSX.Element => {
 
           <div className="flex">
             <div
-              className="bg-zinc-800 h-screen relative app-sidebar max-w-[600px] min-w-[300px]"
+              className="gorilla-sidebar bg-zinc-900 h-screen relative transition-width duration-100 max-w-[600px] min-w-[250px]"
               ref={sidebarRef}
               style={{ width: sidebarWidth }}
               onMouseDown={e => e.preventDefault()}

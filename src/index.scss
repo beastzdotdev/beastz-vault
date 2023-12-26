@@ -79,32 +79,43 @@ body {
 //   background-color: rgba(95, 107, 124, 0.7);
 // }
 
-.gorilla-sidebar-buttons {
-  padding: 6px;
+.gorilla-sidebar {
+  $sidebar-font-size: 13px;
 
-  button {
+  .gorilla-profile {
     border-radius: $global-border-radius;
-    font-size: 13px;
+
+    &:hover {
+      background-color: rgba(95, 107, 124, 0.15);
+    }
+
+    &:active {
+      background-color: rgba(95, 107, 124, 0.3);
+    }
   }
-}
 
-.gorilla-sidebar-tree-nodes {
-  padding: 6px;
-
-  .bp5-tree-node.bp5-tree-node-selected > .bp5-tree-node-content {
-    background-color: rgba(95, 107, 124, 0.3) !important;
+  .gorilla-sidebar-buttons {
+    .bp5-button {
+      font-size: $sidebar-font-size;
+      border-radius: $global-border-radius;
+    }
   }
 
-  .bp5-tree-node-content {
-    border-radius: $global-border-radius;
-    font-size: 13px;
-    margin: 1px 0;
-  }
-}
+  .gorilla-sidebar-tree-nodes {
+    .bp5-tree-node.bp5-tree-node-selected > .bp5-tree-node-content {
+      background: rgba(143, 153, 168, 0.4);
+    }
 
-.app-sidebar {
-  max-width: 600px;
-  transition: width 300ms;
+    .bp5-tree-node-content {
+      border-radius: $global-border-radius;
+      font-size: $sidebar-font-size;
+      margin: 1px 0;
+
+      &:hover {
+        background: rgba(143, 153, 168, 0.15);
+      }
+    }
+  }
 
   .resize-bar {
     .resize-line {
