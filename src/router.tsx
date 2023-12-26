@@ -19,6 +19,7 @@ import { ExperimentalRoot } from './features/experimental/ui/root';
 import { AuthSignIn } from './features/auth/ui/auth-sign-in';
 import { constants } from './shared';
 import { rootLoader } from './features/root/root-loader';
+import { TestRefreshFlow } from './features/experimental/ui/test-refresh-flow';
 
 export const router = createBrowserRouter([
   // under / every page is under auth protection
@@ -99,6 +100,10 @@ export const router = createBrowserRouter([
       {
         path: 'table',
         element: <TableTest />,
+      },
+      {
+        path: 'test-refresh-flow',
+        element: <TestRefreshFlow />,
       },
     ],
   },

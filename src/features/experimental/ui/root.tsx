@@ -18,15 +18,18 @@ export const ExperimentalRoot = (): React.JSX.Element => {
           <Card>
             <Link to="/experimental/table">Tree node</Link>
           </Card>
-          <Card>some future link 1</Card>
-          <Card>some future link 2</Card>
+          <Card>
+            <Link to="/experimental/test-refresh-flow">Test refresh flow</Link>
+          </Card>
         </CardList>
       </div>
 
       <br />
       <hr />
 
-      <Outlet />
+      <div className="m-5">
+        <Outlet />
+      </div>
     </>
   );
 };

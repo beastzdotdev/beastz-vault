@@ -155,63 +155,61 @@ export const EncryptionTest = (): React.JSX.Element => {
   };
 
   return (
-    <div className="w-fit mx-auto mt-20 max-w-md">
-      <div className="flex flex-col">
-        <div>
-          <p className="text-lg pb-3">File encryption</p>
+    <div className="flex flex-col w-fit">
+      <div>
+        <p className="text-lg pb-3">File encryption</p>
 
-          {file && (
-            <>
-              <br />
-              <hr />
-              <div>
-                <p>{file?.name}</p>
-                <p>{file?.size}</p>
-                <p>{file?.type}</p>
-              </div>
-              <hr />
-              <br />
-            </>
-          )}
+        {file && (
+          <>
+            <br />
+            <hr />
+            <div>
+              <p>{file?.name}</p>
+              <p>{file?.size}</p>
+              <p>{file?.type}</p>
+            </div>
+            <hr />
+            <br />
+          </>
+        )}
 
-          <input type="file" name="myFile" onChange={uploadFile} />
+        <input type="file" name="myFile" onChange={uploadFile} />
 
-          <button className="bp5-button bp5-intent-primary mr-2" onClick={fileEncryption}>
-            encrypt
-          </button>
-          <button className="bp5-button bp5-intent-primary" onClick={fileDecryption}>
-            decrypt
-          </button>
-        </div>
+        <button className="bp5-button bp5-intent-primary mr-2" onClick={fileEncryption}>
+          encrypt
+        </button>
+        <button className="bp5-button bp5-intent-primary" onClick={fileDecryption}>
+          decrypt
+        </button>
+      </div>
 
-        <br />
-        <hr />
-        <br />
+      <br />
+      <hr />
+      <br />
 
-        <div>
-          <p className="text-lg pb-3">Text encryption</p>
+      <div>
+        <p className="text-lg pb-3">Text encryption</p>
 
-          <FormGroup labelFor="text-input">
-            <InputGroup id="text-input" placeholder="enter text here" onChange={handleTextInput} />
-          </FormGroup>
+        <FormGroup labelFor="text-input">
+          <InputGroup id="text-input" placeholder="enter text here" onChange={handleTextInput} />
+        </FormGroup>
 
-          <button className="bp5-button bp5-intent-primary mr-2" onClick={textEncryption}>
-            encrypt
-          </button>
-          <button className="bp5-button bp5-intent-primary" onClick={textDecryption}>
-            decrypt
-          </button>
+        <button className="bp5-button bp5-intent-primary mr-2" onClick={textEncryption}>
+          encrypt
+        </button>
+        <button className="bp5-button bp5-intent-primary" onClick={textDecryption}>
+          decrypt
+        </button>
 
-          {resultText && (
-            <Card elevation={Elevation.TWO} className="mt-5" compact>
-              <p className="break-words">{resultText}</p>
+        {resultText && (
+          <Card elevation={Elevation.TWO} className="mt-5" compact>
+            <p className="break-words">{resultText}</p>
 
-              <Button className="mt-3" onClick={copyToClipboard}>
-                Copy
-              </Button>
-            </Card>
-          )}
-        </div>
+            <Button className="mt-3" onClick={copyToClipboard}>
+              Copy
+            </Button>
+          </Card>
+        )}
       </div>
     </div>
   );
