@@ -3,7 +3,7 @@ import { ProfileController } from './profile/state/profile.controller';
 import { ioc, UserApiService } from '../shared';
 import { SharedController } from './shared/state/shared.controller';
 
-export const rootLoader = async (_args: LoaderFunctionArgs) => {
+export const appLoader = async (_args: LoaderFunctionArgs) => {
   const profile = ioc.getContainer().get(ProfileController);
   const sharedController = ioc.getContainer().get(SharedController);
   const userApiService = ioc.getContainer().get(UserApiService);

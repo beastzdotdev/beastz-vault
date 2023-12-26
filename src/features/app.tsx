@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import { Sidebar } from './shared/ui/sidebar';
-import { TopBar } from './shared/ui/topbar';
+// import { TopBar } from './shared/ui/topbar';
 import { observer } from 'mobx-react-lite';
 import { useInjection } from 'inversify-react';
 import { SharedStore } from './shared/state/shared.store';
@@ -12,10 +12,10 @@ export const App = observer((): React.JSX.Element => {
     <>
       {sharedStore.shouldRender && (
         <>
-          <TopBar />
+          {/* <TopBar /> */}
 
           <div className="flex">
-            <div className="w-[250px] bg-slate-900 h-screen">
+            <div className="w-[250px] bg-zinc-800 h-screen">
               <Sidebar />
             </div>
 

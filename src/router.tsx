@@ -2,7 +2,7 @@ import { createBrowserRouter } from 'react-router-dom';
 import { App } from './features/app';
 import { Root } from './features/root/ui/root';
 import { ErrorPage } from './features/error/ui/error';
-import { rootLoader } from './features/app-loader';
+import { appLoader } from './features/app-loader';
 import { TableTest } from './features/experimental/ui/table-test';
 import { AuthSignUp } from './features/auth/ui/auth-sign-up';
 import { Profile } from './features/profile/ui/profile';
@@ -18,6 +18,7 @@ import { EncryptionTest } from './features/experimental/ui/encryption-test';
 import { ExperimentalRoot } from './features/experimental/ui/root';
 import { AuthSignIn } from './features/auth/ui/auth-sign-in';
 import { constants } from './shared';
+import { rootLoader } from './features/root/root-loader';
 
 export const router = createBrowserRouter([
   // under / every page is under auth protection
@@ -25,16 +26,25 @@ export const router = createBrowserRouter([
     path: '/',
     element: <App />,
     errorElement: <ErrorPage />,
-    loader: rootLoader,
+    loader: appLoader,
     children: [
       {
-        index: true,
-        element: <Root />,
-      },
-
-      {
-        path: constants.path.profile,
-        element: <Profile />,
+        errorElement: <p>Root error popupp</p>,
+        children: [
+          {
+            index: true,
+            element: <Root />,
+          },
+          {
+            path: constants.path.profile,
+            element: <Profile />,
+          },
+          {
+            path: '/check-error',
+            loader: rootLoader,
+            element: <p>should not show</p>,
+          },
+        ],
       },
     ],
   },

@@ -1,5 +1,5 @@
-import { Button, H2, Icon, Intent } from '@blueprintjs/core';
-import { NavLink, useRouteError } from 'react-router-dom';
+import { Button, Intent } from '@blueprintjs/core';
+import { useRouteError } from 'react-router-dom';
 import { router } from '../../../router';
 
 export const ErrorPage = (): React.JSX.Element => {
@@ -7,15 +7,21 @@ export const ErrorPage = (): React.JSX.Element => {
 
   if (error instanceof Error) {
     return (
-      <div id="error-page">
-        <h1>Oops! Unexpected Error</h1>
-        <p>Something went wrong.</p>
-        <p>
-          <i>{error.message}</i>
-        </p>
-        <NavLink to="/">
-          <Button text="Go Back" intent={Intent.PRIMARY} />
-        </NavLink>
+      <div className="w-fit mx-auto mt-20">
+        <div className="flex flex-col items-center justify-center">
+          <p className="m-0 ml-3 text-3xl">Something unexpected happend</p>
+          {error.message && <p className="m-0 ml-3 text-lg bp5-text-muted">{error.message}</p>}
+        </div>
+
+        <div className="flex justify-center mt-6">
+          <Button
+            minimal
+            outlined
+            text="Go Back"
+            intent={Intent.WARNING}
+            onClick={() => router.navigate('/')}
+          />
+        </div>
       </div>
     );
   }
@@ -23,13 +29,17 @@ export const ErrorPage = (): React.JSX.Element => {
   return (
     <div className="w-fit mx-auto mt-20">
       <div className="flex items-center justify-center">
-        <Icon icon={'issue'} size={35} intent={Intent.WARNING} />
-        <H2 className="m-0 ml-3">Oops! sorry, page not found.</H2>
+        <p className="m-0 ml-3 text-8xl">Page not found</p>
       </div>
 
-      {/* Go back with -1 */}
-      <div className="flex justify-center mt-5">
-        <Button text="Go Back" intent={Intent.WARNING} onClick={() => router.navigate(-1)} />
+      <div className="flex justify-center mt-6">
+        <Button
+          minimal
+          outlined
+          text="Go Back"
+          intent={Intent.WARNING}
+          onClick={() => router.navigate('/')}
+        />
       </div>
     </div>
   );

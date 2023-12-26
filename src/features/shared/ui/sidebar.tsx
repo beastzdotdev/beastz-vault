@@ -1,4 +1,15 @@
-import { TreeNodeInfo, Tree, ContextMenu, Tooltip, Icon, Intent, Classes } from '@blueprintjs/core';
+import {
+  TreeNodeInfo,
+  Tree,
+  ContextMenu,
+  Tooltip,
+  Button,
+  ButtonGroup,
+  Menu,
+  MenuDivider,
+  MenuItem,
+  Popover,
+} from '@blueprintjs/core';
 import { useCallback, useEffect, useReducer } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -66,47 +77,39 @@ function treeExampleReducer(state: SidebarNodeInfo[], action: TreeAction) {
 const INITIAL_STATE: SidebarNodeInfo[] = [
   {
     id: 0,
-    icon: 'book',
-    label: 'Books',
+    icon: 'folder-close',
+    label: 'Folder -1',
+    childNodes: [],
   },
   {
     id: 1,
-    icon: 'lab-test',
-    label: <ContextMenu content={<div>Hello there!</div>}>Test</ContextMenu>,
+    icon: 'folder-close',
+    label: 'Folder 0',
+    childNodes: [],
   },
   {
     id: 2,
     icon: 'folder-close',
-    isExpanded: true,
-    label: (
-      <ContextMenu content={<div>Hello there!</div>}>
-        <Tooltip content="I'm a folder <3" placement="right">
-          Folder 1
-        </Tooltip>
-      </ContextMenu>
-    ),
+    isExpanded: false,
+    label: 'Folder 1',
+    nodeData: {
+      link: '/profile',
+      // link: '/files/123',
+    },
     childNodes: [
+      {
+        id: 1,
+        icon: 'document',
+        label: 'Something.txt',
+      },
       {
         id: 2,
         icon: 'document',
-        label: 'Item 0',
-        secondaryLabel: (
-          <Tooltip content="An eye!">
-            <Icon icon="eye-open" />
-          </Tooltip>
-        ),
+        label: 'Profile-backup.jpg',
       },
       {
         id: 3,
-        icon: <Icon icon="tag" intent={Intent.PRIMARY} className={Classes.TREE_NODE_ICON} />,
-        label: 'Organic meditation gluten-free, sriracha VHS drinking vinegar beard man.',
-      },
-      {
-        id: 300,
         label: 'Something',
-        nodeData: {
-          link: '/profile',
-        },
       },
       {
         id: 4,
@@ -148,15 +151,18 @@ export const Sidebar = () => {
   const handleNodeClick = useCallback(
     (node: SidebarNodeInfo, nodePath: NodePath, _e: ReactClick) => {
       const nodeData = node.nodeData;
-      const toggleExpanded = !node.isExpanded;
+
+      //TODO check if is file and if file redirect
 
       dispatch({
         type: 'DESELECT_ALL',
       });
-      dispatch({
-        payload: { path: nodePath, isExpanded: toggleExpanded },
-        type: 'SET_IS_EXPANDED',
-      });
+
+      // const toggleExpanded = !node.isExpanded;
+      // dispatch({
+      //   payload: { path: nodePath, isExpanded: toggleExpanded },
+      //   type: 'SET_IS_EXPANDED',
+      // });
       dispatch({
         payload: { path: nodePath, isSelected: true },
         type: 'SET_IS_SELECTED',
@@ -185,7 +191,37 @@ export const Sidebar = () => {
 
   return (
     <>
+      <div>
+        <ButtonGroup fill minimal vertical alignText="left" className="gorilla-sidebar-buttons">
+          <Popover
+            content={
+              <Menu>
+                <MenuItem text="New" icon="document" />
+                <MenuItem text="Create" icon="folder-new" />
+                <MenuDivider />
+                <MenuItem text="Upload File" icon="document-open" />
+                <MenuItem text="Upload Folder" icon="folder-shared-open" />
+                <MenuDivider />
+                <MenuItem text="Gorilla doc (coming soon)" icon="document" />
+              </Menu>
+            }
+            placement="right-start"
+          >
+            <Button icon="plus" rightIcon="chevron-right" text="New" />
+          </Popover>
+          <Button icon="eye-open">Activity</Button>
+          <Button icon="people">Members</Button>
+          <Button icon="cog">Settings</Button>
+        </ButtonGroup>
+      </div>
+
+      <br />
+      <br />
+      <br />
+      <p className="text-xs text-zinc-500 font-bold pl-[7px] pb-1">Bookmarks</p>
+
       <Tree
+        className="gorilla-sidebar-tree-nodes"
         contents={nodes}
         onNodeClick={handleNodeClick}
         onNodeCollapse={handleNodeCollapse}

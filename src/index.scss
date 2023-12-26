@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import './variables.scss';
+
 @import 'normalize.css';
 @import '@blueprintjs/core/lib/css/blueprint.css';
 @import '@blueprintjs/icons/lib/css/blueprint-icons.css';
@@ -69,4 +71,28 @@ body {
   color: #e76a6e !important;
   box-shadow: none !important;
   border: 1px solid rgba(231, 106, 110, 0.5);
+}
+
+//! Dont delete (could be helpfull)
+// This highlight can be added for HELPER feature activation on frontend
+// .bp5-tree-node-caret:hover {
+//   background-color: rgba(95, 107, 124, 0.7);
+// }
+
+.gorilla-sidebar-buttons {
+  @apply p-1.5;
+
+  button {
+    border-radius: $global-border-radius;
+    font-size: 13px;
+  }
+}
+
+.gorilla-sidebar-tree-nodes {
+  @apply p-1.5;
+
+  // button {
+  //   border-radius: $global-border-radius;
+  //   font-size: 13px;
+  // }
 }
