@@ -80,7 +80,7 @@ body {
 // }
 
 .gorilla-sidebar-buttons {
-  @apply p-1.5;
+  padding: 6px;
 
   button {
     border-radius: $global-border-radius;
@@ -89,10 +89,51 @@ body {
 }
 
 .gorilla-sidebar-tree-nodes {
-  @apply p-1.5;
+  padding: 6px;
 
-  // button {
-  //   border-radius: $global-border-radius;
-  //   font-size: 13px;
-  // }
+  .bp5-tree-node.bp5-tree-node-selected > .bp5-tree-node-content {
+    background-color: rgba(95, 107, 124, 0.3) !important;
+  }
+
+  .bp5-tree-node-content {
+    border-radius: $global-border-radius;
+    font-size: 13px;
+    margin: 1px 0;
+  }
+}
+
+.app-sidebar {
+  max-width: 600px;
+  transition: width 300ms;
+
+  .resize-bar {
+    .resize-line {
+      position: absolute; // this line is relative to resize bar
+      bottom: 0;
+      top: 0px;
+      width: 1px;
+      right: 6px;
+      background-color: rgba(95, 107, 124, 0.2);
+
+      //! For debug
+      // background-color: green;
+    }
+
+    position: absolute;
+    bottom: 0;
+    top: 0;
+    width: 12px;
+    right: -6px;
+
+    //! For debug
+    // background-color: rgba(255, 0, 0, 0.158);
+
+    &:hover {
+      cursor: col-resize; // resize curson must be on big resize bar
+
+      .resize-line {
+        background-color: rgba(95, 107, 124);
+      }
+    }
+  }
 }
