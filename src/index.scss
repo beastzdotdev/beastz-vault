@@ -15,11 +15,11 @@
 @import '@blueprintjs/datetime2/src/blueprint-datetime2.scss';
 @import '@blueprintjs/select/lib/css/blueprint-select.css';
 
-$main: #ffffff00;
 $primary: $blue4;
 $success: $green4;
 $warning: $orange4;
 $danger: $red4;
+$input-border-color: #ffffff00;
 
 body {
   background-color: $dark-gray2;
@@ -32,10 +32,10 @@ body {
 
 .bp5-input {
   box-shadow: none !important;
-  border: 1px solid rgba($main, 0.2);
+  border: 1px solid rgba($input-border-color, 0.2);
 
   &:focus {
-    border: 1px solid rgba($main, 0.5);
+    border: 1px solid rgba($input-border-color, 0.5);
   }
 }
 
@@ -147,5 +147,21 @@ body {
         background-color: rgba(95, 107, 124);
       }
     }
+  }
+}
+
+.gorilla-file-structure {
+  .gorilla-file-structure-item {
+    @apply w-full rounded-[3px] cursor-default select-none flex;
+
+    background-color: $dark-gray3;
+
+    &:hover {
+      background-color: $dark-gray4;
+    }
+  }
+
+  .gorilla-file-structure-icon {
+    @apply transition-all duration-100 ease-linear opacity-0;
   }
 }

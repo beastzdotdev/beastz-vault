@@ -28,3 +28,5 @@ TODO PKCE add in both backend and frontend https://developers.onelogin.com/blog/
 
 TODO add focus on search bar after clicking on /
 TODO remove index.ts files
+TODO theming (definetly needed for sure)
+TODO inside file structure make selecting item by shift click and also by cmd click

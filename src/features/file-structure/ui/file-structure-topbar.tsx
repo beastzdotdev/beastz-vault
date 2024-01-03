@@ -1,7 +1,7 @@
 import { Button, InputGroup } from '@blueprintjs/core';
 import { useDebounceHook } from '../../../hooks/use-debounce.hook';
 
-export const FileStructureTopBar = () => {
+export const FileStructureTopBar = (): React.JSX.Element => {
   const [searchTerm, setSearchTerm] = useDebounceHook({
     debounceTime: 500,
     onClear: () => {

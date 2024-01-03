@@ -4,6 +4,7 @@ import { Breadcrumbs } from '@blueprintjs/core';
 import { FileStructureTopBar } from './file-structure-topbar';
 import { AdvancedSelect, AdvancedSelectItem } from '../../../components/advanced-select';
 import { useDebounceHook } from '../../../hooks/use-debounce.hook';
+import { FileStructureFiles } from './file-structure-files';
 
 const typeItems: AdvancedSelectItem[] = [
   { key: uuid(), text: 'Images' },
@@ -55,7 +56,7 @@ export const FileStructure = (): React.JSX.Element => {
     <>
       <FileStructureTopBar />
 
-      <div className="p-3">
+      <div className="p-3 overflow-hidden">
         <div className="w-full">
           <Breadcrumbs
             className="max-w-sm"
@@ -102,10 +103,11 @@ export const FileStructure = (): React.JSX.Element => {
         </div>
 
         <div className="pt-3">
-          <h1>{selectedType?.text}</h1>
-          <h1>{modifiedType?.text}</h1>
+          <FileStructureFiles />
 
-          <p>hello</p>
+          {/* <h1>{selectedType?.text}</h1>
+          <h1>{modifiedType?.text}</h1>
+          <p>hello</p> */}
         </div>
       </div>
     </>
