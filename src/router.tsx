@@ -20,6 +20,7 @@ import { AuthSignIn } from './features/auth/ui/auth-sign-in';
 import { constants } from './shared';
 import { rootLoader } from './features/root/root-loader';
 import { TestRefreshFlow } from './features/experimental/ui/test-refresh-flow';
+import { FileStructure } from './features/file-structure/ui/file-strucutre';
 
 export const router = createBrowserRouter([
   // under / every page is under auth protection
@@ -39,6 +40,10 @@ export const router = createBrowserRouter([
           {
             path: constants.path.profile,
             element: <Profile />,
+          },
+          {
+            path: constants.path.fileStructure,
+            element: <FileStructure />,
           },
           {
             path: '/check-error',

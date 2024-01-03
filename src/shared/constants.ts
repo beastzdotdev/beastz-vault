@@ -4,6 +4,7 @@
 export const constants = Object.freeze({
   path: {
     profile: '/profile',
+    fileStructure: '/file-structure',
 
     signIn: '/auth/sign-in',
     signUp: '/auth/sign-up',

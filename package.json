@@ -28,7 +28,7 @@
   "dependencies": {
     "@blueprintjs/core": "^5.2.0",
     "@blueprintjs/datetime2": "^2.2.1",
-    "@blueprintjs/select": "^5.0.16",
+    "@blueprintjs/select": "^5.0.20",
     "@blueprintjs/table": "^5.0.8",
     "@total-typescript/ts-reset": "^0.4.2",
     "axios": "^1.4.0",

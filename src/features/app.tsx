@@ -14,7 +14,9 @@ export const App = observer((): React.JSX.Element => {
           <div className="flex">
             <Sidebar />
 
-            <Outlet />
+            <div className="flex-1">
+              <Outlet />
+            </div>
           </div>
         </>
       )}

@@ -24,3 +24,7 @@ http://demo.casaos.io/#/
 
 TODO add listener to route change don let login while authorized
 TODO PKCE add in both backend and frontend https://developers.onelogin.com/blog/pkce-dust-react-app
+
+
+TODO add focus on search bar after clicking on /
+TODO remove index.ts files

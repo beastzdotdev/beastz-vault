@@ -101,7 +101,7 @@ const INITIAL_STATE2: SidebarNodeInfo[] = [
     isExpanded: false,
     label: 'Interseting stuff',
     nodeData: {
-      link: '/profile',
+      link: '/xprofile',
     },
   },
 ];
