@@ -21,6 +21,8 @@ $warning: $orange4;
 $danger: $red4;
 $input-border-color: #ffffff00;
 
+$main-white-color: rgba(143, 153, 168, 0.4);
+
 body {
   background-color: $dark-gray2;
 }
@@ -104,7 +106,7 @@ body {
 
   .gorilla-sidebar-tree-nodes {
     .bp5-tree-node.bp5-tree-node-selected > .bp5-tree-node-content {
-      background: rgba(143, 153, 168, 0.4);
+      background: $main-white-color;
     }
 
     .bp5-tree-node-content {
@@ -152,13 +154,17 @@ body {
 
 .gorilla-file-structure {
   .gorilla-file-structure-item {
-    @apply w-full rounded-[3px] cursor-default select-none flex;
+    @apply w-full rounded-none cursor-default select-none flex;
 
     background-color: $dark-gray3;
 
-    &:hover {
+    &:hover:has(.gorilla-file-structure-item-selected) {
       background-color: $dark-gray4;
     }
+  }
+
+  .gorilla-file-structure-item-selected {
+    background: $main-white-color;
   }
 
   .gorilla-file-structure-icon {

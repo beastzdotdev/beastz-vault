@@ -1,19 +1,31 @@
+import { v4 as uuid } from 'uuid';
 import { Button, Icon } from '@blueprintjs/core';
+import { useReducer } from 'react';
 
-const FileStuructureFileItem = (params: {
+interface FileStuructureFileItemParams {
   title: string;
   userName: string;
   date: string;
   fileSize: string;
-}): React.JSX.Element => {
-  //TODO add selected items and on top layer actions for thos files/folders
-  //TODO different icon for file and folder add isFolder property or enum
+  isFile: boolean;
+  isSelected: boolean;
+  onSelected: (id: string) => void;
+  id: string;
+}
 
+const FileStuructureFileItem = (params: FileStuructureFileItemParams): React.JSX.Element => {
   return (
-    <div className="gorilla-file-structure-item group/gorilla-item">
+    <div
+      className={`gorilla-file-structure-item group/gorilla-item ${
+        params.isSelected ? 'gorilla-file-structure-item-selected' : ''
+      }`}
+      onClick={() => {
+        params.onSelected(params.id);
+      }}
+    >
       {/*//! width 100px behaves like min-width:100px */}
       <div className="flex items-center pl-3 pr-5 flex-grow w-[100px]">
-        <Icon icon="folder-close" />
+        <Icon icon={params.isFile ? 'document' : 'folder-close'} />
         <p className="pl-2 truncate">{params.title}</p>
       </div>
 
@@ -71,31 +83,89 @@ const FileStuructureFileItem = (params: {
   );
 };
 
+type F_ACTION = {
+  type: 'TOGGLE_SELECTED';
+  payload: { isSelected: boolean; index: number };
+};
+
+type F = Omit<FileStuructureFileItemParams, 'onSelected'>;
+
+function reducer(state: F[], action: F_ACTION) {
+  const newState = state.slice();
+
+  switch (action.type) {
+    case 'TOGGLE_SELECTED':
+      newState[action.payload.index].isSelected = action.payload.isSelected;
+      break;
+    default:
+      break;
+  }
+
+  return newState;
+}
+
+const initialState: F[] = [
+  {
+    id: uuid(),
+    title: 'Shared',
+    userName: 'Me',
+    date: '20 march 2016',
+    fileSize: '100 gb',
+    isFile: false,
+    isSelected: false,
+  },
+  {
+    id: uuid(),
+    title: 'Something from my memories',
+    userName: 'BukaNika69',
+    date: '11 november 1995',
+    fileSize: '11 bytes',
+    isFile: false,
+    isSelected: false,
+  },
+  {
+    id: uuid(),
+    title:
+      'Something from my memories extra looooooooooong looooooooooong looooooooooong looooooooooong looooooooooong',
+    userName: 'BukaNika69from my memories extra looooooooooong',
+    date: '31 September 1995',
+    fileSize: '1119 bytes',
+    isFile: true,
+    isSelected: false,
+  },
+];
+
 export const FileStructureFiles = (): React.JSX.Element => {
+  const [state, dispatch] = useReducer(reducer, initialState);
+
   return (
     <div className="gorilla-file-structure">
-      <FileStuructureFileItem
-        title={'Shared'}
-        userName={'Me'}
-        date={'20 march 2016'}
-        fileSize={'100 gb'}
-      />
+      {state.map((e, i) => {
+        return (
+          <FileStuructureFileItem
+            id={e.id}
+            key={e.id}
+            title={e.title}
+            userName={e.userName}
+            date={e.date}
+            fileSize={e.fileSize}
+            isFile={e.isFile}
+            isSelected={e.isSelected}
+            onSelected={id => {
+              dispatch({
+                type: 'TOGGLE_SELECTED',
+                payload: { isSelected: !e.isSelected, index: i },
+              });
 
-      <FileStuructureFileItem
-        title={'Something from my memories'}
-        userName={'BukaNika69'}
-        date={'11 november 1995'}
-        fileSize={'11 bytes'}
-      />
+              console.log('='.repeat(20));
+              console.log(state[0].isSelected);
 
-      <FileStuructureFileItem
-        title={
-          'Something from my memories extra looooooooooong looooooooooong looooooooooong looooooooooong looooooooooong'
-        }
-        userName={'BukaNika69from my memories extra looooooooooong'}
-        date={'31 September 1995'}
-        fileSize={'1119 bytes'}
-      />
+              console.log('='.repeat(20));
+              console.log('selected' + id);
+            }}
+          />
+        );
+      })}
     </div>
   );
 };
