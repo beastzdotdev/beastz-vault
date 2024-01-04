@@ -84,24 +84,24 @@ const FileStuructureFileItem = (params: FileStuructureFileItemParams): React.JSX
 };
 
 type F_ACTION = {
-  type: 'TOGGLE_SELECTED';
-  payload: { isSelected: boolean; index: number };
+  type: 'TOGGLE_SELECTED_ALL_EXCEPT_THIS';
+  payload: { id: string };
 };
 
 type F = Omit<FileStuructureFileItemParams, 'onSelected'>;
 
 function reducer(state: F[], action: F_ACTION) {
-  const newState = state.slice();
-
   switch (action.type) {
-    case 'TOGGLE_SELECTED':
-      newState[action.payload.index].isSelected = action.payload.isSelected;
-      break;
+    case 'TOGGLE_SELECTED_ALL_EXCEPT_THIS':
+      return state.map(e => {
+        e.isSelected = e.id === action.payload.id;
+        return e;
+      });
     default:
       break;
   }
 
-  return newState;
+  return state;
 }
 
 const initialState: F[] = [
@@ -153,8 +153,8 @@ export const FileStructureFiles = (): React.JSX.Element => {
             isSelected={e.isSelected}
             onSelected={id => {
               dispatch({
-                type: 'TOGGLE_SELECTED',
-                payload: { isSelected: !e.isSelected, index: i },
+                type: 'TOGGLE_SELECTED_ALL_EXCEPT_THIS',
+                payload: { id: e.id },
               });
 
               console.log('='.repeat(20));

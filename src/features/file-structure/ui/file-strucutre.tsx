@@ -104,10 +104,6 @@ export const FileStructure = (): React.JSX.Element => {
 
         <div className="pt-3">
           <FileStructureFiles />
-
-          {/* <h1>{selectedType?.text}</h1>
-          <h1>{modifiedType?.text}</h1>
-          <p>hello</p> */}
         </div>
       </div>
     </>
