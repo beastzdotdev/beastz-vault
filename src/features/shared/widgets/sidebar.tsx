@@ -14,6 +14,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import logo from '../../../assets/images/profile/doodle-man-1.svg';
 import { SidebarTree } from '../../../widgets/sidebar-tree';
 import { v4 as uuid } from 'uuid';
+import { router } from '../../../router';
+import { constants } from '../../../shared';
 
 type SidebarNodeInfo = TreeNodeInfo<{ link: string | null }>;
 
@@ -156,7 +158,13 @@ export const Sidebar = () => {
 
       <div className="flex flex-col h-full">
         <div className="pt-2">
-          <div className="gorilla-profile flex items-center justify-between py-2 mx-1.5 mb-1 cursor-pointer">
+          <div
+            className="gorilla-profile flex items-center justify-between py-2 mx-1.5 mb-1 cursor-pointer"
+            onClick={() => {
+              //TODO this here is temporary
+              router.navigate(constants.path.fileStructure);
+            }}
+          >
             <div className="flex items-center">
               <img width={24} height={24} src={logo} alt="" className="rounded-sm ml-1.5" />
 
@@ -235,6 +243,11 @@ export const Sidebar = () => {
               <Button icon="trash" text="Trash" />
               <Button icon="ninja" text="AI (coming soon)" />
               <Button icon="data-connection" text="23.45 %" />
+              <Button
+                icon="manual"
+                text="Guide"
+                onClick={() => router.navigate(constants.path.guide)}
+              />
               <Button icon="help" text="Support & Help" />
             </ButtonGroup>
           </div>

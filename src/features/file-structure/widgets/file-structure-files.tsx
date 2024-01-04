@@ -19,9 +19,7 @@ const FileStuructureFileItem = (params: FileStuructureFileItemParams): React.JSX
       className={`gorilla-file-structure-item group/gorilla-item ${
         params.isSelected ? 'gorilla-file-structure-item-selected' : ''
       }`}
-      onClick={() => {
-        params.onSelected(params.id);
-      }}
+      onClick={() => params.onSelected(params.id)}
     >
       {/*//! width 100px behaves like min-width:100px */}
       <div className="flex items-center pl-3 pr-5 flex-grow w-[100px]">
@@ -50,31 +48,37 @@ const FileStuructureFileItem = (params: FileStuructureFileItemParams): React.JSX
           icon="share"
           minimal
           className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
+          onClick={e => e.stopPropagation()}
         />
         <Button
           icon="bookmark"
           minimal
           className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
+          onClick={e => e.stopPropagation()}
         />
         <Button
           icon="download"
           minimal
           className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
+          onClick={e => e.stopPropagation()}
         />
         <Button
           icon="edit"
           minimal
           className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
+          onClick={e => e.stopPropagation()}
         />
         <Button
           icon="lock"
           minimal
           className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
+          onClick={e => e.stopPropagation()}
         />
         <Button
           icon="shield"
           minimal
           className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
+          onClick={e => e.stopPropagation()}
         />
         {/* TODO add dropdown for more items */}
         <Button icon="more" minimal />
@@ -157,10 +161,6 @@ export const FileStructureFiles = (): React.JSX.Element => {
                 payload: { id: e.id },
               });
 
-              console.log('='.repeat(20));
-              console.log(state[0].isSelected);
-
-              console.log('='.repeat(20));
               console.log('selected' + id);
             }}
           />

@@ -21,6 +21,7 @@ import { constants } from './shared';
 import { rootLoader } from './features/root/root-loader';
 import { TestRefreshFlowPage } from './features/experimental/test-refresh-flow.page';
 import { FileStructurePage } from './features/file-structure/file-strucutre.page';
+import { GuidePage } from './features/guide/guide.page';
 
 export const router = createBrowserRouter([
   // under / every page is under auth protection
@@ -44,6 +45,10 @@ export const router = createBrowserRouter([
           {
             path: constants.path.fileStructure,
             element: <FileStructurePage />,
+          },
+          {
+            path: constants.path.guide,
+            element: <GuidePage />,
           },
           {
             path: '/check-error',

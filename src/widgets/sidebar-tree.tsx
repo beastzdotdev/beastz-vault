@@ -1,6 +1,7 @@
 import { TreeNodeInfo, Tree } from '@blueprintjs/core';
 import { useCallback, useEffect, useReducer } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import { router } from '../router';
 
 type NodeCustomData = { link: string | null };
 type SidebarNodeInfo = TreeNodeInfo<NodeCustomData>;
@@ -64,7 +65,6 @@ function treeExampleReducer(state: SidebarNodeInfo[], action: TreeAction) {
 }
 
 export const SidebarTree = (params: { state: SidebarNodeInfo[] }) => {
-  const navigate = useNavigate();
   const location = useLocation();
   const [nodes, dispatch] = useReducer(treeExampleReducer, params.state);
 
@@ -99,10 +99,10 @@ export const SidebarTree = (params: { state: SidebarNodeInfo[] }) => {
       });
 
       if (nodeData && nodeData.link && location.pathname != nodeData.link) {
-        navigate(nodeData.link);
+        router.navigate(nodeData.link);
       }
     },
-    [location.pathname, navigate]
+    [location.pathname]
   );
 
   const handleNodeCollapse = useCallback((_node: SidebarNodeInfo, nodePath: NodePath) => {
