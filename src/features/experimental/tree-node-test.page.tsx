@@ -119,7 +119,7 @@ const INITIAL_STATE: TreeNodeInfo[] = [
   },
 ];
 
-export const TreeNodesTest = () => {
+export const TreeNodesTestPage = () => {
   const [nodes, dispatch] = useReducer(treeExampleReducer, INITIAL_STATE);
 
   const handleNodeClick = useCallback((node: TreeNodeInfo, nodePath: NodePath, _e: ReactClick) => {

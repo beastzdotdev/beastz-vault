@@ -1,10 +1,10 @@
 import { v4 as uuid } from 'uuid';
 import { useState } from 'react';
 import { Breadcrumbs } from '@blueprintjs/core';
-import { FileStructureTopBar } from './file-structure-topbar';
-import { AdvancedSelect, AdvancedSelectItem } from '../../../components/advanced-select';
-import { useDebounceHook } from '../../../hooks/use-debounce.hook';
-import { FileStructureFiles } from './file-structure-files';
+import { FileStructureTopBar } from './widgets/file-structure-topbar';
+import { AdvancedSelect, AdvancedSelectItem } from '../../components/advanced-select';
+import { useDebounceHook } from '../../hooks/use-debounce.hook';
+import { FileStructureFiles } from './widgets/file-structure-files';
 
 const typeItems: AdvancedSelectItem[] = [
   { key: uuid(), text: 'Images' },
@@ -35,7 +35,7 @@ const peopleItems: AdvancedSelectItem[] = [
   { key: uuid(), text: 'besidesamong' },
 ];
 
-export const FileStructure = (): React.JSX.Element => {
+export const FileStructurePage = (): React.JSX.Element => {
   const [selectedType, setSelectedType] = useState<AdvancedSelectItem | null>(null);
   const [modifiedType, setModifiedType] = useState<AdvancedSelectItem | null>(null);
   const [person, setPerson] = useState<AdvancedSelectItem | null>(null);

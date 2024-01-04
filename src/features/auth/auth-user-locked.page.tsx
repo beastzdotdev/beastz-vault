@@ -1,14 +1,16 @@
 import { Button, Classes, H2, Icon, Intent } from '@blueprintjs/core';
-import { router } from '../../../router';
-import { constants } from '../../../shared';
+import { router } from '../../router';
+import { constants } from '../../shared';
 
-//TODO support page
-export const Support = (): React.JSX.Element => {
+export const AuthUserLockedPage = (): React.JSX.Element => {
   return (
     <div className="w-fit mx-auto mt-20">
       <div className="flex items-center">
-        <Icon icon={'build'} size={35} intent={Intent.WARNING} />
-        <H2 className="m-0 ml-3">Sorry this page is under construction</H2>
+        <Icon icon={'shield'} size={35} intent={Intent.DANGER} />
+        <H2 className="m-0 ml-3">
+          Your account has been locked due to some suspicious activity, please verify account again
+          to use our application
+        </H2>
       </div>
 
       <br />
@@ -18,7 +20,7 @@ export const Support = (): React.JSX.Element => {
             icon="link"
             text="Redirect"
             intent={Intent.PRIMARY}
-            onClick={() => router.navigate(constants.path.signIn)}
+            onClick={() => router.navigate(constants.path.authVerify)}
           />
         </div>
       </div>

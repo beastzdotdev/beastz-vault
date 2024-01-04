@@ -140,7 +140,7 @@ export const FileStructureFiles = (): React.JSX.Element => {
 
   return (
     <div className="gorilla-file-structure">
-      {state.map((e, i) => {
+      {state.map(e => {
         return (
           <FileStuructureFileItem
             id={e.id}

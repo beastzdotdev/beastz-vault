@@ -1,9 +1,9 @@
 import { H2, Icon, Intent } from '@blueprintjs/core';
 import { Link, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { constants } from '../../../shared';
+import { constants } from '../../shared';
 
-export const Oops = (): React.JSX.Element => {
+export const OopsPage = (): React.JSX.Element => {
   const location = useLocation();
   const [text, setText] = useState<string | null>(null);
 

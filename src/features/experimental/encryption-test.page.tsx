@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button, Card, Elevation, FormGroup, InputGroup } from '@blueprintjs/core';
-import { encryption, toast } from '../../../shared';
+import { encryption, toast } from '../../shared';
 
 function getStringInputNoMatterWhat(text?: string): string {
   let isValidInput = false;
@@ -56,7 +56,7 @@ function readFileAsBytes(file: File): Promise<Uint8Array | null> {
   });
 }
 
-export const EncryptionTest = (): React.JSX.Element => {
+export const EncryptionTestPage = (): React.JSX.Element => {
   const [file, setFile] = useState<File | null>(null);
   const [text, setText] = useState<string | null>(null);
   const [resultText, setResultText] = useState<string | null>(null);

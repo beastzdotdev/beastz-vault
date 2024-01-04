@@ -36,7 +36,7 @@ const PopConfirm = (params: { onSuccessClick: () => void }) => {
   );
 };
 
-export const TableTest = (): JSX.Element => {
+export const TableTestPage = (): JSX.Element => {
   const ColumnHeader = (index: number) => {
     return (
       <ColumnHeaderCell

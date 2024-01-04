@@ -1,6 +1,6 @@
 import { Button, Intent } from '@blueprintjs/core';
 import { useRouteError } from 'react-router-dom';
-import { router } from '../../../router';
+import { router } from '../../router';
 
 export const ErrorPage = (): React.JSX.Element => {
   const error = useRouteError();
