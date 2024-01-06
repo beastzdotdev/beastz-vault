@@ -27,7 +27,11 @@ export const OopsPage = (): React.JSX.Element => {
           <Link to={constants.path.support} className="font-bold">
             Support
           </Link>{' '}
-          if you ended up on this page.
+          if you ended up on this page. Go
+          <Link to="/" className="font-bold">
+            {' '}
+            Home
+          </Link>
         </p>
       </div>
     </div>

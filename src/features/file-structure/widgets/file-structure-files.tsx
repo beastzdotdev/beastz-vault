@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import { Button, Icon } from '@blueprintjs/core';
+import { Button, Icon, Menu, MenuDivider, MenuItem, Popover } from '@blueprintjs/core';
 import { useReducer } from 'react';
 
 interface FileStuructureFileItemParams {
@@ -80,8 +80,36 @@ const FileStuructureFileItem = (params: FileStuructureFileItemParams): React.JSX
           className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
           onClick={e => e.stopPropagation()}
         />
-        {/* TODO add dropdown for more items */}
-        <Button icon="more" minimal />
+        <Popover
+          content={
+            <Menu>
+              <MenuItem text="Share" icon="share" />
+              <MenuItem text="Bookmark" icon="bookmark" />
+              <MenuItem text="Copy" icon="duplicate">
+                <MenuItem text="Title" />
+                <MenuItem text="Public link" />
+                <MenuItem text="Content (only file)" />
+              </MenuItem>
+              <MenuItem text="Move" icon="nest" />
+              <MenuDivider />
+              <MenuItem text="Add shortcut" icon="folder-new" />
+              <MenuItem text="Change color" icon="tint" />
+              <MenuItem text="Details" icon="info-sign" />
+              <MenuItem text="Activity" icon="list-detail-view" />
+              <MenuItem text="Open in editor (coming soon)" icon="code" />
+              <MenuItem text="Encrypt by" icon="shield">
+                <MenuItem text="Text" />
+                <MenuItem text="Pin" />
+              </MenuItem>
+              <MenuDivider />
+
+              <MenuItem text="Move to bin" icon="trash" />
+            </Menu>
+          }
+          placement="right-start"
+        >
+          <Button icon="more" minimal />
+        </Popover>
       </div>
     </div>
   );
