@@ -20,6 +20,10 @@ const FileStuructureFileItem = (params: FileStuructureFileItemParams): React.JSX
         params.isSelected ? 'gorilla-file-structure-item-selected' : ''
       }`}
       onClick={() => params.onSelected(params.id)}
+      onDoubleClick={() => {
+        console.log('='.repeat(20));
+        console.log('Double click');
+      }}
     >
       {/*//! width 100px behaves like min-width:100px */}
       <div className="flex items-center pl-3 pr-5 flex-grow w-[100px]">

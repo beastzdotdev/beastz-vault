@@ -1,10 +1,12 @@
 import { v4 as uuid } from 'uuid';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Breadcrumbs } from '@blueprintjs/core';
 import { FileStructureTopBar } from './widgets/file-structure-topbar';
 import { AdvancedSelect, AdvancedSelectItem } from '../../components/advanced-select';
 import { useDebounceHook } from '../../hooks/use-debounce.hook';
 import { FileStructureFiles } from './widgets/file-structure-files';
+import { getQueryParams } from '../../shared';
+import { useLocation } from 'react-router-dom';
 
 const typeItems: AdvancedSelectItem[] = [
   { key: uuid(), text: 'Images' },
@@ -39,6 +41,17 @@ export const FileStructurePage = (): React.JSX.Element => {
   const [selectedType, setSelectedType] = useState<AdvancedSelectItem | null>(null);
   const [modifiedType, setModifiedType] = useState<AdvancedSelectItem | null>(null);
   const [person, setPerson] = useState<AdvancedSelectItem | null>(null);
+  const location = useLocation();
+
+  useEffect(() => {
+    const queryParams = getQueryParams<{ id?: string }>(location.search);
+
+    if (queryParams.id) {
+      console.log('='.repeat(20));
+      console.log('Fetching data');
+      console.log(queryParams);
+    }
+  }, [location.search]);
 
   const [_, setPersonTerm] = useDebounceHook({
     debounceTime: 500,

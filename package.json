@@ -40,9 +40,10 @@
     "mobx-react-lite": "^4.0.5",
     "moment": "^2.29.4",
     "nanobus": "^4.5.0",
+    "query-string": "^8.1.0",
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
-    "react-router-dom": "^6.15.0",
+    "react-router-dom": "^6.21.1",
     "reflect-metadata": "^0.1.13",
     "uuid": "^9.0.0",
     "zod": "^3.22.2"
@@ -64,6 +65,7 @@
     "tailwindcss": "^3.3.3",
     "typescript": "^5.0.2",
     "vite": "^5.0.10",
-    "vite-plugin-checker": "^0.6.2"
+    "vite-plugin-checker": "^0.6.2",
+    "vite-plugin-svgr": "^4.2.0"
   }
 }
