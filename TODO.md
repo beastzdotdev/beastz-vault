@@ -31,3 +31,8 @@ TODO remove index.ts files
 TODO theming (definetly needed for sure)
 TODO inside file structure make selecting item by shift click and also by cmd click
 TODO add multi select actions in file structure where you replace filter buttons with action button for selected items
+
+
+TODO better resize, (it looks like its lagging)
+TODO very basic responsivnes
+TODO zen mode

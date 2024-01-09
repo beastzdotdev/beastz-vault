@@ -6,7 +6,7 @@ import { AdvancedSelect, AdvancedSelectItem } from '../../components/advanced-se
 import { useDebounceHook } from '../../hooks/use-debounce.hook';
 import { FileStructureFiles } from './widgets/file-structure-files';
 import { getQueryParams } from '../../shared';
-import { useLocation } from 'react-router-dom';
+import { useLoaderData, useLocation } from 'react-router-dom';
 
 const typeItems: AdvancedSelectItem[] = [
   { key: uuid(), text: 'Images' },
@@ -41,17 +41,13 @@ export const FileStructurePage = (): React.JSX.Element => {
   const [selectedType, setSelectedType] = useState<AdvancedSelectItem | null>(null);
   const [modifiedType, setModifiedType] = useState<AdvancedSelectItem | null>(null);
   const [person, setPerson] = useState<AdvancedSelectItem | null>(null);
-  const location = useLocation();
+  const data = useLoaderData();
 
   useEffect(() => {
-    const queryParams = getQueryParams<{ id?: string }>(location.search);
-
-    if (queryParams.id) {
-      console.log('='.repeat(20));
-      console.log('Fetching data');
-      console.log(queryParams);
-    }
-  }, [location.search]);
+    // get loader data
+    console.log('='.repeat(20));
+    console.log(data);
+  }, [data]);
 
   const [_, setPersonTerm] = useDebounceHook({
     debounceTime: 500,

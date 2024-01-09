@@ -23,5 +23,8 @@ This way url can be saved and later used !!!
   1. fetch root items (on depth of 4 to make it fast)
 
 
-====================================================================================
-
+====================================================================================[Preview file]
+Text - read and show bytes
+Image - insert img tag
+Audio - insert input type audio
+Video - insert in video input (or some library)

@@ -1,6 +1,6 @@
-import { LoaderFunctionArgs } from 'react-router-dom';
+import { LoaderFunctionArgs, redirect } from 'react-router-dom';
 import { ProfileController } from './profile/state/profile.controller';
-import { ioc, UserApiService } from '../shared';
+import { constants, ioc, UserApiService } from '../shared';
 import { SharedController } from './shared/state/shared.controller';
 
 export const appLoader = async (_args: LoaderFunctionArgs) => {
@@ -16,6 +16,14 @@ export const appLoader = async (_args: LoaderFunctionArgs) => {
 
   if (data) {
     profile.setUser(data);
+  }
+
+  const url = new URL(_args.request.url);
+
+  // if request url is root redirect to {constants.path.fileStructure} route
+  if (url.pathname === '/') {
+    url.pathname = constants.path.fileStructure;
+    return redirect(url.toString());
   }
 
   return 'ok';

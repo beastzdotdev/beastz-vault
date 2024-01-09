@@ -47,7 +47,7 @@ const FileStuructureFileItem = (params: FileStuructureFileItemParams): React.JSX
         </div>
       </div>
 
-      <div className="flex items-center justify-end flex-grow-0 w-[210px]">
+      <div className="flex items-center justify-end flex-grow-0 w-[210px] xl:flex hidden">
         <Button
           icon="share"
           minimal
@@ -84,37 +84,41 @@ const FileStuructureFileItem = (params: FileStuructureFileItemParams): React.JSX
           className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
           onClick={e => e.stopPropagation()}
         />
-        <Popover
-          content={
-            <Menu>
-              <MenuItem text="Share" icon="share" />
-              <MenuItem text="Bookmark" icon="bookmark" />
-              <MenuItem text="Copy" icon="duplicate">
-                <MenuItem text="Title" />
-                <MenuItem text="Public link" />
-                <MenuItem text="Content (only file)" />
-              </MenuItem>
-              <MenuItem text="Move" icon="nest" />
-              <MenuDivider />
-              <MenuItem text="Add shortcut" icon="folder-new" />
-              <MenuItem text="Change color" icon="tint" />
-              <MenuItem text="Details" icon="info-sign" />
-              <MenuItem text="Activity" icon="list-detail-view" />
-              <MenuItem text="Open in editor (coming soon)" icon="code" />
-              <MenuItem text="Encrypt by" icon="shield">
-                <MenuItem text="Text" />
-                <MenuItem text="Pin" />
-              </MenuItem>
-              <MenuDivider />
-
-              <MenuItem text="Move to bin" icon="trash" />
-            </Menu>
-          }
-          placement="right-start"
-        >
-          <Button icon="more" minimal />
-        </Popover>
       </div>
+
+      <Popover
+        content={
+          <Menu>
+            <MenuItem text="Share" icon="share" />
+            <MenuItem text="Bookmark" icon="bookmark" />
+            <MenuItem text="Copy" icon="duplicate">
+              <MenuItem text="Title" />
+              <MenuItem text="Public link" />
+              <MenuItem text="Content (only file)" />
+            </MenuItem>
+            <MenuItem text="Move" icon="nest" />
+            <MenuDivider />
+            <MenuItem text="Add shortcut" icon="folder-new" />
+            <MenuItem text="Change color" icon="tint" />
+            <MenuItem text="Details" icon="info-sign" />
+            <MenuItem text="Activity" icon="list-detail-view" />
+            <MenuItem text="Not editable" icon="edit" />
+            <MenuItem text="Lock" icon="lock" />
+            <MenuItem text="Download" icon="download" />
+            <MenuItem text="Open in editor (coming soon)" icon="code" />
+            <MenuItem text="Encrypt by" icon="shield">
+              <MenuItem text="Text" />
+              <MenuItem text="Pin" />
+            </MenuItem>
+            <MenuDivider />
+
+            <MenuItem text="Move to bin" icon="trash" />
+          </Menu>
+        }
+        placement="right-start"
+      >
+        <Button icon="more" minimal />
+      </Popover>
     </div>
   );
 };

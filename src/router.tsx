@@ -22,6 +22,8 @@ import { rootLoader } from './features/root/root-loader';
 import { TestRefreshFlowPage } from './features/experimental/test-refresh-flow.page';
 import { FileStructurePage } from './features/file-structure/file-strucutre.page';
 import { GuidePage } from './features/guide/guide.page';
+import { fileStructureLoader } from './features/file-structure/file-structure.loader';
+import { AppErrorPage } from './features/app-error.page';
 
 export const router = createBrowserRouter([
   // under / every page is under auth protection
@@ -32,7 +34,7 @@ export const router = createBrowserRouter([
     loader: appLoader,
     children: [
       {
-        errorElement: <p>Root error popupp</p>,
+        errorElement: <AppErrorPage />,
         children: [
           {
             index: true,
@@ -45,6 +47,7 @@ export const router = createBrowserRouter([
           {
             path: constants.path.fileStructure,
             element: <FileStructurePage />,
+            loader: fileStructureLoader,
           },
           {
             path: constants.path.guide,
