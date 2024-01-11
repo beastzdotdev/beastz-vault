@@ -5,8 +5,7 @@ import { FileStructureTopBar } from './widgets/file-structure-topbar';
 import { AdvancedSelect, AdvancedSelectItem } from '../../components/advanced-select';
 import { useDebounceHook } from '../../hooks/use-debounce.hook';
 import { FileStructureFiles } from './widgets/file-structure-files';
-import { getQueryParams } from '../../shared';
-import { useLoaderData, useLocation } from 'react-router-dom';
+import { useLoaderData } from 'react-router-dom';
 
 const typeItems: AdvancedSelectItem[] = [
   { key: uuid(), text: 'Images' },
@@ -45,7 +44,7 @@ export const FileStructurePage = (): React.JSX.Element => {
 
   useEffect(() => {
     // get loader data
-    console.log('='.repeat(20));
+    console.log('='.repeat(20) + '[loaded data from fileStructureLoader]');
     console.log(data);
   }, [data]);
 

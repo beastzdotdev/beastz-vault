@@ -17,7 +17,7 @@ export const SupportPage = (): React.JSX.Element => {
             icon="link"
             text="Redirect"
             intent={Intent.PRIMARY}
-            onClick={() => router.navigate(-1)}
+            onClick={() => router.navigate('/')}
           />
         </div>
       </div>

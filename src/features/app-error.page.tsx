@@ -24,7 +24,7 @@ export const AppErrorPage = (): React.JSX.Element => {
             icon="link"
             text="Go Home"
             intent={Intent.NONE}
-            onClick={() => router.navigate(-1)}
+            onClick={() => router.navigate('/')}
           />
         </div>
       </div>

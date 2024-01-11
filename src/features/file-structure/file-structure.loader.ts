@@ -1,5 +1,5 @@
 import { LoaderFunctionArgs, redirect } from 'react-router-dom';
-import { isUUID } from '../../shared';
+import { FileStructureApiService, ioc, isUUID } from '../../shared';
 
 /**
  * @description
@@ -9,11 +9,12 @@ export const fileStructureLoader = async (_args: LoaderFunctionArgs) => {
   const queryParams = new URL(_args.request.url).searchParams;
   const id = queryParams.get('id');
 
+  // 1. Validate url query parameters
   if (id && id !== 'root' && !isUUID(id)) {
     throw new Error(); // router will handle this error
   }
 
-  // if id not exists definitely add before loading ui
+  // 2. if id not exists definitely add id as root before loading ui
   if (!id) {
     const redirectUrl = new URL(_args.request.url);
     redirectUrl.searchParams.set('id', 'root');
@@ -21,7 +22,33 @@ export const fileStructureLoader = async (_args: LoaderFunctionArgs) => {
     return redirect(redirectUrl.toString());
   }
 
-  // fetch file-structure entity based on id
+  const fileStructureApiService = ioc.getContainer().get(FileStructureApiService);
+
+  // 3. if id is root handle root api call
+  if (id === 'root') {
+    const { data, error } = await fileStructureApiService.getRoot();
+
+    //TODO uncomment this part when root call will be resolved
+    // if (error) {
+    //   throw new Error('Sorry, something went wrong, pleas contact support');
+    // }
+
+    console.log('='.repeat(20) + '[Root data]');
+    console.log(data);
+
+    //TODO handle root response
+    return 'ok';
+  }
+
+  // 4. else handle get by id of file structure item
+  const { data, error } = await fileStructureApiService.getById(id);
+
+  if (error) {
+    throw new Error('Could not find item');
+  }
+
+  console.log('='.repeat(20) + '+++');
+  console.log(data);
 
   return 'ok';
 };
