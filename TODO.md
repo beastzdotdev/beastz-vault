@@ -33,6 +33,7 @@ TODO inside file structure make selecting item by shift click and also by cmd cl
 TODO add multi select actions in file structure where you replace filter buttons with action button for selected items
 
 
-TODO better resize, (it looks like its lagging)
+TODO fix resize issue when terminal opens or whole browser resize happens
 TODO very basic responsivnes
 TODO zen mode
+

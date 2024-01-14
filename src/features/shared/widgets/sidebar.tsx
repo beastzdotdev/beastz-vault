@@ -1,3 +1,4 @@
+import { v4 as uuid } from 'uuid';
 import {
   TreeNodeInfo,
   ContextMenu,
@@ -10,12 +11,12 @@ import {
   Popover,
   Icon,
 } from '@blueprintjs/core';
-import { useCallback, useEffect, useRef, useState } from 'react';
 import logo from '../../../assets/images/profile/doodle-man-1.svg';
+import { useState } from 'react';
 import { SidebarTree } from '../../../widgets/sidebar-tree';
-import { v4 as uuid } from 'uuid';
 import { router } from '../../../router';
 import { constants } from '../../../shared';
+import { useResize } from '../../../hooks/use-resize.hook';
 
 type SidebarNodeInfo = TreeNodeInfo<{ link: string | null }>;
 
@@ -109,45 +110,13 @@ const INITIAL_STATE2: SidebarNodeInfo[] = [
 ];
 
 export const Sidebar = () => {
+  const { sidebarRef, sidebarWidth, startResizing } = useResize();
   const [showBookmarks, setShowBookmarks] = useState(true);
   const [showFiles, setShowFiles] = useState(true);
 
-  const sidebarRef = useRef<HTMLDivElement>(null);
-  const [isResizing, setIsResizing] = useState(false);
-  const [sidebarWidth, setSidebarWidth] = useState(250);
-
-  const startResizing = useCallback(() => {
-    setIsResizing(true);
-  }, []);
-
-  const stopResizing = useCallback(() => {
-    setIsResizing(false);
-  }, []);
-
-  const resize = useCallback(
-    mouseMoveEvent => {
-      if (isResizing) {
-        setSidebarWidth(
-          mouseMoveEvent.clientX - (sidebarRef.current?.getBoundingClientRect()?.left ?? 0)
-        );
-      }
-    },
-    [isResizing]
-  );
-
-  useEffect(() => {
-    window.addEventListener('mousemove', resize);
-    window.addEventListener('mouseup', stopResizing);
-
-    return () => {
-      window.removeEventListener('mousemove', resize);
-      window.removeEventListener('mouseup', stopResizing);
-    };
-  }, [resize, stopResizing]);
-
   return (
     <div
-      className="gorilla-sidebar bg-zinc-900 h-screen relative transition-width duration-100 max-w-[600px] min-w-[250px]"
+      className="gorilla-sidebar bg-zinc-900 h-screen relative max-w-[600px] min-w-[250px]"
       ref={sidebarRef}
       style={{ width: sidebarWidth }}
       onMouseDown={e => e.preventDefault()}
