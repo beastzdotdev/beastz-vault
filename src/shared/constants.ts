@@ -21,4 +21,11 @@ export const constants = Object.freeze({
       url: import.meta.env.VITE_BACKEND_URL,
     },
   },
+
+  MAX_FILE_UPLOAD_SIZE_IN_MB: 30,
+  MAX_FILE_COUNT: 1500,
+
+  get MAX_FILE_UPLOAD_SIZE() {
+    return this.MAX_FILE_UPLOAD_SIZE_IN_MB * 1024 * 1024; // ~30 MB in bytes
+  },
 });

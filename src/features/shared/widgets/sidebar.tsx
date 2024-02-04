@@ -10,12 +10,15 @@ import {
   MenuItem,
   Popover,
   Icon,
+  Card,
+  CardList,
+  H3,
 } from '@blueprintjs/core';
 import logo from '../../../assets/images/profile/doodle-man-1.svg';
-import { useState } from 'react';
+import { ChangeEvent, useCallback, useRef, useState } from 'react';
 import { SidebarTree } from '../../../widgets/sidebar-tree';
 import { router } from '../../../router';
-import { constants } from '../../../shared';
+import { bus, constants, formatFileSize } from '../../../shared';
 import { useResize } from '../../../hooks/use-resize.hook';
 
 type SidebarNodeInfo = TreeNodeInfo<{ link: string | null }>;
@@ -109,10 +112,90 @@ const INITIAL_STATE2: SidebarNodeInfo[] = [
   },
 ];
 
+function validateFileSize(files: FileList | null): files is FileList {
+  if (!files?.length) {
+    return false;
+  }
+
+  if (files?.length > constants.MAX_FILE_COUNT) {
+    bus.emit('show-alert', {
+      message: `Too many files (more than ${constants.MAX_FILE_COUNT})`,
+    });
+
+    return false;
+  }
+
+  const fileSizeLimitMessages: { size: string; name: string }[] = [];
+
+  // check size first
+  for (const file of files) {
+    console.log('='.repeat(20));
+    console.log(file);
+    console.log(file.size);
+    if (file.size > constants.MAX_FILE_UPLOAD_SIZE) {
+      fileSizeLimitMessages.push({
+        name: file.name,
+        size: formatFileSize(file.size),
+      });
+    }
+  }
+
+  // show message for error of size limit
+  if (fileSizeLimitMessages.length) {
+    bus.emit('show-alert', {
+      message: (
+        <>
+          <H3>This files exceed size limit(~{constants.MAX_FILE_UPLOAD_SIZE_IN_MB}mb)</H3>
+          <br />
+
+          <CardList compact className="whitespace-nowrap max-h-64">
+            {fileSizeLimitMessages.map(e => (
+              <Card className="flex justify-between">
+                <p>{e.name}</p>
+                <p className="ml-3">{e.size}</p>
+              </Card>
+            ))}
+          </CardList>
+        </>
+      ),
+    });
+
+    return false;
+  }
+
+  return true;
+}
+
 export const Sidebar = () => {
   const { sidebarRef, sidebarWidth, startResizing } = useResize();
   const [showBookmarks, setShowBookmarks] = useState(true);
   const [showFiles, setShowFiles] = useState(true);
+  const fileUploadElement = useRef<HTMLInputElement>(null);
+  const folderUploadElement = useRef<HTMLInputElement>(null);
+
+  const onFileUploadChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    const files = e.currentTarget.files;
+
+    if (!validateFileSize(files)) {
+      return;
+    }
+
+    // start uploading
+    console.log('='.repeat(20));
+    console.log(files);
+  }, []);
+
+  //TODO figure out how to upload batch size
+  const onFolderUploadChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    const files = e.currentTarget.files;
+
+    if (!validateFileSize(files)) {
+      return;
+    }
+
+    console.log('='.repeat(20));
+    console.log(files);
+  }, []);
 
   return (
     <div
@@ -144,6 +227,31 @@ export const Sidebar = () => {
           </div>
 
           <div>
+            <input
+              type="file"
+              name="file-upload"
+              className="hidden"
+              ref={fileUploadElement}
+              onChange={onFileUploadChange}
+              multiple={true}
+            />
+
+            <input
+              type="file"
+              name="folder-upload"
+              className="hidden"
+              ref={folderUploadElement}
+              multiple={false}
+              onChange={onFolderUploadChange}
+              //
+              //
+              //! For folder upload
+              // @ts-expect-error: something
+              webkitdirectory=""
+              mozdirectory=""
+              directory=""
+            />
+
             <ButtonGroup
               fill
               minimal
@@ -154,11 +262,19 @@ export const Sidebar = () => {
               <Popover
                 content={
                   <Menu>
-                    <MenuItem text="New" icon="document" />
+                    <MenuItem text="New" icon="document" type="file" />
                     <MenuItem text="Create" icon="folder-new" />
                     <MenuDivider />
-                    <MenuItem text="Upload File" icon="document-open" />
-                    <MenuItem text="Upload Folder" icon="folder-shared-open" />
+                    <MenuItem
+                      text="Upload File(s)"
+                      icon="document-open"
+                      onClick={() => fileUploadElement.current?.click()}
+                    />
+                    <MenuItem
+                      text="Upload Folder"
+                      icon="folder-shared-open"
+                      onClick={() => folderUploadElement.current?.click()}
+                    />
                     <MenuDivider />
                     <MenuItem text="Gorilla doc (coming soon)" icon="application" />
                   </Menu>

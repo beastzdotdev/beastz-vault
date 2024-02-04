@@ -1,3 +1,5 @@
+export type BusMessageType = string | number | JSX.Element;
+
 export type BusEvents = {
-  'show-alert': (params: { message: string; onClose?: () => void }) => void;
+  'show-alert': (params: { message: BusMessageType; onClose?: () => void }) => void;
 };

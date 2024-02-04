@@ -40,3 +40,4 @@ TODO zen mode
 
 
 TODO checkout how does it look on windows
+TODO right now each file size will be restricted only to fixed size than it will be increased
