@@ -178,7 +178,7 @@ export const Sidebar = () => {
           <div className="my-4"></div>
         </div>
 
-        <div className="flex-1 overflow-y-scroll">
+        <div className="flex-1 overflow-y-auto z-10">
           <div
             className="hover:bg-zinc-800 active:bg-zinc-700 w-fit ml-3"
             onClick={() => setShowBookmarks(!showBookmarks)}

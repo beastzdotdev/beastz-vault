@@ -1,6 +1,7 @@
+import queryString from 'query-string';
+
 import { ZodError, z } from 'zod';
 import { FormikValidationError } from '.';
-import queryString from 'query-string';
 
 export const stringEncode = (text: string): Uint8Array => new TextEncoder().encode(text);
 export const stringDecode = (buffer: ArrayBuffer): string => new TextDecoder().decode(buffer);
@@ -12,8 +13,10 @@ export const base64Decode = (t: string) => {
   );
 };
 
-export const getQueryParams = <T extends object>(params: string): T => {
-  return queryString.parse(params, {
+export const getQueryParams = <T extends object>(url: string): T => {
+  const urlObj = new URL(url);
+
+  return queryString.parse(urlObj.searchParams.toString(), {
     parseBooleans: true,
     parseNumbers: true,
   }) as T;

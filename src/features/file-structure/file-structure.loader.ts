@@ -1,13 +1,13 @@
 import { LoaderFunctionArgs, redirect } from 'react-router-dom';
-import { FileStructureApiService, ioc, isUUID } from '../../shared';
+import { FileStructureApiService, getQueryParams, ioc, isUUID } from '../../shared';
 
 /**
  * @description
  * ! Here _args.request.url will definitely have pathname of /file-structure so no need to check that
  */
 export const fileStructureLoader = async (_args: LoaderFunctionArgs) => {
-  const queryParams = new URL(_args.request.url).searchParams;
-  const id = queryParams.get('id');
+  const queryParams = getQueryParams<{ id?: string }>(_args.request.url);
+  const id = queryParams.id;
 
   // 1. Validate url query parameters
   if (id && id !== 'root' && !isUUID(id)) {
@@ -28,7 +28,7 @@ export const fileStructureLoader = async (_args: LoaderFunctionArgs) => {
   if (id === 'root') {
     const { data, error } = await fileStructureApiService.getRoot();
 
-    //TODO uncomment this part when root call will be resolved
+    //TODO uncomment this part when root call will be resolved and development will be done
     // if (error) {
     //   throw new Error('Sorry, something went wrong, pleas contact support');
     // }

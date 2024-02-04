@@ -37,3 +37,6 @@ TODO fix resize issue when terminal opens or whole browser resize happens
 TODO very basic responsivnes
 TODO zen mode
 
+
+
+TODO checkout how does it look on windows

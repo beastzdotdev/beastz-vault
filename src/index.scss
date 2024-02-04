@@ -27,6 +27,27 @@ body {
   background-color: $dark-gray2;
 }
 
+* {
+  // z-index: 10;
+
+  &::-webkit-scrollbar {
+    width: 7px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba($color: #abb2bf, $alpha: 0.5);
+    border-radius: 10px;
+
+    &:hover {
+      background-color: rgba($color: #abb2bf, $alpha: 0.8);
+    }
+  }
+
+  &::-webkit-scrollbar-corner {
+    display: none;
+  }
+}
+
 // Override
 :focus {
   outline: none;
