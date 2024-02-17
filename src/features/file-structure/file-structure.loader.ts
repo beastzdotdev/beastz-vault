@@ -29,9 +29,11 @@ export const fileStructureLoader = async (_args: LoaderFunctionArgs) => {
     const { data, error } = await fileStructureApiService.getRoot();
 
     //TODO uncomment this part when root call will be resolved and development will be done
-    // if (error) {
-    //   throw new Error('Sorry, something went wrong, pleas contact support');
-    // }
+    if (error) {
+      console.log('='.repeat(20));
+      console.log(error);
+      // throw new Error('Sorry, something went wrong, pleas contact support');
+    }
 
     console.log('='.repeat(20) + '[Root data]');
     console.log(data);

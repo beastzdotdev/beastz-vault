@@ -23,7 +23,7 @@ export const constants = Object.freeze({
   },
 
   MAX_FILE_UPLOAD_SIZE_IN_MB: 30,
-  MAX_FILE_COUNT: 1500,
+  MAX_FILE_COUNT: 150,
 
   get MAX_FILE_UPLOAD_SIZE() {
     return this.MAX_FILE_UPLOAD_SIZE_IN_MB * 1024 * 1024; // ~30 MB in bytes

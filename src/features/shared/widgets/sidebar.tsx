@@ -13,13 +13,22 @@ import {
   Card,
   CardList,
   H3,
+  OverlayToaster,
+  Position,
+  Intent,
+  ToastProps,
 } from '@blueprintjs/core';
 import logo from '../../../assets/images/profile/doodle-man-1.svg';
 import { ChangeEvent, useCallback, useRef, useState } from 'react';
 import { SidebarTree } from '../../../widgets/sidebar-tree';
 import { router } from '../../../router';
-import { bus, constants, formatFileSize } from '../../../shared';
+import { bus, constants, formatFileSize, sleep } from '../../../shared';
 import { useResize } from '../../../hooks/use-resize.hook';
+import {
+  WBKTreeNode,
+  buildWBKTree,
+  wbkBreadthFirstSearch,
+} from '../../../shared/advanced-helpers/tree-data';
 
 type SidebarNodeInfo = TreeNodeInfo<{ link: string | null }>;
 
@@ -119,7 +128,7 @@ function validateFileSize(files: FileList | null): files is FileList {
 
   if (files?.length > constants.MAX_FILE_COUNT) {
     bus.emit('show-alert', {
-      message: `Too many files (more than ${constants.MAX_FILE_COUNT})`,
+      message: `Too many files ${files.length} (max ${constants.MAX_FILE_COUNT}), sorry this application is relatively small and not meant to handle so many file (reason: each file has limit of ${constants.MAX_FILE_UPLOAD_SIZE_IN_MB}mb memory so if you decide to upload max amount of files app would need more than 4.5gb of memory)`,
     });
 
     return false;
@@ -129,9 +138,6 @@ function validateFileSize(files: FileList | null): files is FileList {
 
   // check size first
   for (const file of files) {
-    console.log('='.repeat(20));
-    console.log(file);
-    console.log(file.size);
     if (file.size > constants.MAX_FILE_UPLOAD_SIZE) {
       fileSizeLimitMessages.push({
         name: file.name,
@@ -166,6 +172,12 @@ function validateFileSize(files: FileList | null): files is FileList {
   return true;
 }
 
+const progressToat = OverlayToaster.create({
+  canEscapeKeyClear: false,
+  position: Position.BOTTOM_RIGHT,
+  autoFocus: false,
+});
+
 export const Sidebar = () => {
   const { sidebarRef, sidebarWidth, startResizing } = useResize();
   const [showBookmarks, setShowBookmarks] = useState(true);
@@ -185,16 +197,73 @@ export const Sidebar = () => {
     console.log(files);
   }, []);
 
-  //TODO figure out how to upload batch size
-  const onFolderUploadChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+  const onFolderUploadChange = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.currentTarget.files;
 
     if (!validateFileSize(files)) {
       return;
     }
 
-    console.log('='.repeat(20));
-    console.log(files);
+    const { data, totalLength } = buildWBKTree(files);
+
+    const progressToastProps: Omit<ToastProps, 'message'> = {
+      isCloseButtonShown: false,
+      icon: 'cloud-upload',
+      intent: Intent.NONE,
+      timeout: 10000000,
+    };
+
+    const key = progressToat.show({
+      message: `${data[0].name}: 0 of ${totalLength}`,
+      ...progressToastProps,
+    });
+
+    const queue: WBKTreeNode[] = [];
+    let totalUploadCount = 0;
+    const reminder = totalLength % 5;
+
+    // // start batch upload (by bfs type upload)
+    //TODO calculate upload time (approximate) https://www.google.com/search?q=how+does+drive+calculate+upload+time&oq=how+does+drive+calculate+upload+time&gs_lcrp=EgZjaHJvbWUyCQgAEEUYORigATIHCAEQIRigATIHCAIQIRigATIHCAMQIRifBTIHCAQQIRifBTIHCAUQIRifBdIBCDg5MjVqMGoxqAIAsAIA&sourceid=chrome&ie=UTF-8
+    await wbkBreadthFirstSearch(data, async item => {
+      queue.push(item);
+
+      if (queue.length === 5 || (reminder !== 0 && totalUploadCount === totalLength - reminder)) {
+        //TODO upload backend
+        //TODO plus calculate each file in this batch and if total exceeds for example more than 30 mb
+        //TODO then split into multiple backend api call so that bandwidth would not be for example 150mb
+
+        await new Promise(f => setTimeout(f, 1000));
+
+        totalUploadCount += queue.length === 5 ? 5 : reminder;
+
+        progressToat.show(
+          {
+            message: `${data[0].name}: ${totalUploadCount} of ${totalLength}`,
+            ...progressToastProps,
+          },
+          key
+        );
+
+        queue.length = 0;
+      }
+    });
+
+    // wait for 1 second before changing text
+    await sleep(1000);
+
+    // update toast add close button after upload is done
+    progressToat.show(
+      {
+        message: `completed ${totalUploadCount} of ${totalLength}`,
+        ...progressToastProps,
+        isCloseButtonShown: true, // <- show close button
+      },
+      key
+    );
+
+    // wait 5 second before closing toaster by force if user does not closes
+    await sleep(5000);
+    progressToat.clear();
   }, []);
 
   return (
