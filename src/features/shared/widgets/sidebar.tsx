@@ -10,25 +10,15 @@ import {
   MenuItem,
   Popover,
   Icon,
-  Card,
-  CardList,
-  H3,
-  OverlayToaster,
-  Position,
-  Intent,
-  ToastProps,
 } from '@blueprintjs/core';
 import logo from '../../../assets/images/profile/doodle-man-1.svg';
-import { ChangeEvent, useCallback, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { SidebarTree } from '../../../widgets/sidebar-tree';
 import { router } from '../../../router';
-import { bus, constants, formatFileSize, sleep } from '../../../shared';
+import { constants } from '../../../shared';
 import { useResize } from '../../../hooks/use-resize.hook';
-import {
-  WBKTreeNode,
-  buildWBKTree,
-  wbkBreadthFirstSearch,
-} from '../../../shared/advanced-helpers/tree-data';
+import { FileUploadItem } from './file-upload-item';
+import { FolderUploadItem } from './folder-upload-item';
 
 type SidebarNodeInfo = TreeNodeInfo<{ link: string | null }>;
 
@@ -121,150 +111,12 @@ const INITIAL_STATE2: SidebarNodeInfo[] = [
   },
 ];
 
-function validateFileSize(files: FileList | null): files is FileList {
-  if (!files?.length) {
-    return false;
-  }
-
-  if (files?.length > constants.MAX_FILE_COUNT) {
-    bus.emit('show-alert', {
-      message: `Too many files ${files.length} (max ${constants.MAX_FILE_COUNT}), sorry this application is relatively small and not meant to handle so many file (reason: each file has limit of ${constants.MAX_FILE_UPLOAD_SIZE_IN_MB}mb memory so if you decide to upload max amount of files app would need more than 4.5gb of memory)`,
-    });
-
-    return false;
-  }
-
-  const fileSizeLimitMessages: { size: string; name: string }[] = [];
-
-  // check size first
-  for (const file of files) {
-    if (file.size > constants.MAX_FILE_UPLOAD_SIZE) {
-      fileSizeLimitMessages.push({
-        name: file.name,
-        size: formatFileSize(file.size),
-      });
-    }
-  }
-
-  // show message for error of size limit
-  if (fileSizeLimitMessages.length) {
-    bus.emit('show-alert', {
-      message: (
-        <>
-          <H3>This files exceed size limit(~{constants.MAX_FILE_UPLOAD_SIZE_IN_MB}mb)</H3>
-          <br />
-
-          <CardList compact className="whitespace-nowrap max-h-64">
-            {fileSizeLimitMessages.map(e => (
-              <Card className="flex justify-between">
-                <p>{e.name}</p>
-                <p className="ml-3">{e.size}</p>
-              </Card>
-            ))}
-          </CardList>
-        </>
-      ),
-    });
-
-    return false;
-  }
-
-  return true;
-}
-
-const progressToat = OverlayToaster.create({
-  canEscapeKeyClear: false,
-  position: Position.BOTTOM_RIGHT,
-  autoFocus: false,
-});
-
 export const Sidebar = () => {
   const { sidebarRef, sidebarWidth, startResizing } = useResize();
   const [showBookmarks, setShowBookmarks] = useState(true);
   const [showFiles, setShowFiles] = useState(true);
-  const fileUploadElement = useRef<HTMLInputElement>(null);
-  const folderUploadElement = useRef<HTMLInputElement>(null);
-
-  const onFileUploadChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    const files = e.currentTarget.files;
-
-    if (!validateFileSize(files)) {
-      return;
-    }
-
-    // start uploading
-    console.log('='.repeat(20));
-    console.log(files);
-  }, []);
-
-  const onFolderUploadChange = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
-    const files = e.currentTarget.files;
-
-    if (!validateFileSize(files)) {
-      return;
-    }
-
-    const { data, totalLength } = buildWBKTree(files);
-
-    const progressToastProps: Omit<ToastProps, 'message'> = {
-      isCloseButtonShown: false,
-      icon: 'cloud-upload',
-      intent: Intent.NONE,
-      timeout: 10000000,
-    };
-
-    const key = progressToat.show({
-      message: `${data[0].name}: 0 of ${totalLength}`,
-      ...progressToastProps,
-    });
-
-    const queue: WBKTreeNode[] = [];
-    let totalUploadCount = 0;
-    const reminder = totalLength % 5;
-
-    // // start batch upload (by bfs type upload)
-    //TODO calculate upload time (approximate) https://www.google.com/search?q=how+does+drive+calculate+upload+time&oq=how+does+drive+calculate+upload+time&gs_lcrp=EgZjaHJvbWUyCQgAEEUYORigATIHCAEQIRigATIHCAIQIRigATIHCAMQIRifBTIHCAQQIRifBTIHCAUQIRifBdIBCDg5MjVqMGoxqAIAsAIA&sourceid=chrome&ie=UTF-8
-    await wbkBreadthFirstSearch(data, async item => {
-      queue.push(item);
-
-      if (queue.length === 5 || (reminder !== 0 && totalUploadCount === totalLength - reminder)) {
-        //TODO upload backend
-        //TODO plus calculate each file in this batch and if total exceeds for example more than 30 mb
-        //TODO then split into multiple backend api call so that bandwidth would not be for example 150mb
-
-        await new Promise(f => setTimeout(f, 1000));
-
-        totalUploadCount += queue.length === 5 ? 5 : reminder;
-
-        progressToat.show(
-          {
-            message: `${data[0].name}: ${totalUploadCount} of ${totalLength}`,
-            ...progressToastProps,
-          },
-          key
-        );
-
-        queue.length = 0;
-      }
-    });
-
-    // wait for 1 second before changing text
-    await sleep(1000);
-
-    // update toast add close button after upload is done
-    progressToat.show(
-      {
-        message: `completed ${totalUploadCount} of ${totalLength}`,
-        ...progressToastProps,
-        isCloseButtonShown: true, // <- show close button
-      },
-      key
-    );
-
-    // wait 5 second before closing toaster by force if user does not closes
-    await sleep(5000);
-    progressToat.clear();
-  }, []);
+  const fileUploadRef = useRef<HTMLInputElement>(null);
+  const folderUploadRef = useRef<HTMLInputElement>(null);
 
   return (
     <div
@@ -296,30 +148,9 @@ export const Sidebar = () => {
           </div>
 
           <div>
-            <input
-              type="file"
-              name="file-upload"
-              className="hidden"
-              ref={fileUploadElement}
-              onChange={onFileUploadChange}
-              multiple={true}
-            />
+            <FileUploadItem inputRef={fileUploadRef} />
 
-            <input
-              type="file"
-              name="folder-upload"
-              className="hidden"
-              ref={folderUploadElement}
-              multiple={false}
-              onChange={onFolderUploadChange}
-              //
-              //
-              //! For folder upload
-              // @ts-expect-error: something
-              webkitdirectory=""
-              mozdirectory=""
-              directory=""
-            />
+            <FolderUploadItem inputRef={folderUploadRef} />
 
             <ButtonGroup
               fill
@@ -337,12 +168,12 @@ export const Sidebar = () => {
                     <MenuItem
                       text="Upload File(s)"
                       icon="document-open"
-                      onClick={() => fileUploadElement.current?.click()}
+                      onClick={() => fileUploadRef.current?.click()}
                     />
                     <MenuItem
                       text="Upload Folder"
                       icon="folder-shared-open"
-                      onClick={() => folderUploadElement.current?.click()}
+                      onClick={() => folderUploadRef.current?.click()}
                     />
                     <MenuDivider />
                     <MenuItem text="Gorilla doc (coming soon)" icon="application" />

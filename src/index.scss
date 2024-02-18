@@ -190,3 +190,14 @@ body {
     @apply transition-all duration-100 ease-linear opacity-0;
   }
 }
+
+.only-for-file-upload {
+  .bp5-toast-message {
+    padding: 0;
+  }
+
+  // remove button group from toast (cannot be done via props, this is hacky way)
+  .bp5-button-group {
+    display: none;
+  }
+}

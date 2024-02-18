@@ -24,6 +24,7 @@ import { FileStructurePage } from './features/file-structure/file-strucutre.page
 import { GuidePage } from './features/guide/guide.page';
 import { fileStructureLoader } from './features/file-structure/file-structure.loader';
 import { AppErrorPage } from './features/app-error.page';
+import { CardListLoaderTestPage } from './features/experimental/card-list-loader-test-page';
 
 export const router = createBrowserRouter([
   // under / every page is under auth protection
@@ -117,6 +118,10 @@ export const router = createBrowserRouter([
       {
         path: 'test-refresh-flow',
         element: <TestRefreshFlowPage />,
+      },
+      {
+        path: 'test-card-list-loader',
+        element: <CardListLoaderTestPage />,
       },
     ],
   },
