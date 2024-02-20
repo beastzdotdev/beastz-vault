@@ -25,7 +25,7 @@ export class FileStructureApiService {
     }
   }
 
-  async create(params: {
+  async uploadFile(params: {
     file: File;
     parentId?: number;
     rootParentId?: number;
@@ -38,11 +38,15 @@ export class FileStructureApiService {
     if (rootParentId) formData.append('rootParentId', rootParentId.toString());
 
     try {
-      const result: AxiosResponse<FileStructure> = await api.post(`file-structure`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const result: AxiosResponse<FileStructure> = await api.post(
+        'file-structure/upload-file',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
 
       return { data: result.data };
     } catch (e: unknown) {

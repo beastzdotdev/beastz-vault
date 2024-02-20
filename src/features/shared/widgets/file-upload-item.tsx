@@ -87,7 +87,9 @@ export const FileUploadItem = ({
       ) {
         for (const queueItem of queue) {
           //TODO this will create on root for now but later we must use url to determine if this has parent
-          const { data, error } = await fileStructureApiService.create({ file: queueItem.file });
+          const { data, error } = await fileStructureApiService.uploadFile({
+            file: queueItem.file,
+          });
 
           console.log('='.repeat(20));
           console.log(data);
