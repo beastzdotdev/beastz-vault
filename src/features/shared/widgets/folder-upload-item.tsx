@@ -16,7 +16,7 @@ const progressToat = OverlayToaster.create({
 
 const progressToastProps: Omit<ToastProps, 'message'> = {
   isCloseButtonShown: false,
-  icon: 'cloud-upload',
+  icon: 'folder-close',
   intent: Intent.NONE,
   timeout: 10000000,
 };

@@ -24,4 +24,29 @@ export class FileStructureApiService {
       return { error: e as ClientApiError };
     }
   }
+
+  async create(params: {
+    file: File;
+    parentId?: number;
+    rootParentId?: number;
+  }): Promise<AxiosApiResponse<FileStructure>> {
+    const { file, parentId, rootParentId } = params;
+
+    const formData = new FormData();
+    formData.append('file', file);
+    if (parentId) formData.append('parentId', parentId.toString());
+    if (rootParentId) formData.append('rootParentId', rootParentId.toString());
+
+    try {
+      const result: AxiosResponse<FileStructure> = await api.post(`file-structure`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      return { data: result.data };
+    } catch (e: unknown) {
+      return { error: e as ClientApiError };
+    }
+  }
 }

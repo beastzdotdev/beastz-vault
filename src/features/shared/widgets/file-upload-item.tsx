@@ -12,7 +12,8 @@ import {
 import { v4 as uuid } from 'uuid';
 import { ChangeEvent, useCallback } from 'react';
 import { validateFileSize } from '../helper/validate-file';
-import { sleep } from '../../../shared';
+import { FileStructureApiService, sleep } from '../../../shared';
+import { useInjection } from 'inversify-react';
 
 const progressToat = OverlayToaster.create({
   canEscapeKeyClear: false,
@@ -32,6 +33,8 @@ export const FileUploadItem = ({
 }: {
   inputRef: React.RefObject<HTMLInputElement>;
 }): React.JSX.Element => {
+  const fileStructureApiService = useInjection(FileStructureApiService);
+
   const onFileUploadChange = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.currentTarget.files;
 
@@ -67,9 +70,6 @@ export const FileUploadItem = ({
       ...progressToastProps,
     });
 
-    //TODO handle upload by calling multiple parallel api calls and on each one update toast
-    await new Promise(f => setTimeout(f, 1000));
-
     const maxCount = 2;
     const reminder = totalLength % maxCount;
     const queue: { file: File; id: string }[] = [];
@@ -85,17 +85,17 @@ export const FileUploadItem = ({
         queue.length === maxCount ||
         (reminder !== 0 && totalUploadCount === totalLength - reminder)
       ) {
-        //TODO upload backend
-        //TODO plus calculate each file in this batch and if total exceeds for example more than 30 mb
-        //TODO then split into multiple backend api call so that bandwidth would not be for example 150mb
-
         for (const queueItem of queue) {
-          await new Promise(f => setTimeout(f, 1000));
+          //TODO this will create on root for now but later we must use url to determine if this has parent
+          const { data, error } = await fileStructureApiService.create({ file: queueItem.file });
+
+          console.log('='.repeat(20));
+          console.log(data);
 
           finishedUploadedFiles.push({
             id: queueItem.id,
             file: queueItem.file,
-            isSuccess: Math.random() > 0.5, // change later based on real upload
+            isSuccess: !error,
           });
         }
 
