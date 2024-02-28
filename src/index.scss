@@ -29,7 +29,8 @@ body {
 
 * {
   &::-webkit-scrollbar {
-    width: 7px;
+    width: 7px; // for vertical scrollbar thickness
+    height: 7px; // for horizontal scrollbar thickness
   }
 
   &::-webkit-scrollbar-thumb {

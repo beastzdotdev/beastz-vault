@@ -1,11 +1,10 @@
 import { v4 as uuid } from 'uuid';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Breadcrumbs } from '@blueprintjs/core';
 import { FileStructureTopBar } from './widgets/file-structure-topbar';
 import { AdvancedSelect, AdvancedSelectItem } from '../../components/advanced-select';
 import { useDebounceHook } from '../../hooks/use-debounce.hook';
-import { FileStructureFiles } from './widgets/file-structure-files';
-import { useLoaderData } from 'react-router-dom';
+import { FileStructureFilesWidget } from './widgets/file-structure-files.widget';
 
 const typeItems: AdvancedSelectItem[] = [
   { key: uuid(), text: 'Images' },
@@ -40,13 +39,6 @@ export const FileStructurePage = (): React.JSX.Element => {
   const [selectedType, setSelectedType] = useState<AdvancedSelectItem | null>(null);
   const [modifiedType, setModifiedType] = useState<AdvancedSelectItem | null>(null);
   const [person, setPerson] = useState<AdvancedSelectItem | null>(null);
-  const data = useLoaderData();
-
-  useEffect(() => {
-    // get loader data
-    console.log('='.repeat(20) + '[loaded data from fileStructureLoader]');
-    console.log(data);
-  }, [data]);
 
   const [_, setPersonTerm] = useDebounceHook({
     debounceTime: 500,
@@ -111,7 +103,7 @@ export const FileStructurePage = (): React.JSX.Element => {
         </div>
 
         <div className="pt-3">
-          <FileStructureFiles />
+          <FileStructureFilesWidget />
         </div>
       </div>
     </>

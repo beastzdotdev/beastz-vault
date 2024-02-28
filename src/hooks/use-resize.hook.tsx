@@ -14,7 +14,7 @@ export const useResize = () => {
   }, []);
 
   const resize = useCallback(
-    mouseMoveEvent => {
+    (mouseMoveEvent: MouseEvent) => {
       if (isResizing) {
         setSidebarWidth(
           mouseMoveEvent.clientX - (sidebarRef.current?.getBoundingClientRect()?.left ?? 0)

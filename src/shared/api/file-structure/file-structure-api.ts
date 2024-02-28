@@ -1,25 +1,37 @@
-import { AxiosResponse } from 'axios';
 import { api } from '..';
 import { AxiosApiResponse } from '../../types';
 import { ClientApiError } from '../../errors/client-error.schema';
 import { Singleton } from '../../ioc';
-import { FileStructure } from './file-structure-api.schema';
+import { BasicFileStructureResponseDto } from './file-structure-api.schema';
+import { plainToInstance } from 'class-transformer';
 
 @Singleton
 export class FileStructureApiService {
-  async getRoot(): Promise<AxiosApiResponse<unknown>> {
+  async getOnlyRoot(): Promise<AxiosApiResponse<BasicFileStructureResponseDto[]>> {
     try {
-      const result: AxiosResponse<FileStructure> = await api.get(`file-structure/root`);
-      return { data: result.data };
+      const result = await api.get(`file-structure/only-root`);
+
+      return {
+        data: plainToInstance<BasicFileStructureResponseDto, BasicFileStructureResponseDto>(
+          BasicFileStructureResponseDto,
+          result.data,
+          { enableImplicitConversion: true }
+        ),
+      };
     } catch (e: unknown) {
       return { error: e as ClientApiError };
     }
   }
 
-  async getById(id: string): Promise<AxiosApiResponse<FileStructure>> {
+  async getById(id: string): Promise<AxiosApiResponse<BasicFileStructureResponseDto>> {
     try {
-      const result: AxiosResponse<FileStructure> = await api.get(`file-structure/${id}`);
-      return { data: result.data };
+      const result = await api.get(`file-structure/${id}`);
+
+      return {
+        data: plainToInstance(BasicFileStructureResponseDto, result.data, {
+          enableImplicitConversion: true,
+        }),
+      };
     } catch (e: unknown) {
       return { error: e as ClientApiError };
     }
@@ -29,26 +41,46 @@ export class FileStructureApiService {
     file: File;
     parentId?: number;
     rootParentId?: number;
-  }): Promise<AxiosApiResponse<FileStructure>> {
+  }): Promise<AxiosApiResponse<BasicFileStructureResponseDto>> {
     const { file, parentId, rootParentId } = params;
 
     const formData = new FormData();
     formData.append('file', file);
     if (parentId) formData.append('parentId', parentId.toString());
     if (rootParentId) formData.append('rootParentId', rootParentId.toString());
+    if (file.lastModified)
+      formData.append('lastModifiedAt', new Date(file.lastModified).toISOString());
 
     try {
-      const result: AxiosResponse<FileStructure> = await api.post(
-        'file-structure/upload-file',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      );
+      const result = await api.post('file-structure/upload-file', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
 
-      return { data: result.data };
+      return {
+        data: plainToInstance(BasicFileStructureResponseDto, result.data, {
+          enableImplicitConversion: true,
+        }),
+      };
+    } catch (e: unknown) {
+      return { error: e as ClientApiError };
+    }
+  }
+
+  async createFolder(params: {
+    name: string;
+    parentId?: number;
+    rootParentId?: number;
+  }): Promise<AxiosApiResponse<BasicFileStructureResponseDto>> {
+    try {
+      const result = await api.post('file-structure/create-folder', params);
+
+      return {
+        data: plainToInstance(BasicFileStructureResponseDto, result.data, {
+          enableImplicitConversion: true,
+        }),
+      };
     } catch (e: unknown) {
       return { error: e as ClientApiError };
     }

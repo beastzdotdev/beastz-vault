@@ -43,7 +43,7 @@ export const AuthSignInPage = (): React.JSX.Element => {
       <Button
         icon={showPassword ? 'unlock' : 'lock'}
         intent={Intent.WARNING}
-        minimal={true}
+        minimal
         onClick={() => setShowPassword(e => !e)}
       />
     </Tooltip>
@@ -54,7 +54,7 @@ export const AuthSignInPage = (): React.JSX.Element => {
       <H2>Sign in</H2>
       <br />
 
-      <ControlGroup fill={true} vertical={true} style={{ width: '500px' }}>
+      <ControlGroup fill vertical style={{ width: '500px' }}>
         <FormGroup label="Email" labelInfo="(required)">
           <InputGroup
             intent={userForm.errors.email && showErrorMessage ? Intent.DANGER : Intent.NONE}

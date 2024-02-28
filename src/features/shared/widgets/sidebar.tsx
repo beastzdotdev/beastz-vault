@@ -19,6 +19,10 @@ import { constants } from '../../../shared';
 import { useResize } from '../../../hooks/use-resize.hook';
 import { FileUploadItem } from './file-upload-item';
 import { FolderUploadItem } from './folder-upload-item';
+import { CreateFolderDialogWidget } from './create-folder/create-folder-dialog.widget';
+import { observer } from 'mobx-react-lite';
+import { useInjection } from 'inversify-react';
+import { SharedStore } from '../state/shared.store';
 
 type SidebarNodeInfo = TreeNodeInfo<{ link: string | null }>;
 
@@ -111,20 +115,25 @@ const INITIAL_STATE2: SidebarNodeInfo[] = [
   },
 ];
 
-export const Sidebar = () => {
+export const Sidebar = observer(() => {
   const { sidebarRef, sidebarWidth, startResizing } = useResize();
   const [showBookmarks, setShowBookmarks] = useState(true);
   const [showFiles, setShowFiles] = useState(true);
   const fileUploadRef = useRef<HTMLInputElement>(null);
   const folderUploadRef = useRef<HTMLInputElement>(null);
 
+  const sharedStore = useInjection(SharedStore);
+
+  const [isFolderCreateOpen, setIsFolderCreateOpen] = useState(false);
+
   return (
     <div
-      className="gorilla-sidebar bg-zinc-900 h-screen relative max-w-[600px] min-w-[250px]"
+      className="gorilla-sidebar bg-zinc-900 h-screen relative max-w-[600px] min-w-[250px] select-none"
       ref={sidebarRef}
       style={{ width: sidebarWidth }}
-      onMouseDown={e => e.preventDefault()}
     >
+      <CreateFolderDialogWidget isOpen={isFolderCreateOpen} setIsOpen={setIsFolderCreateOpen} />
+
       <div className="resize-bar" onMouseDown={startResizing}>
         <div className="resize-line"></div>
       </div>
@@ -163,7 +172,18 @@ export const Sidebar = () => {
                 content={
                   <Menu>
                     <MenuItem text="New" icon="document" type="file" />
-                    <MenuItem text="Create" icon="folder-new" />
+
+                    <MenuItem
+                      text="Create"
+                      icon="folder-new"
+                      onClick={() => {
+                        console.log('='.repeat(20));
+                        console.log(123);
+
+                        setIsFolderCreateOpen(true);
+                      }}
+                    />
+
                     <MenuDivider />
                     <MenuItem
                       text="Upload File(s)"
@@ -213,7 +233,21 @@ export const Sidebar = () => {
             <p className="text-xs text-zinc-500 font-bold cursor-pointer">Files</p>
           </div>
 
-          {showFiles && <SidebarTree state={INITIAL_STATE2} />}
+          {/* //TODO needs some work */}
+          {/* {showFiles && <SidebarTree state={INITIAL_STATE2} />} */}
+          {showFiles && (
+            <SidebarTree
+              state={
+                sharedStore.activeFileStructureInBody?.map(e => ({
+                  id: e.id,
+                  icon: e.isFile ? 'document' : 'folder-close',
+                  label: e.isFile ? e.title + e.fileExstensionRaw : e.title,
+                  isExpanded: false,
+                  childNodes: e.isFile ? undefined : [],
+                })) ?? []
+              }
+            />
+          )}
 
           <div className="my-5"></div>
 
@@ -240,4 +274,4 @@ export const Sidebar = () => {
       </div>
     </div>
   );
-};
+});

@@ -44,7 +44,7 @@ export const AdvancedSelect = ({
         className={`w-fit ${className ?? ''}`}
         items={items}
         onItemSelect={handleSelectOnItem}
-        noResults={<MenuItem disabled={true} text="No results." roleStructure="menuitem" />}
+        noResults={<MenuItem disabled text="No results." roleStructure="menuitem" />}
         filterable={onSearch !== undefined}
         onQueryChange={query => onFilter?.(query)}
         itemRenderer={(item, { handleClick, handleFocus, modifiers }) => (

@@ -55,14 +55,14 @@ export const TableTestPage = (): JSX.Element => {
 
   return (
     <>
-      <ControlGroup fill={true} vertical={true}>
+      <ControlGroup fill vertical>
         <div style={{ height: '400px', width: 'fit-content' }}>
           <Table2
             numRows={100}
-            enableFocusedCell={true}
+            enableFocusedCell
             defaultRowHeight={40}
             selectionModes={SelectionModes.NONE}
-            enableMultipleSelection={true}
+            enableMultipleSelection
           >
             <Column
               cellRenderer={rowIndex => <Cell>{'hello' + rowIndex}</Cell>}

@@ -1,18 +1,12 @@
-import { ToastProps, Intent, OverlayToaster, Position } from '@blueprintjs/core';
+import { ToastProps, Intent } from '@blueprintjs/core';
 import { ChangeEvent, useCallback } from 'react';
-import { sleep } from '../../../shared';
+import { fileContentProgressToast, sleep } from '../../../shared';
 import { validateFileSize } from '../helper/validate-file';
 import {
   buildWBKTree,
   WBKTreeNode,
   wbkBreadthFirstSearch,
 } from '../../../shared/advanced-helpers/tree-data';
-
-const progressToat = OverlayToaster.create({
-  canEscapeKeyClear: false,
-  position: Position.BOTTOM_RIGHT,
-  autoFocus: false,
-});
 
 const progressToastProps: Omit<ToastProps, 'message'> = {
   isCloseButtonShown: false,
@@ -27,6 +21,9 @@ export const FolderUploadItem = ({
   inputRef: React.RefObject<HTMLInputElement>;
 }): React.JSX.Element => {
   const onFolderUploadChange = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
+    // dissmiss previous toasts
+    fileContentProgressToast.clear();
+
     const files = e.currentTarget.files;
 
     if (!validateFileSize(files)) {
@@ -35,7 +32,7 @@ export const FolderUploadItem = ({
 
     const { data, totalLength } = buildWBKTree(files);
 
-    const key = progressToat.show({
+    const key = fileContentProgressToast.show({
       message: `${data[0].name}: 0 of ${totalLength}`,
       ...progressToastProps,
     });
@@ -62,7 +59,7 @@ export const FolderUploadItem = ({
 
         totalUploadCount += queue.length === maxCount ? maxCount : reminder;
 
-        progressToat.show(
+        fileContentProgressToast.show(
           {
             message: `${data[0].name}: ${totalUploadCount} of ${totalLength}`,
             ...progressToastProps,
@@ -78,7 +75,7 @@ export const FolderUploadItem = ({
     await sleep(1000);
 
     // update toast add close button after upload is done
-    progressToat.show(
+    fileContentProgressToast.show(
       {
         message: `completed ${totalUploadCount} of ${totalLength}`,
         ...progressToastProps,
@@ -90,9 +87,10 @@ export const FolderUploadItem = ({
     // reset input target value so that same file triggers onChange event
     e.target.value = '';
 
+    //! Uncomment bellow code if you want auto closing
     // wait 5 second before closing toaster by force if user does not closes
-    await sleep(5000);
-    progressToat.clear();
+    // await sleep(5000);
+    // fileContentProgressToast.clear();
   }, []);
 
   return (

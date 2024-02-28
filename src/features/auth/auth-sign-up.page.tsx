@@ -54,7 +54,7 @@ export const AuthSignUpPage = (): React.JSX.Element => {
       <Button
         icon={showPassword ? 'unlock' : 'lock'}
         intent={Intent.WARNING}
-        minimal={true}
+        minimal
         onClick={() => setShowPassword(e => !e)}
       />
     </Tooltip>
@@ -65,7 +65,7 @@ export const AuthSignUpPage = (): React.JSX.Element => {
       <H2>Sign up</H2>
       <br />
 
-      <ControlGroup fill={true} vertical={true} style={{ width: '500px' }}>
+      <ControlGroup fill vertical style={{ width: '500px' }}>
         <FormGroup label="Email" labelInfo="(required)">
           <InputGroup
             intent={userForm.errors.email && showErrorMessage ? Intent.DANGER : Intent.NONE}
@@ -148,7 +148,7 @@ export const AuthSignUpPage = (): React.JSX.Element => {
           <HTMLSelect
             options={['Enter gender please', ...Object.values(Gender)]}
             className={userForm.errors.gender && showErrorMessage ? 'danger-select' : ''}
-            fill={true}
+            fill
             name={userFormFields.gender}
             value={userForm.values.gender}
             onChange={userForm.handleChange}
@@ -164,10 +164,10 @@ export const AuthSignUpPage = (): React.JSX.Element => {
             value={userForm.values.birthDate}
             onChange={value => userForm.setFieldValue(userFormFields.birthDate, value)}
             dateFnsFormat="dd/MM/yyyy"
-            showActionsBar={true}
+            showActionsBar
             minDate={moment().subtract(100, 'year').toDate()}
             maxDate={moment().toDate()}
-            highlightCurrentDay={true}
+            highlightCurrentDay
             closeOnSelection={false}
             popoverProps={{ placement: 'bottom' }}
             rightElement={<Icon icon="globe" intent="primary" style={{ padding: '7px 5px' }} />}

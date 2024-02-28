@@ -1,19 +1,42 @@
 import { OverlayToaster, Position } from '@blueprintjs/core';
+import { createRoot } from 'react-dom/client';
 
-const AuthToaster = OverlayToaster.create({
-  className: 'global toast',
-  position: Position.TOP_RIGHT,
-});
+export const [fileContentProgressToast, globalCenterToast, globalTopRightToast] = await Promise.all(
+  [
+    OverlayToaster.createAsync(
+      {
+        canEscapeKeyClear: false,
+        position: Position.BOTTOM_RIGHT,
+        autoFocus: false,
+      },
+      {
+        domRenderer: (toastr, containerEl) => createRoot(containerEl).render(toastr),
+      }
+    ),
+    OverlayToaster.createAsync(
+      {
+        canEscapeKeyClear: false,
+        autoFocus: true,
+      },
+      {
+        domRenderer: (toastr, containerEl) => createRoot(containerEl).render(toastr),
+      }
+    ),
 
-const CenterToast = OverlayToaster.create({
-  className: 'global center toast',
-  canEscapeKeyClear: false,
-  autoFocus: true,
-});
+    OverlayToaster.createAsync(
+      {
+        position: Position.TOP_RIGHT,
+      },
+      {
+        domRenderer: (toastr, containerEl) => createRoot(containerEl).render(toastr),
+      }
+    ),
+  ]
+);
 
 export const toast = Object.freeze({
   error(message: string) {
-    AuthToaster.show({
+    globalTopRightToast.show({
       message,
       intent: 'danger',
       icon: 'warning-sign',
@@ -22,7 +45,7 @@ export const toast = Object.freeze({
   },
 
   showDefaultMessage(message: string) {
-    CenterToast.show({
+    globalCenterToast.show({
       message,
       intent: 'primary',
       icon: 'warning-sign',

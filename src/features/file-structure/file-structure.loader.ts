@@ -1,5 +1,6 @@
 import { LoaderFunctionArgs, redirect } from 'react-router-dom';
 import { FileStructureApiService, getQueryParams, ioc, isUUID } from '../../shared';
+import { SharedController } from '../shared/state/shared.controller';
 
 /**
  * @description
@@ -23,34 +24,27 @@ export const fileStructureLoader = async (_args: LoaderFunctionArgs) => {
   }
 
   const fileStructureApiService = ioc.getContainer().get(FileStructureApiService);
+  const sharedController = ioc.getContainer().get(SharedController);
 
   // 3. if id is root handle root api call
   if (id === 'root') {
-    const { data, error } = await fileStructureApiService.getRoot();
+    const { data, error } = await fileStructureApiService.getOnlyRoot();
 
-    //TODO uncomment this part when root call will be resolved and development will be done
-    if (error) {
-      console.log('='.repeat(20));
-      console.log(error);
-      // throw new Error('Sorry, something went wrong, pleas contact support');
+    if (error || !data) {
+      throw new Error('Sorry, something went wrong, pleas contact support');
     }
 
-    console.log('='.repeat(20) + '[Root data]');
-    console.log(data);
+    sharedController.setActiveFileStructureInBody(data);
 
-    //TODO handle root response
-    return 'ok';
+    return data;
   }
 
   // 4. else handle get by id of file structure item
   const { data, error } = await fileStructureApiService.getById(id);
 
-  if (error) {
+  if (error || !data) {
     throw new Error('Could not find item');
   }
 
-  console.log('='.repeat(20) + '+++');
-  console.log(data);
-
-  return 'ok';
+  return data;
 };

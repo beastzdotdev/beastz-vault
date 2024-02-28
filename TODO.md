@@ -43,3 +43,7 @@ TODO checkout how does it look on windows
 TODO right now each file size will be restricted only to fixed size than it will be increased
 
 TODO calculate upload time (approximate) https://www.google.com/search?q=how+does+drive+calculate+upload+time&oq=how+does+drive+calculate+upload+time&gs_lcrp=EgZjaHJvbWUyCQgAEEUYORigATIHCAEQIRigATIHCAIQIRigATIHCAMQIRifBTIHCAQQIRifBTIHCAUQIRifBdIBCDg5MjVqMGoxqAIAsAIA&sourceid=chrome&ie=UTF-8
+
+
+
+TODO create intro website and could use this lib: https://ui.aceternity.com/components
