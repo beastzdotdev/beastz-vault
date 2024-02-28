@@ -251,7 +251,7 @@ export const Sidebar = observer(() => {
 
           <div className="my-5"></div>
 
-          <div className="">
+          <div>
             <ButtonGroup
               fill
               minimal
