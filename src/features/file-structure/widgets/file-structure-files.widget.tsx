@@ -1,4 +1,14 @@
-import { Button, Icon, Menu, MenuDivider, MenuItem, Popover } from '@blueprintjs/core';
+import {
+  Button,
+  Icon,
+  Intent,
+  Menu,
+  MenuDivider,
+  MenuItem,
+  NonIdealState,
+  NonIdealStateIconSize,
+  Popover,
+} from '@blueprintjs/core';
 import { FileMimeType } from '../../../shared/enum/file-mimte-type.enum';
 import { observer } from 'mobx-react-lite';
 import { useInjection } from 'inversify-react';
@@ -145,38 +155,49 @@ export const FileStructureFilesWidget = observer((): React.JSX.Element => {
 
   return (
     <div className="gorilla-file-structure">
-      {sharedStore.activeFileStructureInBody.map(e => {
-        return (
-          <FileStuructureFileItem
-            {...e}
-            userName="Me"
-            key={e.id}
-            onSelected={id => sharedController.setIsSelectedInActiveFSPage(id)}
-            onDoubleClick={value => {
-              const { id, isFile, rootParentId, parentId } = value;
+      {sharedStore.activeFileStructureInBody.length ? (
+        sharedStore.activeFileStructureInBody.map(e => {
+          return (
+            <FileStuructureFileItem
+              {...e}
+              userName="Me"
+              key={e.id}
+              onSelected={id => sharedController.setIsSelectedInActiveFSPage(id)}
+              onDoubleClick={value => {
+                const { id, isFile, rootParentId } = value;
 
-              if (isFile) {
-                //TODO do stuff for file
-                return;
-              }
+                if (isFile) {
+                  //TODO do stuff for file
+                  return;
+                }
 
-              const redirectUrlObj = new URL(window.location.href);
-              redirectUrlObj.searchParams.set('id', id.toString());
-              redirectUrlObj.searchParams.set(
-                'root_parent_id',
-                rootParentId ? rootParentId.toString() : id.toString()
-              );
-              redirectUrlObj.searchParams.set(
-                'parent_id',
-                parentId ? parentId.toString() : id.toString()
-              );
-              const redirectUrl = redirectUrlObj.pathname + redirectUrlObj.search;
+                const redirectUrlObj = new URL(window.location.href);
+                redirectUrlObj.searchParams.set('id', id.toString());
+                redirectUrlObj.searchParams.set(
+                  'root_parent_id',
+                  rootParentId ? rootParentId.toString() : id.toString()
+                );
+                const redirectUrl = redirectUrlObj.pathname + redirectUrlObj.search;
 
-              navigate(redirectUrl);
-            }}
-          />
-        );
-      })}
+                navigate(redirectUrl);
+              }}
+            />
+          );
+        })
+      ) : (
+        <NonIdealState
+          className="mt-16"
+          title="No folder found"
+          icon="search"
+          description="Looks like there were no folder or files found in this directory"
+          action={
+            <Button onClick={() => navigate(-1)} intent={Intent.PRIMARY} minimal outlined>
+              Go back
+            </Button>
+          }
+          iconSize={NonIdealStateIconSize.STANDARD}
+        />
+      )}
     </div>
   );
 });

@@ -1,10 +1,8 @@
 import { TreeNodeInfo, Tree } from '@blueprintjs/core';
 import { useCallback, useEffect, useReducer } from 'react';
-import { useLocation } from 'react-router-dom';
-import { router } from '../router';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-type NodeCustomData = { link: string | null };
-type SidebarNodeInfo = TreeNodeInfo<NodeCustomData>;
+type SidebarNodeInfo = TreeNodeInfo<{ link?: string; isFile: boolean }>;
 
 type ReactClick = React.MouseEvent<HTMLElement>;
 type NodePath = number[];
@@ -35,7 +33,8 @@ const forEachNodeFindByUrl = (nodes: SidebarNodeInfo[] | undefined, path: string
   }
 
   for (const node of nodes) {
-    if (node.nodeData?.link?.startsWith(path)) {
+    // if (node.nodeData?.link?.startsWith(path)) { // <- can be used later
+    if (node.nodeData?.link === path) {
       node.isSelected = true;
       return;
     }
@@ -69,10 +68,10 @@ function treeExampleReducer(state: SidebarNodeInfo[], action: TreeAction) {
 
 export const SidebarTree = (params: { state: SidebarNodeInfo[] }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [nodes, dispatch] = useReducer(treeExampleReducer, params.state);
 
-  // listen to route changes
-  useEffect(() => {
+  const revalidateTreeSelectionStatus = useCallback(() => {
     dispatch({
       type: 'DESELECT_ALL',
     });
@@ -81,12 +80,20 @@ export const SidebarTree = (params: { state: SidebarNodeInfo[] }) => {
       return;
     }
 
+    const z = location.search ? location.pathname + location.search : location.pathname;
+
     dispatch({
       type: 'SELECT_ON_ROUTE_CHANGE',
-      payload: { path: location.pathname },
+      payload: { path: z },
     });
   }, [location]);
 
+  // listen to route changes
+  useEffect(() => {
+    revalidateTreeSelectionStatus();
+  }, [revalidateTreeSelectionStatus]);
+
+  // listen to state change from parent
   useEffect(() => {
     dispatch({
       type: 'UPDATE_STATE',
@@ -94,13 +101,13 @@ export const SidebarTree = (params: { state: SidebarNodeInfo[] }) => {
         data: params.state,
       },
     });
-  }, [params.state]);
+
+    revalidateTreeSelectionStatus();
+  }, [params.state, revalidateTreeSelectionStatus]);
 
   const handleNodeClick = useCallback(
     (node: SidebarNodeInfo, nodePath: NodePath, _e: ReactClick) => {
       const nodeData = node.nodeData;
-
-      //TODO check if is file and if file redirect
 
       dispatch({
         type: 'DESELECT_ALL',
@@ -110,11 +117,30 @@ export const SidebarTree = (params: { state: SidebarNodeInfo[] }) => {
         type: 'SET_IS_SELECTED',
       });
 
-      if (nodeData && nodeData.link && location.pathname != nodeData.link) {
-        router.navigate(nodeData.link);
+      if (nodeData?.isFile) {
+        //TODO check if is file and if file show popup just like in root page on double click
+        return;
+      }
+
+      if (nodeData && nodeData.link) {
+        const existingLocation = window.location;
+
+        const nodeDataUrlObj = new URL(existingLocation.origin + nodeData.link);
+        const existingUrlObj = new URL(existingLocation.href);
+
+        // this means node data click happens on same page
+        if (
+          nodeDataUrlObj.searchParams.get('id') === existingUrlObj.searchParams.get('id') &&
+          nodeDataUrlObj.searchParams.get('root_parent_id') ===
+            existingUrlObj.searchParams.get('root_parent_id')
+        ) {
+          return;
+        }
+
+        navigate(nodeData.link);
       }
     },
-    [location.pathname]
+    [navigate]
   );
 
   const handleNodeCollapse = useCallback((_node: SidebarNodeInfo, nodePath: NodePath) => {

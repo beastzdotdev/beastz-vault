@@ -16,14 +16,8 @@ export class SharedController {
   @Inject(FileStructureApiService)
   private readonly fileStructureApiService: FileStructureApiService;
 
-  async createFolder(name: string) {
-    const { data, error } = await this.fileStructureApiService.createFolder({
-      name,
-
-      //TODO
-      // parentId,
-      // rootParentId
-    });
+  async createFolder(params: { name: string; parentId?: number; rootParentId?: number }) {
+    const { data, error } = await this.fileStructureApiService.createFolder(params);
 
     if (error || !data) {
       console.log('='.repeat(20));
@@ -47,6 +41,16 @@ export class SharedController {
     });
 
     this.sharedStore.activeFileStructureInBody = newArr;
+  }
+
+  setActiveFileStructureInRoot(value: BasicFileStructureResponseDto[]) {
+    const newArr = plainToInstance(ActiveFileStructure, value);
+
+    newArr.forEach(e => {
+      e.setExtraParams({ isSelected: false });
+    });
+
+    this.sharedStore.activeFileStructureInRoot = newArr;
   }
 
   setIsSelectedInActiveFSPage(id: number) {

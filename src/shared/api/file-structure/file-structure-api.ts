@@ -23,9 +23,11 @@ export class FileStructureApiService {
     }
   }
 
-  async getContentById(id: string): Promise<AxiosApiResponse<BasicFileStructureResponseDto[]>> {
+  async getContentByParentId(
+    parentId: string
+  ): Promise<AxiosApiResponse<BasicFileStructureResponseDto[]>> {
     try {
-      const result = await api.get(`file-structure/content/${id}`);
+      const result = await api.get(`file-structure/content/${parentId}`);
 
       return {
         data: plainToInstance<BasicFileStructureResponseDto, BasicFileStructureResponseDto>(

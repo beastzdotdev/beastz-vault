@@ -32,7 +32,15 @@ export const CreateFolderDialogWidget = ({
     validateOnChange: true,
     validationSchema: zodFormikErrorAdapter(verifyFolderNameInput),
     onSubmit: async (values, { resetForm }) => {
-      await sharedController.createFolder(values.folderName);
+      const urlObj = new URL(window.location.href);
+      const rootParentId = urlObj.searchParams.get('root_parent_id');
+      const parentId = urlObj.searchParams.get('id');
+
+      await sharedController.createFolder({
+        name: values.folderName,
+        parentId: parentId ? parseInt(parentId) : undefined,
+        rootParentId: rootParentId ? parseInt(rootParentId) : undefined,
+      });
 
       resetForm();
       setIsOpen(false);
@@ -49,7 +57,6 @@ export const CreateFolderDialogWidget = ({
         canOutsideClickClose
         canEscapeKeyClose
         shouldReturnFocusOnClose
-        autoFocus
       >
         <DialogBody>
           <FormGroup>

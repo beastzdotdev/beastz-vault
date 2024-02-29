@@ -6,6 +6,7 @@ import { ActiveFileStructure } from './shared.type';
 export class SharedStore {
   private _shouldRender: boolean;
   private _activeFileStructureInBody: ActiveFileStructure[];
+  private _activeFileStructureInRoot: ActiveFileStructure[];
 
   constructor() {
     makeAutoObservable(this);
@@ -29,5 +30,12 @@ export class SharedStore {
 
   set activeFileStructureInBody(value: ActiveFileStructure[]) {
     this._activeFileStructureInBody = value;
+  }
+
+  get activeFileStructureInRoot(): ActiveFileStructure[] {
+    return this._activeFileStructureInRoot;
+  }
+  set activeFileStructureInRoot(value: ActiveFileStructure[]) {
+    this._activeFileStructureInRoot = value;
   }
 }

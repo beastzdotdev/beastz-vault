@@ -1,16 +1,4 @@
-import { v4 as uuid } from 'uuid';
-import {
-  TreeNodeInfo,
-  ContextMenu,
-  Tooltip,
-  Button,
-  ButtonGroup,
-  Menu,
-  MenuDivider,
-  MenuItem,
-  Popover,
-  Icon,
-} from '@blueprintjs/core';
+import { Button, ButtonGroup, Menu, MenuDivider, MenuItem, Popover, Icon } from '@blueprintjs/core';
 import logo from '../../../assets/images/profile/doodle-man-1.svg';
 import { useRef, useState } from 'react';
 import { SidebarTree } from '../../../widgets/sidebar-tree';
@@ -24,70 +12,68 @@ import { observer } from 'mobx-react-lite';
 import { useInjection } from 'inversify-react';
 import { SharedStore } from '../state/shared.store';
 
-type SidebarNodeInfo = TreeNodeInfo<{ link: string | null }>;
+// const INITIAL_STATE: SidebarNodeInfo[] = [
+//   {
+//     id: 0,
+//     icon: 'folder-close',
+//     label: 'Folder -1',
+//     childNodes: [],
+//   },
+//   {
+//     id: 1,
+//     icon: 'folder-close',
+//     label: 'Folder 0',
+//     childNodes: [
+//       // eslint-disable-next-line no-constant-condition
+//       ...(1 >= 1
+//         ? Array.from({ length: 20 }, () => ({
+//             id: uuid(),
+//             icon: 'document' as const,
+//             label: uuid(),
+//           }))
+//         : []),
+//     ],
+//   },
 
-const INITIAL_STATE: SidebarNodeInfo[] = [
-  {
-    id: 0,
-    icon: 'folder-close',
-    label: 'Folder -1',
-    childNodes: [],
-  },
-  {
-    id: 1,
-    icon: 'folder-close',
-    label: 'Folder 0',
-    childNodes: [
-      // eslint-disable-next-line no-constant-condition
-      ...(1 >= 1
-        ? Array.from({ length: 20 }, () => ({
-            id: uuid(),
-            icon: 'document' as const,
-            label: uuid(),
-          }))
-        : []),
-    ],
-  },
+//   {
+//     id: 2,
+//     icon: 'folder-close',
+//     isExpanded: false,
+//     label: 'Folder 1',
+//     nodeData: {
+//       link: '/profile',
+//     },
+//     childNodes: [
+//       {
+//         id: 1,
+//         icon: 'document',
+//         label: 'Something.txt',
+//       },
+//       {
+//         id: 2,
+//         icon: 'document',
+//         label: 'Profile-backup.jpg',
+//       },
 
-  {
-    id: 2,
-    icon: 'folder-close',
-    isExpanded: false,
-    label: 'Folder 1',
-    nodeData: {
-      link: '/profile',
-    },
-    childNodes: [
-      {
-        id: 1,
-        icon: 'document',
-        label: 'Something.txt',
-      },
-      {
-        id: 2,
-        icon: 'document',
-        label: 'Profile-backup.jpg',
-      },
-
-      {
-        id: 3,
-        label: 'Something',
-      },
-      {
-        id: 4,
-        hasCaret: true,
-        icon: 'folder-close',
-        label: (
-          <ContextMenu content={<div>Hello there!</div>}>
-            <Tooltip content="foo" placement="right">
-              Folder 2
-            </Tooltip>
-          </ContextMenu>
-        ),
-      },
-    ],
-  },
-];
+//       {
+//         id: 3,
+//         label: 'Something',
+//       },
+//       {
+//         id: 4,
+//         hasCaret: true,
+//         icon: 'folder-close',
+//         label: (
+//           <ContextMenu content={<div>Hello there!</div>}>
+//             <Tooltip content="foo" placement="right">
+//               Folder 2
+//             </Tooltip>
+//           </ContextMenu>
+//         ),
+//       },
+//     ],
+//   },
+// ];
 
 // const INITIAL_STATE2: SidebarNodeInfo[] = [
 //   {
@@ -117,7 +103,7 @@ const INITIAL_STATE: SidebarNodeInfo[] = [
 
 export const Sidebar = observer(() => {
   const { sidebarRef, sidebarWidth, startResizing } = useResize();
-  const [showBookmarks, setShowBookmarks] = useState(true);
+  // const [showBookmarks, setShowBookmarks] = useState(true);
   const [showFiles, setShowFiles] = useState(true);
   const fileUploadRef = useRef<HTMLInputElement>(null);
   const folderUploadRef = useRef<HTMLInputElement>(null);
@@ -215,14 +201,14 @@ export const Sidebar = observer(() => {
         </div>
 
         <div className="flex-1 overflow-y-auto z-10">
-          <div
+          {/*TODO Bookmarks are temporary disabled */}
+          {/* <div
             className="hover:bg-zinc-800 active:bg-zinc-700 w-fit ml-3"
             onClick={() => setShowBookmarks(!showBookmarks)}
           >
             <p className="text-xs text-zinc-500 font-bold cursor-pointer">Bookmarks</p>
           </div>
-
-          {showBookmarks && <SidebarTree state={INITIAL_STATE} />}
+          {showBookmarks && <SidebarTree state={INITIAL_STATE} />} */}
 
           <div className="my-2"></div>
 
@@ -236,12 +222,26 @@ export const Sidebar = observer(() => {
           {showFiles && (
             <SidebarTree
               state={
-                sharedStore.activeFileStructureInBody?.map(e => ({
+                sharedStore.activeFileStructureInRoot?.map(e => ({
                   id: e.id,
                   icon: e.isFile ? 'document' : 'folder-close',
                   label: e.isFile ? e.title + e.fileExstensionRaw : e.title,
                   isExpanded: false,
                   childNodes: e.isFile ? undefined : [],
+                  ...(e.isFile
+                    ? {
+                        nodeData: {
+                          isFile: true,
+                        },
+                      }
+                    : {
+                        nodeData: {
+                          isFile: false,
+                          link: e.rootParentId
+                            ? `/file-structure?id=${e.id}&root_parent_id=${e.rootParentId}`
+                            : `/file-structure?id=${e.id}&root_parent_id=${e.id}`,
+                        },
+                      }),
                 })) ?? []
               }
             />
