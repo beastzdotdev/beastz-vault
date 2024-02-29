@@ -4,13 +4,13 @@ import { observer } from 'mobx-react-lite';
 import { useInjection } from 'inversify-react';
 import { SharedStore } from '../../shared/state/shared.store';
 import { SharedController } from '../../shared/state/shared.controller';
+import { useNavigate } from 'react-router-dom';
 
 interface FileStuructureFileItemParams {
   userName: string;
   isSelected: boolean;
   onSelected: (id: number) => void;
-
-  // date: string;
+  onDoubleClick: (value: FileStuructureFileItemParams) => void;
 
   id: number;
   path: string;
@@ -36,10 +36,7 @@ const FileStuructureFileItem = (params: FileStuructureFileItemParams): React.JSX
         params.isSelected ? 'gorilla-file-structure-item-selected' : ''
       }`}
       onClick={() => params.onSelected(params.id)}
-      onDoubleClick={() => {
-        console.log('='.repeat(20));
-        console.log('Double click');
-      }}
+      onDoubleClick={() => params.onDoubleClick(params)}
     >
       {/*//! width 100px behaves like min-width:100px */}
       <div className="flex items-center pl-3 pr-5 flex-grow w-[100px]">
@@ -144,6 +141,7 @@ const FileStuructureFileItem = (params: FileStuructureFileItemParams): React.JSX
 export const FileStructureFilesWidget = observer((): React.JSX.Element => {
   const sharedStore = useInjection(SharedStore);
   const sharedController = useInjection(SharedController);
+  const navigate = useNavigate();
 
   return (
     <div className="gorilla-file-structure">
@@ -154,6 +152,28 @@ export const FileStructureFilesWidget = observer((): React.JSX.Element => {
             userName="Me"
             key={e.id}
             onSelected={id => sharedController.setIsSelectedInActiveFSPage(id)}
+            onDoubleClick={value => {
+              const { id, isFile, rootParentId, parentId } = value;
+
+              if (isFile) {
+                //TODO do stuff for file
+                return;
+              }
+
+              const redirectUrlObj = new URL(window.location.href);
+              redirectUrlObj.searchParams.set('id', id.toString());
+              redirectUrlObj.searchParams.set(
+                'root_parent_id',
+                rootParentId ? rootParentId.toString() : id.toString()
+              );
+              redirectUrlObj.searchParams.set(
+                'parent_id',
+                parentId ? parentId.toString() : id.toString()
+              );
+              const redirectUrl = redirectUrlObj.pathname + redirectUrlObj.search;
+
+              navigate(redirectUrl);
+            }}
           />
         );
       })}

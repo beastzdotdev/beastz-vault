@@ -12,7 +12,8 @@ type TreeAction =
   | { type: 'SET_IS_EXPANDED'; payload: { path: NodePath; isExpanded: boolean } }
   | { type: 'DESELECT_ALL' }
   | { type: 'SET_IS_SELECTED'; payload: { path: NodePath; isSelected: boolean } }
-  | { type: 'SELECT_ON_ROUTE_CHANGE'; payload: { path: string } };
+  | { type: 'SELECT_ON_ROUTE_CHANGE'; payload: { path: string } }
+  | { type: 'UPDATE_STATE'; payload: { data: SidebarNodeInfo[] } };
 
 const forEachNode = (
   nodes: SidebarNodeInfo[] | undefined,
@@ -59,6 +60,8 @@ function treeExampleReducer(state: SidebarNodeInfo[], action: TreeAction) {
     case 'SELECT_ON_ROUTE_CHANGE':
       forEachNodeFindByUrl(newState, action.payload.path);
       break;
+    case 'UPDATE_STATE':
+      return action.payload.data;
   }
 
   return newState;
@@ -83,6 +86,15 @@ export const SidebarTree = (params: { state: SidebarNodeInfo[] }) => {
       payload: { path: location.pathname },
     });
   }, [location]);
+
+  useEffect(() => {
+    dispatch({
+      type: 'UPDATE_STATE',
+      payload: {
+        data: params.state,
+      },
+    });
+  }, [params.state]);
 
   const handleNodeClick = useCallback(
     (node: SidebarNodeInfo, nodePath: NodePath, _e: ReactClick) => {

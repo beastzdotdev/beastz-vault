@@ -23,6 +23,22 @@ export class FileStructureApiService {
     }
   }
 
+  async getContentById(id: string): Promise<AxiosApiResponse<BasicFileStructureResponseDto[]>> {
+    try {
+      const result = await api.get(`file-structure/content/${id}`);
+
+      return {
+        data: plainToInstance<BasicFileStructureResponseDto, BasicFileStructureResponseDto>(
+          BasicFileStructureResponseDto,
+          result.data,
+          { enableImplicitConversion: true }
+        ),
+      };
+    } catch (e: unknown) {
+      return { error: e as ClientApiError };
+    }
+  }
+
   async getById(id: string): Promise<AxiosApiResponse<BasicFileStructureResponseDto>> {
     try {
       const result = await api.get(`file-structure/${id}`);

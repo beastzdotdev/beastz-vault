@@ -1,5 +1,5 @@
 import { LoaderFunctionArgs, redirect } from 'react-router-dom';
-import { FileStructureApiService, getQueryParams, ioc, isUUID } from '../../shared';
+import { FileStructureApiService, getQueryParams, ioc } from '../../shared';
 import { SharedController } from '../shared/state/shared.controller';
 
 /**
@@ -7,11 +7,19 @@ import { SharedController } from '../shared/state/shared.controller';
  * ! Here _args.request.url will definitely have pathname of /file-structure so no need to check that
  */
 export const fileStructureLoader = async (_args: LoaderFunctionArgs) => {
-  const queryParams = getQueryParams<{ id?: string }>(_args.request.url);
-  const id = queryParams.id;
+  const queryParams = getQueryParams<{ id?: string; root_parent_id?: number; parent_id?: number }>(
+    _args.request.url
+  );
+  const { id, parent_id: parentId, root_parent_id: rootParentId } = queryParams;
+
+  // only id and id === root
+  // all three and id is not root
+
+  const correctRouteParams =
+    (id && id === 'root') || (id && parentId && rootParentId && id !== 'root');
 
   // 1. Validate url query parameters
-  if (id && id !== 'root' && !isUUID(id)) {
+  if (!correctRouteParams) {
     throw new Error(); // router will handle this error
   }
 
@@ -35,16 +43,19 @@ export const fileStructureLoader = async (_args: LoaderFunctionArgs) => {
     }
 
     sharedController.setActiveFileStructureInBody(data);
-
-    return data;
+    return 'ok';
   }
 
   // 4. else handle get by id of file structure item
-  const { data, error } = await fileStructureApiService.getById(id);
+  const { data, error } = await fileStructureApiService.getContentById(id);
+
+  console.log('='.repeat(20));
+  console.log(data);
 
   if (error || !data) {
-    throw new Error('Could not find item');
+    throw new Error('Could not find folder');
   }
 
-  return data;
+  sharedController.setActiveFileStructureInBody(data);
+  return 'ok';
 };

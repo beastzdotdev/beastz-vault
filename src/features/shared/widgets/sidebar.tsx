@@ -89,31 +89,31 @@ const INITIAL_STATE: SidebarNodeInfo[] = [
   },
 ];
 
-const INITIAL_STATE2: SidebarNodeInfo[] = [
-  {
-    id: 0,
-    icon: 'folder-close',
-    label: 'Some stuff',
-    childNodes: [],
-    isExpanded: false,
-  },
-  {
-    id: 1,
-    icon: 'folder-close',
-    label: 'Misc',
-    childNodes: [],
-    isExpanded: false,
-  },
-  {
-    id: 2,
-    icon: 'folder-close',
-    isExpanded: false,
-    label: 'Interseting stuff',
-    nodeData: {
-      link: '/xprofile',
-    },
-  },
-];
+// const INITIAL_STATE2: SidebarNodeInfo[] = [
+//   {
+//     id: 0,
+//     icon: 'folder-close',
+//     label: 'Some stuff',
+//     childNodes: [],
+//     isExpanded: false,
+//   },
+//   {
+//     id: 1,
+//     icon: 'folder-close',
+//     label: 'Misc',
+//     childNodes: [],
+//     isExpanded: false,
+//   },
+//   {
+//     id: 2,
+//     icon: 'folder-close',
+//     isExpanded: false,
+//     label: 'Interseting stuff',
+//     nodeData: {
+//       link: '/xprofile',
+//     },
+//   },
+// ];
 
 export const Sidebar = observer(() => {
   const { sidebarRef, sidebarWidth, startResizing } = useResize();
@@ -233,8 +233,6 @@ export const Sidebar = observer(() => {
             <p className="text-xs text-zinc-500 font-bold cursor-pointer">Files</p>
           </div>
 
-          {/* //TODO needs some work */}
-          {/* {showFiles && <SidebarTree state={INITIAL_STATE2} />} */}
           {showFiles && (
             <SidebarTree
               state={
