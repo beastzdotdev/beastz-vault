@@ -1,3 +1,4 @@
+import { v4 as uuid } from 'uuid';
 /**
  * @description WBK for making obvious that it was created from browser webkitRelativePath
  *              and not from the backend file entities
@@ -10,6 +11,8 @@ export enum WBKFileType {
 }
 
 export type WBKTreeNode = {
+  generatedId: string;
+  generatedParentId: string | null;
   name: string;
   path: string;
   type: WBKFileType;
@@ -26,10 +29,12 @@ export const buildWBKTree = (files: FileList): { data: WBKTreeNode[]; totalLengt
 
   for (const file of files) {
     const pathParts = file.webkitRelativePath.split('/');
-    let currentNode = tree.find(node => node.name === pathParts[0]);
+    let currentNode = tree.find(node => node.name === pathParts[0]); // creates root folder
 
     if (!currentNode) {
       currentNode = {
+        generatedId: uuid(),
+        generatedParentId: null,
         name: pathParts[0],
         path: '/' + pathParts[0],
         type: WBKFileType.FOLDER,
@@ -52,6 +57,8 @@ export const buildWBKTree = (files: FileList): { data: WBKTreeNode[]; totalLengt
         const type = isLastPart ? WBKFileType.FILE : WBKFileType.FOLDER;
 
         existingNode = {
+          generatedId: uuid(),
+          generatedParentId: currentNode?.generatedId ?? null,
           name: part,
           path: currentNode.path + '/' + part,
           type,
@@ -60,7 +67,6 @@ export const buildWBKTree = (files: FileList): { data: WBKTreeNode[]; totalLengt
         };
 
         currentNode.children?.push(existingNode);
-
         totalLength++;
       }
 

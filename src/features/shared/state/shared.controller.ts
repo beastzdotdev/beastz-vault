@@ -30,6 +30,7 @@ export class SharedController {
       isSelected: false,
     });
 
+    //TODO i think here needs adjustmants whether if root than activeInRoot must be updated as well e.g. pushed
     this.sharedStore.addActiveFileStructureInBody(newData);
   }
 
