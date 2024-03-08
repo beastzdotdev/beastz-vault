@@ -1,9 +1,13 @@
 import { ToastProps, Intent, Spinner, Card, CardList, Icon, Button } from '@blueprintjs/core';
 import { v4 as uuid } from 'uuid';
-import { ChangeEvent, useCallback } from 'react';
+import { ChangeEvent, useCallback, useState } from 'react';
 import { validateFileSize } from '../helper/validate-file';
 import { FileStructureApiService, fileContentProgressToast, sleep } from '../../../shared';
 import { useInjection } from 'inversify-react';
+import { getFileStructureUrlParams } from '../helper/get-url-params';
+import { DuplicateNameDialogWidget } from './duplicate-name-dialog/duplicate-name-dialog';
+import { FileUploadAtomicStore } from './file-upload-atomic-store';
+import { observer } from 'mobx-react-lite';
 
 const progressToastProps: Omit<ToastProps, 'message'> = {
   className: 'only-for-file-upload',
@@ -12,26 +16,20 @@ const progressToastProps: Omit<ToastProps, 'message'> = {
   timeout: 10000000,
 };
 
-export const FileUploadItem = ({
-  inputRef,
-}: {
-  inputRef: React.RefObject<HTMLInputElement>;
-}): React.JSX.Element => {
-  const fileStructureApiService = useInjection(FileStructureApiService);
+export const FileUploadItem = observer(
+  ({ inputRef }: { inputRef: React.RefObject<HTMLInputElement> }): React.JSX.Element => {
+    const fileStructureApiService = useInjection(FileStructureApiService);
+    const fileUploadAtomicStore = useInjection(FileUploadAtomicStore);
+    const [isDuplicateNameDialogOpen, setDuplicateNameDialogOpen] = useState(false);
 
-  const onFileUploadChange = useCallback(
-    async (e: ChangeEvent<HTMLInputElement>) => {
-      // dissmiss previous toasts
-      fileContentProgressToast.clear();
-
-      const files = e.currentTarget.files;
-
-      if (!validateFileSize(files)) {
+    const start = useCallback(async () => {
+      if (!fileUploadAtomicStore.data.length) {
         return;
       }
 
-      const data = Array.from(files).map(file => ({ id: uuid(), file }));
-      const totalLength = files.length;
+      const totalLength = fileUploadAtomicStore.data.length;
+
+      const { parentId, rootParentId } = getFileStructureUrlParams();
 
       const key = fileContentProgressToast.show({
         message: (
@@ -43,7 +41,7 @@ export const FileUploadItem = ({
             </div>
 
             <CardList bordered={false} compact style={{ maxHeight: '225px' }}>
-              {data.map(e => (
+              {fileUploadAtomicStore.data.map(e => (
                 <Card interactive={false} className="flex justify-between" key={e.id}>
                   <p>{e.file.name}</p>
                   <Spinner size={20} intent={Intent.PRIMARY} className="ml-5" />
@@ -63,7 +61,7 @@ export const FileUploadItem = ({
       let totalUploadCount = 0;
 
       // start batch upload
-      for (const obj of data) {
+      for (const obj of fileUploadAtomicStore.data) {
         queue.push(obj);
 
         if (
@@ -71,16 +69,19 @@ export const FileUploadItem = ({
           (reminder !== 0 && totalUploadCount === totalLength - reminder)
         ) {
           for (const queueItem of queue) {
-            console.log('='.repeat(20));
-            console.log(queueItem.file);
+            const foundItem = fileUploadAtomicStore.duplicates.find(
+              e => e.title === queueItem.file.name
+            );
 
-            //TODO this will create on root for now but later we must use url to determine if this has parent
-            const { data, error } = await fileStructureApiService.uploadFile({
+            const { error } = await fileStructureApiService.uploadFile({
               file: queueItem.file,
-            });
 
-            console.log('='.repeat(20));
-            console.log(data);
+              // if file does not have duplicate then does not matter what modal duplicate choice says
+              // we need to send replace because new file is created
+              keepBoth: !foundItem?.hasDuplicate ? false : fileUploadAtomicStore.keepBoth,
+              parentId,
+              rootParentId,
+            });
 
             finishedUploadedFiles.push({
               id: queueItem.id,
@@ -102,7 +103,7 @@ export const FileUploadItem = ({
                   </div>
 
                   <CardList bordered={false} compact style={{ maxHeight: '225px' }}>
-                    {data.map(e => (
+                    {fileUploadAtomicStore.data.map(e => (
                       <Card interactive={false} className="flex justify-between" key={e.id}>
                         <p>{e.file.name}</p>
 
@@ -154,7 +155,7 @@ export const FileUploadItem = ({
               </div>
 
               <CardList bordered={false} compact style={{ maxHeight: '225px' }}>
-                {data.map(e => (
+                {fileUploadAtomicStore.data.map(e => (
                   <Card interactive={false} className="flex justify-between" key={e.id}>
                     <p>{e.file.name}</p>
 
@@ -177,26 +178,84 @@ export const FileUploadItem = ({
       );
 
       // reset value so that same file triggers upload
-      e.target.value = '';
+      if (inputRef.current) {
+        inputRef.current.value = '';
+      }
 
       //! Uncomment bellow code if you want auto closing
       // wait 5 second before closing toaster by force if user does not closes
       // await sleep(5000);
       // fileUploadProgressToat.dismiss(key);
-    },
-    [fileStructureApiService]
-  );
+    }, [
+      fileStructureApiService,
+      fileUploadAtomicStore.data,
+      fileUploadAtomicStore.duplicates,
+      fileUploadAtomicStore.keepBoth,
+      inputRef,
+    ]);
 
-  return (
-    <>
-      <input
-        type="file"
-        name="file-upload"
-        className="hidden"
-        ref={inputRef}
-        onChange={onFileUploadChange}
-        multiple
-      />
-    </>
-  );
-};
+    const onFileUploadChange = useCallback(
+      async (e: ChangeEvent<HTMLInputElement>) => {
+        const { parentId } = getFileStructureUrlParams();
+
+        // dissmiss previous toasts
+        fileContentProgressToast.clear();
+
+        // reset state
+        fileUploadAtomicStore.resetState();
+
+        const tempFiles = e.currentTarget.files;
+
+        if (!validateFileSize(tempFiles)) {
+          return;
+        }
+
+        const data = Array.from(tempFiles).map(file => ({ id: uuid(), file }));
+
+        fileUploadAtomicStore.setFiles(data);
+
+        const { data: duplicateData, error } = await fileStructureApiService.detectDuplicate({
+          titles: data.map(e => e.file.name),
+          isFile: true,
+          parentId,
+        });
+
+        if (error) {
+          throw new Error('Something unexpected happend');
+        }
+
+        const hasAnyDuplicate = duplicateData?.some(e => e.hasDuplicate);
+
+        if (hasAnyDuplicate) {
+          fileUploadAtomicStore.setDuplicates(duplicateData ?? []);
+        }
+
+        // start process (dialog or straight upload) based on hasAnyDuplicate
+        hasAnyDuplicate ? setDuplicateNameDialogOpen(true) : await start();
+      },
+      [fileStructureApiService, fileUploadAtomicStore, start]
+    );
+
+    return (
+      <>
+        <DuplicateNameDialogWidget
+          isOpen={isDuplicateNameDialogOpen}
+          setIsOpen={setDuplicateNameDialogOpen}
+          callBack={async ({ keepBoth }) => {
+            fileUploadAtomicStore.setKeepBoth(keepBoth);
+            await start();
+          }}
+        />
+
+        <input
+          type="file"
+          name="file-upload"
+          className="hidden"
+          ref={inputRef}
+          onChange={onFileUploadChange}
+          multiple
+        />
+      </>
+    );
+  }
+);

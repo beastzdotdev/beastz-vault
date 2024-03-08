@@ -7,7 +7,7 @@ import { constants } from '../../../shared';
 import { useResize } from '../../../hooks/use-resize.hook';
 import { FileUploadItem } from './file-upload-item';
 import { FolderUploadItem } from './folder-upload-item';
-import { CreateFolderDialogWidget } from './create-folder/create-folder-dialog.widget';
+import { CreateFolderDialogWidget } from './create-folder-dialog/create-folder-dialog.widget';
 import { observer } from 'mobx-react-lite';
 import { useInjection } from 'inversify-react';
 import { SharedStore } from '../state/shared.store';
@@ -163,9 +163,6 @@ export const Sidebar = observer(() => {
                       text="Create"
                       icon="folder-new"
                       onClick={() => {
-                        console.log('='.repeat(20));
-                        console.log(123);
-
                         setIsFolderCreateOpen(true);
                       }}
                     />

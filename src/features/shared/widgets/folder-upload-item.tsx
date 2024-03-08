@@ -9,6 +9,7 @@ import {
   fileContentProgressToast,
   sleep,
 } from '../../../shared';
+import { getFileStructureUrlParams } from '../helper/get-url-params';
 
 const progressToastProps: Omit<ToastProps, 'message'> = {
   isCloseButtonShown: false,
@@ -16,6 +17,8 @@ const progressToastProps: Omit<ToastProps, 'message'> = {
   intent: Intent.NONE,
   timeout: 10000000,
 };
+
+const maxCount = 3;
 
 export const FolderUploadItem = ({
   inputRef,
@@ -26,13 +29,6 @@ export const FolderUploadItem = ({
 
   const onFolderUploadChange = useCallback(
     async (e: ChangeEvent<HTMLInputElement>) => {
-      const urlObj = new URL(window.location.href);
-      const tempRootParentId = urlObj.searchParams.get('root_parent_id');
-      const tempParentId = urlObj.searchParams.get('id');
-
-      const rootParentId = tempRootParentId ? parseInt(tempRootParentId) : undefined;
-      const parentId = tempParentId ? parseInt(tempParentId) : undefined;
-
       // dissmiss previous toasts
       fileContentProgressToast.clear();
 
@@ -42,6 +38,7 @@ export const FolderUploadItem = ({
         return;
       }
 
+      const { parentId, rootParentId } = getFileStructureUrlParams();
       const { data: tree, totalLength } = buildWBKTree(files);
 
       const key = fileContentProgressToast.show({
@@ -49,7 +46,6 @@ export const FolderUploadItem = ({
         ...progressToastProps,
       });
 
-      const maxCount = 3;
       const reminder = totalLength % maxCount;
       const queue: WBKTreeNode[] = [];
       const completedUploaded: (BasicFileStructureResponseDto & {
@@ -58,77 +54,6 @@ export const FolderUploadItem = ({
       })[] = []; // this is flat list for uploaded items
 
       let totalUploadCount = 0;
-
-      // start batch upload (by bfs type upload)
-      // await wbkBreadthFirstSearch(data, async item => {
-      //   queue.push(item);
-
-      //   const foundParent = completedUploaded.find(e => e.generatedId === item.generatedParentId);
-      //   let completed: BasicFileStructureResponseDto | undefined = undefined;
-
-      //   // Upload to backend must happen before sleep
-      //   if (item.children?.length) {
-      //     const { data, error } = await fileStructureApiService.createFolder({
-      //       name: item.name,
-      //       rootParentId,
-      //       parentId: item.generatedParentId === null ? parentId : foundParent?.id,
-      //     });
-
-      //     if (error) {
-      //       console.log('='.repeat(20));
-      //       console.log(item);
-      //       console.log(error);
-      //     }
-
-      //     if (data) {
-      //       completed = data;
-      //     }
-      //   } else {
-      //     const { data, error } = await fileStructureApiService.uploadFile({
-      //       file: item.file!,
-      //       rootParentId: rootParentId ?? foundParent?.id,
-      //       parentId: foundParent?.id,
-      //     });
-
-      //     if (error) {
-      //       console.log('='.repeat(20));
-      //       console.log(item);
-      //       console.log(error);
-      //     }
-
-      //     if (data) {
-      //       completed = data;
-      //     }
-      //   }
-
-      //   if (completed) {
-      //     completedUploaded.push({
-      //       ...completed,
-      //       generatedId: item.generatedId,
-      //       generatedParentId: item.generatedParentId,
-      //     });
-      //   }
-
-      //   // This is needed in order for server to breathe a little
-      //   if (
-      //     queue.length === maxCount ||
-      //     (reminder !== 0 && totalUploadCount === totalLength - reminder)
-      //   ) {
-      //     await new Promise(f => setTimeout(f, 1000));
-
-      //     totalUploadCount += queue.length === maxCount ? maxCount : reminder;
-
-      //     fileContentProgressToast.show(
-      //       {
-      //         message: `${data[0].name}: ${totalUploadCount} of ${totalLength}`,
-      //         ...progressToastProps,
-      //       },
-      //       key
-      //     );
-
-      //     queue.length = 0;
-      //   }
-      // });
 
       const queueForBFS: WBKTreeNode[] = [];
       const visited: Set<string> = new Set();
@@ -143,9 +68,6 @@ export const FolderUploadItem = ({
         const currentNode = queueForBFS.shift()!;
 
         if (!visited.has(currentNode.path)) {
-          // Perform the desired operation on the current node (in this case, printing the path)
-          // console.log(currentNode.name + ': ' + currentNode.path);
-
           // If the current node has children, add them to the queueForBFS
           for (const child of currentNode.children || []) {
             queueForBFS.push(child);
@@ -154,9 +76,9 @@ export const FolderUploadItem = ({
           // Mark the current node as visited
           visited.add(currentNode.path);
 
-          //! start batch upload
           queue.push(currentNode);
 
+          //! Upload logic starts here
           const foundParent = completedUploaded.find(
             e => e.generatedId === currentNode.generatedParentId
           );
@@ -168,8 +90,13 @@ export const FolderUploadItem = ({
               name: currentNode.name,
               rootParentId: rootParentId ?? foundParent?.id,
               parentId: currentNode.generatedParentId === null ? parentId : foundParent?.id,
+
+              //TODO message left
+              //TODO fix keep both param sending both in folder upload and folder creation
+              keepBoth: false, //TODO fix this
             });
 
+            // FOr debug purposes only
             // await new Promise(f => setTimeout(f, 5000));
 
             if (error) {
@@ -186,6 +113,9 @@ export const FolderUploadItem = ({
               file: currentNode.file!,
               rootParentId: rootParentId ?? foundParent?.id,
               parentId: foundParent?.id,
+              // in folder upload file will always be inside or rather created first time
+              // so this params can always be false
+              keepBoth: false,
             });
 
             if (error) {

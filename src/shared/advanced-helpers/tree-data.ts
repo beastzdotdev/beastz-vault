@@ -80,6 +80,9 @@ export const buildWBKTree = (files: FileList): { data: WBKTreeNode[]; totalLengt
   };
 };
 
+/**
+ * @description For now this method is not used anywhere but it can be used in the future
+ */
 export const wbkBreadthFirstSearch = async (
   treeNodes: WBKTreeNode[],
   callback?: (currentNode: WBKTreeNode) => Promise<void>

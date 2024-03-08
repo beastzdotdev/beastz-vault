@@ -16,7 +16,12 @@ export class SharedController {
   @Inject(FileStructureApiService)
   private readonly fileStructureApiService: FileStructureApiService;
 
-  async createFolder(params: { name: string; parentId?: number; rootParentId?: number }) {
+  async createFolder(params: {
+    name: string;
+    parentId?: number;
+    rootParentId?: number;
+    keepBoth: boolean;
+  }) {
     const { data, error } = await this.fileStructureApiService.createFolder(params);
 
     if (error || !data) {

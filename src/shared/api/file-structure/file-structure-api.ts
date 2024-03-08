@@ -2,7 +2,10 @@ import { api } from '..';
 import { AxiosApiResponse } from '../../types';
 import { ClientApiError } from '../../errors/client-error.schema';
 import { Singleton } from '../../ioc';
-import { BasicFileStructureResponseDto } from './file-structure-api.schema';
+import {
+  BasicFileStructureResponseDto,
+  DetectDuplicateResponseDto,
+} from './file-structure-api.schema';
 import { plainToInstance } from 'class-transformer';
 
 @Singleton
@@ -55,8 +58,25 @@ export class FileStructureApiService {
     }
   }
 
+  async detectDuplicate(params: {
+    titles: string[];
+    parentId?: number;
+    isFile: boolean;
+  }): Promise<AxiosApiResponse<DetectDuplicateResponseDto[]>> {
+    try {
+      const result = await api.get(`file-structure/detect-duplicate`, { params });
+
+      return {
+        data: result.data,
+      };
+    } catch (e: unknown) {
+      return { error: e as ClientApiError };
+    }
+  }
+
   async uploadFile(params: {
     file: File;
+    keepBoth: boolean;
     parentId?: number;
     rootParentId?: number;
   }): Promise<AxiosApiResponse<BasicFileStructureResponseDto>> {
@@ -64,10 +84,17 @@ export class FileStructureApiService {
 
     const formData = new FormData();
     formData.append('file', file);
-    if (parentId) formData.append('parentId', parentId.toString());
-    if (rootParentId) formData.append('rootParentId', rootParentId.toString());
-    if (file.lastModified)
+    formData.append('keepBoth', params.keepBoth.toString());
+
+    if (parentId) {
+      formData.append('parentId', parentId.toString());
+    }
+    if (rootParentId) {
+      formData.append('rootParentId', rootParentId.toString());
+    }
+    if (file.lastModified) {
       formData.append('lastModifiedAt', new Date(file.lastModified).toISOString());
+    }
 
     try {
       const result = await api.post('file-structure/upload-file', formData, {
@@ -88,6 +115,7 @@ export class FileStructureApiService {
 
   async createFolder(params: {
     name: string;
+    keepBoth: boolean;
     parentId?: number;
     rootParentId?: number;
   }): Promise<AxiosApiResponse<BasicFileStructureResponseDto>> {

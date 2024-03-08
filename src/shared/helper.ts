@@ -49,8 +49,7 @@ export const zodFormikErrorAdapter = <T>(
         };
 
         if (error instanceof ZodError) {
-          console.log('='.repeat(20));
-          console.log(error.formErrors.fieldErrors);
+          console.warn('Custom: Firing zod formik errors', error.formErrors.fieldErrors);
 
           errInstance.inner = error.errors.map(e => ({
             message: e.message,

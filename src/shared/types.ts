@@ -6,6 +6,10 @@ export type AxiosApiResponse<T> = {
   error?: ClientApiError;
 };
 
+export type BasicMessageResponse<T = string> = {
+  message: T;
+};
+
 export type GeneralClass<T = unknown> = {
   new (...args: never[]): T;
 };
@@ -27,5 +31,5 @@ export type HandleRefreshType = {
 
 export type FormikValidationError = {
   name: 'ValidationError';
-  inner: Array<{ path: string; message: string }>;
+  inner: { path: string; message: string }[];
 };
