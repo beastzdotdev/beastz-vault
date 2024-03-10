@@ -1,11 +1,11 @@
 import { ToastProps, Intent, Spinner, Card, CardList, Icon, Button } from '@blueprintjs/core';
 import { v4 as uuid } from 'uuid';
 import { ChangeEvent, useCallback, useState } from 'react';
-import { validateFileSize } from '../helper/validate-file';
-import { FileStructureApiService, fileContentProgressToast, sleep } from '../../../shared';
+import { validateFileSize } from '../../helper/validate-file';
+import { FileStructureApiService, fileContentProgressToast, sleep } from '../../../../shared';
 import { useInjection } from 'inversify-react';
-import { getFileStructureUrlParams } from '../helper/get-url-params';
-import { DuplicateNameDialogWidget } from './duplicate-name-dialog/duplicate-name-dialog';
+import { getFileStructureUrlParams } from '../../helper/get-url-params';
+import { DuplicateNameDialogWidget } from '../duplicate-name-dialog/duplicate-name-dialog';
 import { FileUploadAtomicStore } from './file-upload-atomic-store';
 import { observer } from 'mobx-react-lite';
 
@@ -204,13 +204,11 @@ export const FileUploadItem = observer(
         // reset state
         fileUploadAtomicStore.resetState();
 
-        const tempFiles = e.currentTarget.files;
-
-        if (!validateFileSize(tempFiles)) {
+        if (!validateFileSize(e.currentTarget.files)) {
           return;
         }
 
-        const data = Array.from(tempFiles).map(file => ({ id: uuid(), file }));
+        const data = Array.from(e.currentTarget.files).map(file => ({ id: uuid(), file }));
 
         fileUploadAtomicStore.setFiles(data);
 

@@ -1,15 +1,18 @@
 import { ToastProps, Intent } from '@blueprintjs/core';
-import { ChangeEvent, useCallback } from 'react';
-import { validateFileSize } from '../helper/validate-file';
-import { buildWBKTree, WBKTreeNode } from '../../../shared/advanced-helpers/tree-data';
+import { ChangeEvent, useCallback, useState } from 'react';
+import { validateFileSize } from '../../helper/validate-file';
+import { buildWBKTree, WBKTreeNode } from '../../../../shared/advanced-helpers/tree-data';
 import { useInjection } from 'inversify-react';
 import {
   BasicFileStructureResponseDto,
   FileStructureApiService,
   fileContentProgressToast,
   sleep,
-} from '../../../shared';
-import { getFileStructureUrlParams } from '../helper/get-url-params';
+} from '../../../../shared';
+import { getFileStructureUrlParams } from '../../helper/get-url-params';
+import { DuplicateNameDialogWidget } from '../duplicate-name-dialog/duplicate-name-dialog';
+import { FolderUploadAtomicStore } from './folder-upload-atomic-store';
+import { observer } from 'mobx-react-lite';
 
 const progressToastProps: Omit<ToastProps, 'message'> = {
   isCloseButtonShown: false,
@@ -20,33 +23,21 @@ const progressToastProps: Omit<ToastProps, 'message'> = {
 
 const maxCount = 3;
 
-export const FolderUploadItem = ({
-  inputRef,
-}: {
-  inputRef: React.RefObject<HTMLInputElement>;
-}): React.JSX.Element => {
-  const fileStructureApiService = useInjection(FileStructureApiService);
+export const FolderUploadItem = observer(
+  ({ inputRef }: { inputRef: React.RefObject<HTMLInputElement> }): React.JSX.Element => {
+    const fileStructureApiService = useInjection(FileStructureApiService);
+    const folderUploadAtomicStore = useInjection(FolderUploadAtomicStore);
+    const [isDuplicateNameDialogOpen, setDuplicateNameDialogOpen] = useState(false);
 
-  const onFolderUploadChange = useCallback(
-    async (e: ChangeEvent<HTMLInputElement>) => {
-      // dissmiss previous toasts
-      fileContentProgressToast.clear();
-
-      const files = e.currentTarget.files;
-
-      if (!validateFileSize(files)) {
-        return;
-      }
-
-      const { parentId, rootParentId } = getFileStructureUrlParams();
-      const { data: tree, totalLength } = buildWBKTree(files);
+    const start = useCallback(async () => {
+      const { rootParentId, parentId } = getFileStructureUrlParams();
 
       const key = fileContentProgressToast.show({
-        message: `${tree[0].name}: 0 of ${totalLength}`,
+        message: `${folderUploadAtomicStore.data[0].name}: 0 of ${folderUploadAtomicStore.totalLength}`,
         ...progressToastProps,
       });
 
-      const reminder = totalLength % maxCount;
+      const reminder = folderUploadAtomicStore.totalLength % maxCount;
       const queue: WBKTreeNode[] = [];
       const completedUploaded: (BasicFileStructureResponseDto & {
         generatedId: string;
@@ -59,9 +50,10 @@ export const FolderUploadItem = ({
       const visited: Set<string> = new Set();
 
       // Add the top-level nodes to the queue
-      for (const node of tree) {
+      for (const node of folderUploadAtomicStore.data) {
         queueForBFS.push(node);
       }
+      let isFirstNode = true;
 
       while (queueForBFS.length > 0) {
         // Remove and process the first node in the queueForBFS
@@ -90,19 +82,20 @@ export const FolderUploadItem = ({
               name: currentNode.name,
               rootParentId: rootParentId ?? foundParent?.id,
               parentId: currentNode.generatedParentId === null ? parentId : foundParent?.id,
-
-              //TODO message left
-              //TODO fix keep both param sending both in folder upload and folder creation
-              keepBoth: false, //TODO fix this
+              keepBoth: isFirstNode ? folderUploadAtomicStore.keepBoth : false,
             });
 
-            // FOr debug purposes only
+            // For debug purposes only
             // await new Promise(f => setTimeout(f, 5000));
 
             if (error) {
               console.log('='.repeat(20));
               console.log(currentNode);
               console.log(error);
+            }
+
+            if (isFirstNode) {
+              isFirstNode = false;
             }
 
             if (data) {
@@ -140,7 +133,7 @@ export const FolderUploadItem = ({
           // This is needed in order for server to breathe a little
           if (
             queue.length === maxCount ||
-            (reminder !== 0 && totalUploadCount === totalLength - reminder)
+            (reminder !== 0 && totalUploadCount === folderUploadAtomicStore.totalLength - reminder)
           ) {
             await new Promise(f => setTimeout(f, 1000));
 
@@ -148,7 +141,7 @@ export const FolderUploadItem = ({
 
             fileContentProgressToast.show(
               {
-                message: `${tree[0].name}: ${totalUploadCount} of ${totalLength}`,
+                message: `${folderUploadAtomicStore.data[0].name}: ${totalUploadCount} of ${folderUploadAtomicStore.totalLength}`,
                 ...progressToastProps,
               },
               key
@@ -165,7 +158,7 @@ export const FolderUploadItem = ({
       // update toast add close button after upload is done
       fileContentProgressToast.show(
         {
-          message: `completed ${totalUploadCount} of ${totalLength}`,
+          message: `completed ${totalUploadCount} of ${folderUploadAtomicStore.totalLength}`,
           ...progressToastProps,
           isCloseButtonShown: true, // <- show close button
         },
@@ -173,33 +166,89 @@ export const FolderUploadItem = ({
       );
 
       // reset input target value so that same file triggers onChange event
-      e.target.value = '';
+      if (inputRef.current) {
+        inputRef.current.value = '';
+      }
 
       //! Uncomment bellow code if you want auto closing
       // wait 5 second before closing toaster by force if user does not closes
       // await sleep(5000);
       // fileContentProgressToast.clear();
-    },
-    [fileStructureApiService]
-  );
+    }, [
+      fileStructureApiService,
+      folderUploadAtomicStore.data,
+      folderUploadAtomicStore.keepBoth,
+      folderUploadAtomicStore.totalLength,
+      inputRef,
+    ]);
 
-  return (
-    <>
-      <input
-        type="file"
-        name="folder-upload"
-        className="hidden"
-        ref={inputRef}
-        multiple={false}
-        onChange={onFolderUploadChange}
-        //
-        //
-        //! For folder upload
-        // @ts-expect-error: something
-        webkitdirectory=""
-        mozdirectory=""
-        directory=""
-      />
-    </>
-  );
-};
+    const onFolderUploadChange = useCallback(
+      async (e: ChangeEvent<HTMLInputElement>) => {
+        const { parentId } = getFileStructureUrlParams();
+
+        // dissmiss previous toasts
+        fileContentProgressToast.clear();
+
+        // reset state
+        folderUploadAtomicStore.resetState();
+
+        if (!validateFileSize(e.currentTarget.files)) {
+          return;
+        }
+
+        const { data: tree, totalLength } = buildWBKTree(e.currentTarget.files);
+
+        folderUploadAtomicStore.setFiles(tree);
+        folderUploadAtomicStore.setTotalLength(totalLength);
+
+        const { data: duplicateData, error } = await fileStructureApiService.detectDuplicate({
+          titles: [tree[0].name],
+          isFile: false,
+          parentId,
+        });
+
+        if (error) {
+          throw new Error('Something unexpected happend');
+        }
+
+        const hasAnyDuplicate = duplicateData?.some(e => e.hasDuplicate);
+
+        if (hasAnyDuplicate) {
+          folderUploadAtomicStore.setDuplicates(duplicateData ?? []);
+        }
+
+        // start process (dialog or straight upload) based on hasAnyDuplicate
+        hasAnyDuplicate ? setDuplicateNameDialogOpen(true) : await start();
+      },
+      [fileStructureApiService, folderUploadAtomicStore, start]
+    );
+
+    return (
+      <>
+        <DuplicateNameDialogWidget
+          isOpen={isDuplicateNameDialogOpen}
+          setIsOpen={setDuplicateNameDialogOpen}
+          callBack={async ({ keepBoth }) => {
+            folderUploadAtomicStore.setKeepBoth(keepBoth);
+            await start();
+          }}
+        />
+
+        <input
+          type="file"
+          name="folder-upload"
+          className="hidden"
+          ref={inputRef}
+          multiple={false}
+          onChange={onFolderUploadChange}
+          //
+          //
+          //! For folder upload
+          webkitdirectory=""
+          mozdirectory=""
+          directory=""
+        />
+      </>
+    );
+  }
+);

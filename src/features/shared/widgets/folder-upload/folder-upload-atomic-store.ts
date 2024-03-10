@@ -1,9 +1,12 @@
 import { makeAutoObservable } from 'mobx';
-import { DetectDuplicateResponseDto, Singleton } from '../../../shared';
+import { DetectDuplicateResponseDto, Singleton } from '../../../../shared';
+import { WBKTreeNode } from '../../../../shared/advanced-helpers/tree-data';
 
 @Singleton
-export class FileUploadAtomicStore {
-  private _data: { id: string; file: File }[] = [];
+export class FolderUploadAtomicStore {
+  private _data: WBKTreeNode[] = [];
+  private _totalLength: number = 0;
+
   private _keepBoth: boolean = false;
   private _duplicates: DetectDuplicateResponseDto[] = [];
 
@@ -11,8 +14,12 @@ export class FileUploadAtomicStore {
     makeAutoObservable(this);
   }
 
-  get data(): { id: string; file: File }[] {
+  get data(): WBKTreeNode[] {
     return this._data;
+  }
+
+  get totalLength(): number {
+    return this._totalLength;
   }
 
   get keepBoth(): boolean {
@@ -24,13 +31,18 @@ export class FileUploadAtomicStore {
   }
 
   resetState() {
-    this._keepBoth = false;
     this._data = [];
+    this._totalLength = 0;
+    this._keepBoth = false;
     this._duplicates = [];
   }
 
-  setFiles(data: { id: string; file: File }[]) {
+  setFiles(data: WBKTreeNode[]) {
     this._data = data;
+  }
+
+  setTotalLength(totalLength: number) {
+    this._totalLength = totalLength;
   }
 
   setKeepBoth(keepBoth: boolean) {

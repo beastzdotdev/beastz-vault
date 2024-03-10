@@ -6,6 +6,8 @@ import { FocusStyleManager, HotkeysProvider, OverlaysProvider } from '@blueprint
 
 // styles
 import './index.scss';
+import './declares.d.ts';
+import './declares.d.tsx';
 import { Provider } from 'inversify-react';
 import { configure } from 'mobx';
 import { ioc, GlobalAlertProvider } from './shared';
