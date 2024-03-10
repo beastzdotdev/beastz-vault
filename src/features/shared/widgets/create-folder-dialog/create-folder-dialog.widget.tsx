@@ -11,12 +11,13 @@ import { useCallback, useState } from 'react';
 import { useInjection } from 'inversify-react';
 import { useFormik } from 'formik';
 import { FormErrorMessage } from '../../../../components/form-error-message';
-import { zodFormikErrorAdapter } from '../../../../shared';
+import { FileStructureApiService, zodFormikErrorAdapter } from '../../../../shared';
 import { SharedController } from '../../state/shared.controller';
 import {
   createFolderDialogValidation,
   createFolderDialogValidationFields,
 } from './create-folder-dialog-validation';
+import { getFileStructureUrlParams } from '../../helper/get-url-params';
 
 export const CreateFolderDialogWidget = ({
   isOpen,
@@ -27,6 +28,7 @@ export const CreateFolderDialogWidget = ({
 }): React.JSX.Element => {
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const sharedController = useInjection(SharedController);
+  const fileStructureApiService = useInjection(FileStructureApiService);
 
   const folderNameForm = useFormik({
     initialValues: {
@@ -34,19 +36,35 @@ export const CreateFolderDialogWidget = ({
     },
     validateOnChange: true,
     validationSchema: zodFormikErrorAdapter(createFolderDialogValidation),
-    onSubmit: async (values, { resetForm }) => {
-      const urlObj = new URL(window.location.href);
-      const rootParentId = urlObj.searchParams.get('root_parent_id');
-      const parentId = urlObj.searchParams.get('id');
+    onSubmit: async (values, { resetForm, setFieldError }) => {
+      const { rootParentId, parentId } = getFileStructureUrlParams();
+      // const urlObj = new URL(window.location.href);
+      // const rootParentId = urlObj.searchParams.get('root_parent_id');
+      // const parentId = urlObj.searchParams.get('id');
+
+      const { data: duplicateData, error } = await fileStructureApiService.detectDuplicate({
+        titles: [values.folderName],
+        isFile: false,
+        parentId,
+      });
+
+      if (error) {
+        throw new Error('Something unexpected happend');
+      }
+
+      if (duplicateData?.[0]?.hasDuplicate) {
+        setFieldError(
+          createFolderDialogValidationFields.folderName,
+          'Duplicate name detected, please use another one'
+        );
+        return;
+      }
 
       await sharedController.createFolder({
         name: values.folderName,
-        parentId: parentId ? parseInt(parentId) : undefined,
-        rootParentId: rootParentId ? parseInt(rootParentId) : undefined,
-
-        //TODO message left
-        //TODO fix keep both param sending both in folder upload and folder creation
-        keepBoth: false, //TODO fix this
+        parentId,
+        rootParentId,
+        keepBoth: false, // since validation happens this can be false everytime
       });
 
       resetForm();

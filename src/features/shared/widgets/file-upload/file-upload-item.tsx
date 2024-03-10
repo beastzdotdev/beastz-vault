@@ -181,11 +181,6 @@ export const FileUploadItem = observer(
       if (inputRef.current) {
         inputRef.current.value = '';
       }
-
-      //! Uncomment bellow code if you want auto closing
-      // wait 5 second before closing toaster by force if user does not closes
-      // await sleep(5000);
-      // fileUploadProgressToat.dismiss(key);
     }, [
       fileStructureApiService,
       fileUploadAtomicStore.data,
