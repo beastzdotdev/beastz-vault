@@ -1,3 +1,4 @@
+import { plainToInstance } from 'class-transformer';
 import { api } from '..';
 import { AxiosApiResponse } from '../../types';
 import { ClientApiError } from '../../errors/client-error.schema';
@@ -6,7 +7,6 @@ import {
   BasicFileStructureResponseDto,
   DetectDuplicateResponseDto,
 } from './file-structure-api.schema';
-import { plainToInstance } from 'class-transformer';
 
 @Singleton
 export class FileStructureApiService {
@@ -25,24 +25,6 @@ export class FileStructureApiService {
       return { error: e as ClientApiError };
     }
   }
-
-  // async getContentByParentId(
-  //   parentId: string
-  // ): Promise<AxiosApiResponse<BasicFileStructureResponseDto[]>> {
-  //   try {
-  //     const result = await api.get(`file-structure/content/${parentId}`);
-
-  //     return {
-  //       data: plainToInstance<BasicFileStructureResponseDto, BasicFileStructureResponseDto>(
-  //         BasicFileStructureResponseDto,
-  //         result.data,
-  //         { enableImplicitConversion: true }
-  //       ),
-  //     };
-  //   } catch (e: unknown) {
-  //     return { error: e as ClientApiError };
-  //   }
-  // }
 
   async getById(id: string): Promise<AxiosApiResponse<BasicFileStructureResponseDto>> {
     try {
