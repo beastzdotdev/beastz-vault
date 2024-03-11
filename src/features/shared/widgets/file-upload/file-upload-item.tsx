@@ -8,7 +8,6 @@ import { getFileStructureUrlParams } from '../../helper/get-url-params';
 import { DuplicateNameDialogWidget } from '../duplicate-name-dialog/duplicate-name-dialog';
 import { FileUploadAtomicStore } from './file-upload-atomic-store';
 import { observer } from 'mobx-react-lite';
-import { SharedController } from '../../state/shared.controller';
 
 const progressToastProps: Omit<ToastProps, 'message'> = {
   className: 'only-for-file-upload',
@@ -20,7 +19,6 @@ const progressToastProps: Omit<ToastProps, 'message'> = {
 export const FileUploadItem = observer(
   ({ inputRef }: { inputRef: React.RefObject<HTMLInputElement> }): React.JSX.Element => {
     const fileStructureApiService = useInjection(FileStructureApiService);
-    const sharedController = useInjection(SharedController);
     const fileUploadAtomicStore = useInjection(FileUploadAtomicStore);
     const [isDuplicateNameDialogOpen, setDuplicateNameDialogOpen] = useState(false);
 
@@ -75,7 +73,7 @@ export const FileUploadItem = observer(
               e => e.title === queueItem.file.name
             );
 
-            const { error, data } = await fileStructureApiService.uploadFile({
+            const { error } = await fileStructureApiService.uploadFile({
               file: queueItem.file,
 
               // if file does not have duplicate then does not matter what modal duplicate choice says

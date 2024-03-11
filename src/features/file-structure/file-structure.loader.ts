@@ -21,12 +21,13 @@ export const fileStructureLoader = async (_args: LoaderFunctionArgs) => {
   }
 
   // root content must always be set like if user is in deeply nested folder and user resets page
-  const { data: rootData, error: rootDataError } = await fileStructureApiService.getOnlyRoot();
+  const { data: rootData, error: rootDataError } = await fileStructureApiService.getContent();
 
   if (rootDataError || !rootData) {
-    throw new Error('Sorry, something went wrong, pleas contact support');
+    throw new Error('Sorry, something went wrong');
   }
 
+  //! Always set root data when initial loading for sidebar
   sharedController.setActiveFileStructureInRoot(rootData);
 
   // 2. Validate url query parameters
@@ -41,12 +42,14 @@ export const fileStructureLoader = async (_args: LoaderFunctionArgs) => {
     return 'ok';
   }
 
-  // 4. else handle get by id of file structure item (overrides only active file structure)
-  const { data, error } = await fileStructureApiService.getContentByParentId(id);
+  const parentId = parseInt(id);
 
-  // console.log('='.repeat(20));
-  // console.log('fetched data by parent id: ' + id);
-  // console.log(data);
+  if (!parentId) {
+    throw new Error('Sorry, something went wrong');
+  }
+
+  // 4. else handle get by id of file structure item (overrides only active file structure)
+  const { data, error } = await fileStructureApiService.getContent(parentId);
 
   if (error || !data) {
     throw new Error('Could not find folder');

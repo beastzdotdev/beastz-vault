@@ -10,9 +10,9 @@ import { plainToInstance } from 'class-transformer';
 
 @Singleton
 export class FileStructureApiService {
-  async getOnlyRoot(): Promise<AxiosApiResponse<BasicFileStructureResponseDto[]>> {
+  async getContent(parentId?: number): Promise<AxiosApiResponse<BasicFileStructureResponseDto[]>> {
     try {
-      const result = await api.get(`file-structure/only-root`);
+      const result = await api.get(`file-structure/content`, { params: { parentId } });
 
       return {
         data: plainToInstance<BasicFileStructureResponseDto, BasicFileStructureResponseDto>(
@@ -26,23 +26,23 @@ export class FileStructureApiService {
     }
   }
 
-  async getContentByParentId(
-    parentId: string
-  ): Promise<AxiosApiResponse<BasicFileStructureResponseDto[]>> {
-    try {
-      const result = await api.get(`file-structure/content/${parentId}`);
+  // async getContentByParentId(
+  //   parentId: string
+  // ): Promise<AxiosApiResponse<BasicFileStructureResponseDto[]>> {
+  //   try {
+  //     const result = await api.get(`file-structure/content/${parentId}`);
 
-      return {
-        data: plainToInstance<BasicFileStructureResponseDto, BasicFileStructureResponseDto>(
-          BasicFileStructureResponseDto,
-          result.data,
-          { enableImplicitConversion: true }
-        ),
-      };
-    } catch (e: unknown) {
-      return { error: e as ClientApiError };
-    }
-  }
+  //     return {
+  //       data: plainToInstance<BasicFileStructureResponseDto, BasicFileStructureResponseDto>(
+  //         BasicFileStructureResponseDto,
+  //         result.data,
+  //         { enableImplicitConversion: true }
+  //       ),
+  //     };
+  //   } catch (e: unknown) {
+  //     return { error: e as ClientApiError };
+  //   }
+  // }
 
   async getById(id: string): Promise<AxiosApiResponse<BasicFileStructureResponseDto>> {
     try {

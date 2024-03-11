@@ -45,6 +45,9 @@ export class BasicFileStructureResponseDto {
 
   @Type(() => Date)
   createdAt: Date;
+
+  @Type(() => BasicFileStructureResponseDto)
+  children: BasicFileStructureResponseDto[];
 }
 
 export class DetectDuplicateResponseDto {
