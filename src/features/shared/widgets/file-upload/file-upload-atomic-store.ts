@@ -1,6 +1,9 @@
 import { makeAutoObservable } from 'mobx';
 import { DetectDuplicateResponseDto, Singleton } from '../../../../shared';
 
+/**
+ * This class is only temporary storage for file(s) upload
+ */
 @Singleton
 export class FileUploadAtomicStore {
   private _data: { id: string; file: File }[] = [];

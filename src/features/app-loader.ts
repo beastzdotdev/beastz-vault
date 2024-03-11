@@ -1,14 +1,14 @@
 import { LoaderFunctionArgs, redirect } from 'react-router-dom';
 import { ProfileController } from './profile/state/profile.controller';
 import { constants, ioc, UserApiService } from '../shared';
-import { SharedController } from './shared/state/shared.controller';
 import { ProfileStore } from './profile/state/profile.store';
 import { runInAction } from 'mobx';
+import { SharedStore } from './shared/state/shared.store';
 
 export const appLoader = async (_args: LoaderFunctionArgs) => {
   const profileController = ioc.getContainer().get(ProfileController);
   const profileStore = ioc.getContainer().get(ProfileStore);
-  const sharedController = ioc.getContainer().get(SharedController);
+  const sharedStore = ioc.getContainer().get(SharedStore);
   const userApiService = ioc.getContainer().get(UserApiService);
 
   await runInAction(async () => {
@@ -17,7 +17,7 @@ export const appLoader = async (_args: LoaderFunctionArgs) => {
       const { data } = await userApiService.getCurrentUser();
 
       // Api call will make sure whether user is locked, blocked or not verified
-      sharedController.setShouldRender(data ? true : false);
+      sharedStore.setShouldRender(data ? true : false);
 
       if (data) {
         profileController.setUser(data);

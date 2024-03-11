@@ -37,6 +37,8 @@ export class SharedController {
 
     //TODO i think here needs adjustmants whether if root than activeInRoot must be updated as well e.g. pushed
     this.sharedStore.addActiveFileStructureInBody(newData);
+
+    // if root update sidebar and body
   }
 
   setActiveFileStructureInBody(value: BasicFileStructureResponseDto[]) {
@@ -46,7 +48,7 @@ export class SharedController {
       e.setExtraParams({ isSelected: false });
     });
 
-    this.sharedStore.activeFileStructureInBody = newArr;
+    this.sharedStore.setActiveFileStructureInBody(newArr);
   }
 
   setActiveFileStructureInRoot(value: BasicFileStructureResponseDto[]) {
@@ -56,23 +58,19 @@ export class SharedController {
       e.setExtraParams({ isSelected: false });
     });
 
-    this.sharedStore.activeFileStructureInRoot = newArr;
+    this.sharedStore.setActiveFileStructureInRoot(newArr);
   }
 
   setIsSelectedInActiveFSPage(id: number) {
-    this.sharedStore.activeFileStructureInBody = this.sharedStore.activeFileStructureInBody.map(
-      e => {
+    this.sharedStore.setActiveFileStructureInBody(
+      this.sharedStore.activeFileStructureInBody.map(e => {
         if (e.id === id) {
           e.isSelected = true;
         } else {
           e.isSelected = false;
         }
         return e;
-      }
+      })
     );
-  }
-
-  setShouldRender(value: boolean) {
-    this.sharedStore.shouldRender = value;
   }
 }

@@ -2,6 +2,9 @@ import { makeAutoObservable } from 'mobx';
 import { DetectDuplicateResponseDto, Singleton } from '../../../../shared';
 import { WBKTreeNode } from '../../../../shared/advanced-helpers/tree-data';
 
+/**
+ * This class is only temporary storage for folder upload
+ */
 @Singleton
 export class FolderUploadAtomicStore {
   private _data: WBKTreeNode[] = [];
