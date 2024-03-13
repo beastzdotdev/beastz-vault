@@ -13,6 +13,7 @@ import { getFileStructureUrlParams } from '../../helper/get-url-params';
 import { DuplicateNameDialogWidget } from '../duplicate-name-dialog/duplicate-name-dialog';
 import { FolderUploadAtomicStore } from './folder-upload-atomic-store';
 import { observer } from 'mobx-react-lite';
+import { SharedController } from '../../state/shared.controller';
 
 const progressToastProps: Omit<ToastProps, 'message'> = {
   isCloseButtonShown: false,
@@ -25,6 +26,7 @@ const maxCount = 3;
 
 export const FolderUploadItem = observer(
   ({ inputRef }: { inputRef: React.RefObject<HTMLInputElement> }): React.JSX.Element => {
+    const sharedController = useInjection(SharedController);
     const fileStructureApiService = useInjection(FileStructureApiService);
     const folderUploadAtomicStore = useInjection(FolderUploadAtomicStore);
     const [isDuplicateNameDialogOpen, setDuplicateNameDialogOpen] = useState(false);
@@ -94,12 +96,17 @@ export const FolderUploadItem = observer(
               console.log(error);
             }
 
-            if (isFirstNode) {
-              isFirstNode = false;
-            }
-
             if (data) {
               completed = data;
+
+              if (isFirstNode) {
+                sharedController.createFileStructureInState(
+                  data,
+                  !folderUploadAtomicStore.keepBoth
+                );
+
+                isFirstNode = false;
+              }
             }
           } else {
             const { data, error } = await fileStructureApiService.uploadFile({
@@ -177,6 +184,7 @@ export const FolderUploadItem = observer(
       folderUploadAtomicStore.data,
       folderUploadAtomicStore.keepBoth,
       folderUploadAtomicStore.totalLength,
+      sharedController,
       inputRef,
     ]);
 

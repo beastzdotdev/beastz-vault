@@ -1,3 +1,4 @@
+import filenamify from 'filenamify/browser';
 import {
   Button,
   Dialog,
@@ -38,9 +39,11 @@ export const CreateFolderDialogWidget = ({
     validationSchema: zodFormikErrorAdapter(createFolderDialogValidation),
     onSubmit: async (values, { resetForm, setFieldError }) => {
       const { rootParentId, parentId } = getFileStructureUrlParams();
-      // const urlObj = new URL(window.location.href);
-      // const rootParentId = urlObj.searchParams.get('root_parent_id');
-      // const parentId = urlObj.searchParams.get('id');
+
+      if (values.folderName !== filenamify(values.folderName)) {
+        setFieldError(createFolderDialogValidationFields.folderName, 'Invalid folder name');
+        return;
+      }
 
       const { data: duplData, error: duplError } = await fileStructureApiService.detectDuplicate({
         titles: [values.folderName],
