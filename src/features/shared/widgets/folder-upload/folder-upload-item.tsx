@@ -1,6 +1,6 @@
 import { ToastProps, Intent } from '@blueprintjs/core';
 import { ChangeEvent, useCallback, useState } from 'react';
-import { validateFileSize } from '../../helper/validate-file';
+import { cleanFiles, validateFileSize } from '../../helper/validate-file';
 import { buildWBKTree, WBKTreeNode } from '../../../../shared/advanced-helpers/tree-data';
 import { useInjection } from 'inversify-react';
 import {
@@ -122,6 +122,9 @@ export const FolderUploadItem = observer(
             }
           }
 
+          console.log('='.repeat(20));
+          console.log(completed);
+
           if (completed) {
             completedUploaded.push({
               ...completed,
@@ -191,7 +194,9 @@ export const FolderUploadItem = observer(
           return;
         }
 
-        const { data: tree, totalLength } = buildWBKTree(e.currentTarget.files);
+        const sanitizedFiles = cleanFiles(e.currentTarget.files);
+
+        const { data: tree, totalLength } = buildWBKTree(sanitizedFiles);
 
         folderUploadAtomicStore.setFiles(tree);
         folderUploadAtomicStore.setTotalLength(totalLength);

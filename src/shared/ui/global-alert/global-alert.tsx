@@ -14,12 +14,12 @@ const GlobalAlert = ({
 }) => {
   return (
     <Alert
-      className="max-w-none"
+      className="max-w-none gorilla-global-alert"
       isOpen={isOpen}
       onClose={onClose}
       intent={Intent.NONE}
       icon="issue"
-      confirmButtonText="OK"
+      confirmButtonText="Close"
       canEscapeKeyCancel={false}
       canOutsideClickCancel={false}
     >

@@ -1,3 +1,4 @@
+import filenamify from 'filenamify/browser';
 import { H3, CardList, Card } from '@blueprintjs/core';
 import { constants, bus, formatFileSize } from '../../../shared';
 
@@ -14,40 +15,66 @@ export const validateFileSize = (files: FileList | null): files is FileList => {
     return false;
   }
 
-  const fileSizeLimitMessages: { size: string; name: string }[] = [];
+  return true;
+};
 
-  // check size first
+export const cleanFiles = (files: FileList): File[] => {
+  const sanitizedFiles: File[] = [];
+  const ignoredFiles: (
+    | { name: string; reason: 'name' }
+    | { size: string; name: string; reason: 'size' }
+  )[] = [];
+
   for (const file of files) {
-    if (file.size > constants.MAX_FILE_UPLOAD_SIZE) {
-      fileSizeLimitMessages.push({
+    if (file.name !== filenamify(file.name)) {
+      ignoredFiles.push({
+        name: file.name,
+        reason: 'name',
+      });
+    } else if (file.size > constants.MAX_FILE_UPLOAD_SIZE) {
+      ignoredFiles.push({
         name: file.name,
         size: formatFileSize(file.size),
+        reason: 'size',
       });
+    } else {
+      sanitizedFiles.push(file);
     }
   }
 
   // show message for error of size limit
-  if (fileSizeLimitMessages.length) {
+  if (ignoredFiles.length) {
     bus.emit('show-alert', {
       message: (
         <>
-          <H3>This files exceed size limit(~{constants.MAX_FILE_UPLOAD_SIZE_IN_MB}mb)</H3>
+          <H3>Warning, This files will be ignored</H3>
           <br />
 
-          <CardList compact className="whitespace-nowrap max-h-64">
-            {fileSizeLimitMessages.map(e => (
-              <Card className="flex justify-between">
-                <p>{e.name}</p>
-                <p className="ml-3">{e.size}</p>
-              </Card>
-            ))}
+          <CardList compact className="whitespace-nowrap max-h-64" bordered={false}>
+            {ignoredFiles.map((e, i) => {
+              if (e.reason === 'size') {
+                return (
+                  <Card className="flex justify-between" key={i}>
+                    <p>{e.name}</p>
+                    <p className="ml-3 text-red-500">{e.size}</p>
+                  </Card>
+                );
+              }
+
+              if (e.reason === 'name') {
+                return (
+                  <Card className="flex justify-between" key={i}>
+                    <p>{e.name}</p>
+                    <p className="ml-3 text-red-500">Invalid name</p>
+                  </Card>
+                );
+              }
+            })}
           </CardList>
         </>
       ),
     });
-
-    return false;
   }
 
-  return true;
+  return sanitizedFiles;
 };

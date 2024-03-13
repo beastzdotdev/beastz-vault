@@ -34,6 +34,7 @@
     "axios": "^1.6.7",
     "class-transformer": "^0.5.1",
     "crypto-js": "^4.2.0",
+    "filenamify": "^6.0.0",
     "formik": "^2.4.5",
     "inversify": "^6.0.2",
     "inversify-react": "^1.1.0",

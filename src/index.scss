@@ -202,3 +202,9 @@ body {
     display: none;
   }
 }
+
+.gorilla-global-alert {
+  .bp5-alert-contents {
+    flex: 1;
+  }
+}

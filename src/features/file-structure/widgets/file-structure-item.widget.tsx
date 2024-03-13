@@ -1,5 +1,6 @@
 import { Button, Icon, Menu, MenuDivider, MenuItem, Popover } from '@blueprintjs/core';
 import { FileMimeType } from '../../../shared/enum/file-mimte-type.enum';
+import { formatFileSize } from '../../../shared';
 
 interface FileStuructureFileItemParams {
   userName: string;
@@ -53,7 +54,8 @@ export const FileStuructureFileItem = (params: FileStuructureFileItemParams): Re
         </div>
 
         <div className="flex items-center justify-start w-[90px] pr-5">
-          <p>{params.sizeInBytes}</p>
+          <p>{formatFileSize(params.sizeInBytes)}</p>
+          {/* <p>{params.sizeInBytes}</p> */}
         </div>
       </div>
 

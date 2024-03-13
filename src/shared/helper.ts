@@ -75,7 +75,11 @@ export const isUUID = (value: string) => {
   return uuidRegex.test(value);
 };
 
-export const formatFileSize = (size: number): string => {
+export const formatFileSize = (size: number | null): string => {
+  if (size === null) {
+    return '';
+  }
+
   const units: string[] = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
   const threshold = 1024;
   let i = 0; // Start from 0 for correct unit selection

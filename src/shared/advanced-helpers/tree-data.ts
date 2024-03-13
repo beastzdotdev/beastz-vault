@@ -23,7 +23,7 @@ export type WBKTreeNode = {
 /**
  * totalLength property also includes folder count in length as well
  */
-export const buildWBKTree = (files: FileList): { data: WBKTreeNode[]; totalLength: number } => {
+export const buildWBKTree = (files: File[]): { data: WBKTreeNode[]; totalLength: number } => {
   const tree: WBKTreeNode[] = [];
   let totalLength = 0;
 
