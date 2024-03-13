@@ -8,9 +8,6 @@ export class SharedController {
   @Inject(SharedStore)
   private readonly sharedStore: SharedStore;
 
-  // @Inject(FileStructureApiService)
-  // private readonly fileStructureApiService: FileStructureApiService;
-
   async createFileStructureInState(data: BasicFileStructureInRootDto, isReplaced: boolean) {
     runInAction(() => {
       //! 1. handle active body state first (check if url and parent id matches)
