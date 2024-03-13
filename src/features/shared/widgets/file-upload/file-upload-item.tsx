@@ -8,6 +8,7 @@ import { getFileStructureUrlParams } from '../../helper/get-url-params';
 import { DuplicateNameDialogWidget } from '../duplicate-name-dialog/duplicate-name-dialog';
 import { FileUploadAtomicStore } from './file-upload-atomic-store';
 import { observer } from 'mobx-react-lite';
+import { SharedController } from '../../state/shared.controller';
 
 const progressToastProps: Omit<ToastProps, 'message'> = {
   className: 'only-for-file-upload',
@@ -20,6 +21,7 @@ export const FileUploadItem = observer(
   ({ inputRef }: { inputRef: React.RefObject<HTMLInputElement> }): React.JSX.Element => {
     const fileStructureApiService = useInjection(FileStructureApiService);
     const fileUploadAtomicStore = useInjection(FileUploadAtomicStore);
+    const sharedController = useInjection(SharedController);
     const [isDuplicateNameDialogOpen, setDuplicateNameDialogOpen] = useState(false);
 
     const start = useCallback(async () => {
@@ -73,12 +75,11 @@ export const FileUploadItem = observer(
               e => e.title === queueItem.file.name
             );
 
-            const { error } = await fileStructureApiService.uploadFile({
+            const { error, data } = await fileStructureApiService.uploadFile({
               file: queueItem.file,
-
               // if file does not have duplicate then does not matter what modal duplicate choice says
               // we need to send replace because new file is created
-              keepBoth: !foundItem?.hasDuplicate ? false : fileUploadAtomicStore.keepBoth,
+              keepBoth: foundItem?.hasDuplicate ? fileUploadAtomicStore.keepBoth : false,
               parentId,
               rootParentId,
             });
@@ -89,9 +90,15 @@ export const FileUploadItem = observer(
               isSuccess: !error,
             });
 
-            // if (data) {
-            //   sharedController.push();
-            // }
+            if (data) {
+              sharedController.createFileStructureInState(
+                data,
+                // here keep both in paranthesis is slightly changed from above default param is now true
+                // because if new file is created then yes backend needs false but here we need true or
+                // replace will trigger instead of push
+                !(foundItem?.hasDuplicate ? fileUploadAtomicStore.keepBoth : true)
+              );
+            }
           }
 
           totalUploadCount += queue.length === maxCount ? maxCount : reminder; // this is for internal use only (unlike in folders upload)
@@ -190,6 +197,7 @@ export const FileUploadItem = observer(
       fileUploadAtomicStore.data,
       fileUploadAtomicStore.duplicates,
       fileUploadAtomicStore.keepBoth,
+      sharedController,
       inputRef,
     ]);
 

@@ -1,76 +1,63 @@
-import { plainToInstance } from 'class-transformer';
-import {
-  Singleton,
-  Inject,
-  BasicFileStructureResponseDto,
-  FileStructureApiService,
-} from '../../../shared';
+import { runInAction, toJS } from 'mobx';
+import { Singleton, Inject, BasicFileStructureInRootDto } from '../../../shared';
 import { SharedStore } from './shared.store';
-import { ActiveFileStructure } from './shared.type';
+import { BasicFileStructureInBodyDto } from './shared.type';
 
 @Singleton
 export class SharedController {
   @Inject(SharedStore)
   private readonly sharedStore: SharedStore;
 
-  @Inject(FileStructureApiService)
-  private readonly fileStructureApiService: FileStructureApiService;
+  // @Inject(FileStructureApiService)
+  // private readonly fileStructureApiService: FileStructureApiService;
 
-  async createFolder(params: {
-    name: string;
-    parentId?: number;
-    rootParentId?: number;
-    keepBoth: boolean;
-  }) {
-    const { data, error } = await this.fileStructureApiService.createFolder(params);
+  async createFileStructureInState(data: BasicFileStructureInRootDto, isReplaced: boolean) {
+    runInAction(() => {
+      //! 1. handle active body state first (check if url and parent id matches)
+      if (
+        (data.parentId === null && this.sharedStore.isRoot) ||
+        data.parentId === this.sharedStore.activeId
+      ) {
+        const forBody = BasicFileStructureInBodyDto.transform(data);
+        forBody.setExtraParams({ isSelected: false });
 
-    if (error || !data) {
-      console.log('='.repeat(20));
-      console.log(error);
-      throw new Error('Could not create folder');
-    }
+        isReplaced
+          ? this.sharedStore.replaceActiveFileStructureInBody(forBody)
+          : this.sharedStore.pushActiveFileStructureInBody(forBody);
+      }
 
-    const newData = plainToInstance(ActiveFileStructure, data);
-    newData.setExtraParams({
-      isSelected: false,
+      //! 2. handle root data then
+      if (data.parentId) {
+        const node = this.sharedStore.search(data.parentId);
+
+        // if not found just ignore
+        if (!node) {
+          return;
+        }
+
+        if (isReplaced) {
+          const index = node?.children.findIndex(e => e.path === data.path);
+          if (index !== -1) {
+            node.children[index] = data;
+          }
+        } else {
+          node.children.push(data);
+        }
+      } else {
+        isReplaced
+          ? this.sharedStore.replaceActiveFileStructureInRoot(data)
+          : this.sharedStore.pushActiveFileStructureInRoot(data);
+      }
     });
 
-    //TODO i think here needs adjustmants whether if root than activeInRoot must be updated as well e.g. pushed
-    this.sharedStore.addActiveFileStructureInBody(newData);
-
-    // if root update sidebar and body
+    console.log('='.repeat(20));
+    console.log(toJS(this.sharedStore.activeFileStructureInRoot));
   }
 
-  setActiveFileStructureInBody(value: BasicFileStructureResponseDto[]) {
-    const newArr = plainToInstance(ActiveFileStructure, value);
-
-    newArr.forEach(e => {
-      e.setExtraParams({ isSelected: false });
-    });
+  setFileStructureBodyFromRoot(value: BasicFileStructureInRootDto[]) {
+    const newArr = BasicFileStructureInBodyDto.transformMany(value);
+    newArr.forEach(e => e.setExtraParams({ isSelected: false }));
 
     this.sharedStore.setActiveFileStructureInBody(newArr);
-  }
-
-  setActiveFileStructureInRoot(value: BasicFileStructureResponseDto[]) {
-    const newArr = plainToInstance(ActiveFileStructure, value);
-
-    newArr.forEach(e => {
-      e.setExtraParams({ isSelected: false });
-    });
-
-    this.sharedStore.setActiveFileStructureInRoot(newArr);
-  }
-
-  setIsSelectedInActiveFSPage(id: number) {
-    this.sharedStore.setActiveFileStructureInBody(
-      this.sharedStore.activeFileStructureInBody.map(e => {
-        if (e.id === id) {
-          e.isSelected = true;
-        } else {
-          e.isSelected = false;
-        }
-        return e;
-      })
-    );
   }
 }

@@ -1,6 +1,7 @@
 import { LoaderFunctionArgs, redirect } from 'react-router-dom';
 import { FileStructureApiService, getQueryParams, ioc } from '../../shared';
 import { SharedController } from '../shared/state/shared.controller';
+import { SharedStore } from '../shared/state/shared.store';
 
 /**
  * @description
@@ -11,6 +12,7 @@ export const fileStructureLoader = async (_args: LoaderFunctionArgs) => {
   const { id, root_parent_id: rootParentId } = queryParams;
   const fileStructureApiService = ioc.getContainer().get(FileStructureApiService);
   const sharedController = ioc.getContainer().get(SharedController);
+  const sharedStore = ioc.getContainer().get(SharedStore);
 
   // 1. if id not exists definitely add id as root before loading ui
   if (!id) {
@@ -18,6 +20,12 @@ export const fileStructureLoader = async (_args: LoaderFunctionArgs) => {
     redirectUrl.searchParams.set('id', 'root');
 
     return redirect(redirectUrl.toString());
+  }
+
+  // 2. Validate url query parameters
+  const correctRouteParams = !!((id && id === 'root') || (id && rootParentId && id !== 'root'));
+  if (!correctRouteParams) {
+    throw new Error(); // router will handle this error
   }
 
   // root content must always be set like if user is in deeply nested folder and user resets page
@@ -28,17 +36,11 @@ export const fileStructureLoader = async (_args: LoaderFunctionArgs) => {
   }
 
   //! Always set root data when initial loading for sidebar
-  sharedController.setActiveFileStructureInRoot(rootData);
-
-  // 2. Validate url query parameters
-  const correctRouteParams = !!((id && id === 'root') || (id && rootParentId && id !== 'root'));
-  if (!correctRouteParams) {
-    throw new Error(); // router will handle this error
-  }
+  sharedStore.setActiveFileStructureInRoot(rootData);
 
   // 3. if id is root then ignore because it is already set
   if (id === 'root') {
-    sharedController.setActiveFileStructureInBody(rootData);
+    sharedController.setFileStructureBodyFromRoot(rootData);
     return 'ok';
   }
 
@@ -52,9 +54,9 @@ export const fileStructureLoader = async (_args: LoaderFunctionArgs) => {
   const { data, error } = await fileStructureApiService.getContent(parentId);
 
   if (error || !data) {
-    throw new Error('Could not find folder');
+    throw new Error('Sorry, something went wrong');
   }
 
-  sharedController.setActiveFileStructureInBody(data);
+  sharedController.setFileStructureBodyFromRoot(data);
   return 'ok';
 };

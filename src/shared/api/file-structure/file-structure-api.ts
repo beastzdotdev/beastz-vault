@@ -1,40 +1,29 @@
-import { plainToInstance } from 'class-transformer';
 import { api } from '..';
 import { AxiosApiResponse } from '../../types';
 import { ClientApiError } from '../../errors/client-error.schema';
 import { Singleton } from '../../ioc';
 import {
-  BasicFileStructureResponseDto,
+  BasicFileStructureInRootDto,
   DetectDuplicateResponseDto,
 } from './file-structure-api.schema';
 
 @Singleton
 export class FileStructureApiService {
-  async getContent(parentId?: number): Promise<AxiosApiResponse<BasicFileStructureResponseDto[]>> {
+  async getContent(parentId?: number): Promise<AxiosApiResponse<BasicFileStructureInRootDto[]>> {
     try {
       const result = await api.get(`file-structure/content`, { params: { parentId } });
 
-      return {
-        data: plainToInstance<BasicFileStructureResponseDto, BasicFileStructureResponseDto>(
-          BasicFileStructureResponseDto,
-          result.data,
-          { enableImplicitConversion: true }
-        ),
-      };
+      return { data: BasicFileStructureInRootDto.transformMany(result.data) };
     } catch (e: unknown) {
       return { error: e as ClientApiError };
     }
   }
 
-  async getById(id: string): Promise<AxiosApiResponse<BasicFileStructureResponseDto>> {
+  async getById(id: string): Promise<AxiosApiResponse<BasicFileStructureInRootDto>> {
     try {
       const result = await api.get(`file-structure/${id}`);
 
-      return {
-        data: plainToInstance(BasicFileStructureResponseDto, result.data, {
-          enableImplicitConversion: true,
-        }),
-      };
+      return { data: BasicFileStructureInRootDto.transform(result.data) };
     } catch (e: unknown) {
       return { error: e as ClientApiError };
     }
@@ -48,9 +37,7 @@ export class FileStructureApiService {
     try {
       const result = await api.get(`file-structure/detect-duplicate`, { params });
 
-      return {
-        data: result.data,
-      };
+      return { data: result.data };
     } catch (e: unknown) {
       return { error: e as ClientApiError };
     }
@@ -61,7 +48,7 @@ export class FileStructureApiService {
     keepBoth: boolean;
     parentId?: number;
     rootParentId?: number;
-  }): Promise<AxiosApiResponse<BasicFileStructureResponseDto>> {
+  }): Promise<AxiosApiResponse<BasicFileStructureInRootDto>> {
     const { file, parentId, rootParentId } = params;
 
     const formData = new FormData();
@@ -85,11 +72,7 @@ export class FileStructureApiService {
         },
       });
 
-      return {
-        data: plainToInstance(BasicFileStructureResponseDto, result.data, {
-          enableImplicitConversion: true,
-        }),
-      };
+      return { data: BasicFileStructureInRootDto.transform(result.data) };
     } catch (e: unknown) {
       return { error: e as ClientApiError };
     }
@@ -100,15 +83,11 @@ export class FileStructureApiService {
     keepBoth: boolean;
     parentId?: number;
     rootParentId?: number;
-  }): Promise<AxiosApiResponse<BasicFileStructureResponseDto>> {
+  }): Promise<AxiosApiResponse<BasicFileStructureInRootDto>> {
     try {
       const result = await api.post('file-structure/create-folder', params);
 
-      return {
-        data: plainToInstance(BasicFileStructureResponseDto, result.data, {
-          enableImplicitConversion: true,
-        }),
-      };
+      return { data: BasicFileStructureInRootDto.transform(result.data) };
     } catch (e: unknown) {
       return { error: e as ClientApiError };
     }

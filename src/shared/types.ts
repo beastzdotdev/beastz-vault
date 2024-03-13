@@ -1,5 +1,6 @@
 import { ClientApiError } from './errors/client-error.schema';
 import { ExceptionMessageCode } from './enum/exception-message-code.enum';
+import { FileMimeType } from './enum/file-mimte-type.enum';
 
 export type AxiosApiResponse<T> = {
   data?: T;
@@ -32,4 +33,23 @@ export type HandleRefreshType = {
 export type FormikValidationError = {
   name: 'ValidationError';
   inner: { path: string; message: string }[];
+};
+
+export type BasicFileStructure = {
+  id: number;
+  path: string;
+  title: string;
+  depth: number;
+  color: string | null;
+  sizeInBytes: number | null;
+  fileExstensionRaw: string | null;
+  mimeTypeRaw: string | null;
+  mimeType: FileMimeType | null;
+  isEditable: boolean | null;
+  isFile: boolean;
+  rootParentId: number | null;
+  parentId: number | null;
+  lastModifiedAt: Date | null;
+  createdAt: Date;
+  children: BasicFileStructure[];
 };

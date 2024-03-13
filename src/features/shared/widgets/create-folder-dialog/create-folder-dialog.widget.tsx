@@ -13,11 +13,11 @@ import { useFormik } from 'formik';
 import { FormErrorMessage } from '../../../../components/form-error-message';
 import { FileStructureApiService, zodFormikErrorAdapter } from '../../../../shared';
 import { SharedController } from '../../state/shared.controller';
+import { getFileStructureUrlParams } from '../../helper/get-url-params';
 import {
   createFolderDialogValidation,
   createFolderDialogValidationFields,
 } from './create-folder-dialog-validation';
-import { getFileStructureUrlParams } from '../../helper/get-url-params';
 
 export const CreateFolderDialogWidget = ({
   isOpen,
@@ -42,17 +42,17 @@ export const CreateFolderDialogWidget = ({
       // const rootParentId = urlObj.searchParams.get('root_parent_id');
       // const parentId = urlObj.searchParams.get('id');
 
-      const { data: duplicateData, error } = await fileStructureApiService.detectDuplicate({
+      const { data: duplData, error: duplError } = await fileStructureApiService.detectDuplicate({
         titles: [values.folderName],
         isFile: false,
         parentId,
       });
 
-      if (error) {
+      if (duplError) {
         throw new Error('Something unexpected happend');
       }
 
-      if (duplicateData?.[0]?.hasDuplicate) {
+      if (duplData?.[0]?.hasDuplicate) {
         setFieldError(
           createFolderDialogValidationFields.folderName,
           'Duplicate name detected, please use another one'
@@ -60,12 +60,18 @@ export const CreateFolderDialogWidget = ({
         return;
       }
 
-      await sharedController.createFolder({
+      const { data, error } = await fileStructureApiService.createFolder({
         name: values.folderName,
         parentId,
         rootParentId,
         keepBoth: false, // since validation happens this can be false everytime
       });
+
+      if (error || !data) {
+        throw new Error('Could not create folder');
+      }
+
+      sharedController.createFileStructureInState(data, false);
 
       resetForm();
       setIsOpen(false);

@@ -4,7 +4,7 @@ import { validateFileSize } from '../../helper/validate-file';
 import { buildWBKTree, WBKTreeNode } from '../../../../shared/advanced-helpers/tree-data';
 import { useInjection } from 'inversify-react';
 import {
-  BasicFileStructureResponseDto,
+  BasicFileStructureInRootDto,
   FileStructureApiService,
   fileContentProgressToast,
   sleep,
@@ -39,7 +39,7 @@ export const FolderUploadItem = observer(
 
       const reminder = folderUploadAtomicStore.totalLength % maxCount;
       const queue: WBKTreeNode[] = [];
-      const completedUploaded: (BasicFileStructureResponseDto & {
+      const completedUploaded: (BasicFileStructureInRootDto & {
         generatedId: string;
         generatedParentId: string | null;
       })[] = []; // this is flat list for uploaded items
@@ -74,7 +74,7 @@ export const FolderUploadItem = observer(
           const foundParent = completedUploaded.find(
             e => e.generatedId === currentNode.generatedParentId
           );
-          let completed: BasicFileStructureResponseDto | undefined = undefined;
+          let completed: BasicFileStructureInRootDto | undefined = undefined;
 
           // Upload to backend must happen before sleep
           if (currentNode.children?.length) {

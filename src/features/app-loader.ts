@@ -2,8 +2,8 @@ import { LoaderFunctionArgs, redirect } from 'react-router-dom';
 import { ProfileController } from './profile/state/profile.controller';
 import { constants, ioc, UserApiService } from '../shared';
 import { ProfileStore } from './profile/state/profile.store';
-import { runInAction } from 'mobx';
 import { SharedStore } from './shared/state/shared.store';
+import { runInAction } from 'mobx';
 
 export const appLoader = async (_args: LoaderFunctionArgs) => {
   const profileController = ioc.getContainer().get(ProfileController);
