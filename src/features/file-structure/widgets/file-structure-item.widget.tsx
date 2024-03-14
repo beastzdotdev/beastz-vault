@@ -28,7 +28,7 @@ interface FileStuructureFileItemParams {
 export const FileStuructureFileItem = (params: FileStuructureFileItemParams): React.JSX.Element => {
   return (
     <div
-      className={`gorilla-file-structure-item group/gorilla-item ${
+      className={`gorilla-file-structure-item group/gorilla-item  ${
         params.isSelected ? 'gorilla-file-structure-item-selected' : ''
       }`}
       onClick={() => params.onSelected(params.id)}
@@ -55,7 +55,6 @@ export const FileStuructureFileItem = (params: FileStuructureFileItemParams): Re
 
         <div className="flex items-center justify-start w-[90px] pr-5">
           <p>{formatFileSize(params.sizeInBytes)}</p>
-          {/* <p>{params.sizeInBytes}</p> */}
         </div>
       </div>
 

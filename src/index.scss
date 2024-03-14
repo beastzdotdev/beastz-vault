@@ -22,6 +22,7 @@ $danger: $red4;
 $input-border-color: #ffffff00;
 
 $main-white-color: rgba(143, 153, 168, 0.4);
+$main-white-color-hover: rgba(143, 153, 168, 0.2);
 
 body {
   background-color: $dark-gray2;
@@ -175,20 +176,17 @@ body {
 .gorilla-file-structure {
   .gorilla-file-structure-item {
     @apply w-full rounded-none cursor-default select-none flex;
+    // transition-colors duration-75 ease-linear <- can bee added for animation
 
     background-color: $dark-gray3;
 
-    &:hover:has(.gorilla-file-structure-item-selected) {
-      background-color: $dark-gray4;
+    &:not(.gorilla-file-structure-item-selected):hover {
+      background-color: $main-white-color-hover;
     }
   }
 
   .gorilla-file-structure-item-selected {
     background: $main-white-color;
-  }
-
-  .gorilla-file-structure-icon {
-    @apply transition-all duration-100 ease-linear opacity-0;
   }
 }
 
