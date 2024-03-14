@@ -100,13 +100,14 @@ export const FolderUploadItem = observer(
               completed = data;
 
               if (isFirstNode) {
-                sharedController.createFileStructureInState(
-                  data,
-                  !folderUploadAtomicStore.keepBoth
-                );
-
                 isFirstNode = false;
               }
+
+              // update in state
+              sharedController.createFileStructureInState(
+                data,
+                !(isFirstNode ? folderUploadAtomicStore.keepBoth : true)
+              );
             }
           } else {
             const { data, error } = await fileStructureApiService.uploadFile({
@@ -126,11 +127,11 @@ export const FolderUploadItem = observer(
 
             if (data) {
               completed = data;
+
+              // update in state
+              sharedController.createFileStructureInState(data, false);
             }
           }
-
-          console.log('='.repeat(20));
-          console.log(completed);
 
           if (completed) {
             completedUploaded.push({
