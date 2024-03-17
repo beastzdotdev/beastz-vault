@@ -1,5 +1,5 @@
 import { runInAction, toJS } from 'mobx';
-import { Singleton, Inject, BasicFileStructureInRootDto } from '../../../shared';
+import { Singleton, Inject, RootFileStructure } from '../../../shared';
 import { SharedStore } from './shared.store';
 import { BasicFileStructureInBodyDto } from './shared.type';
 
@@ -8,7 +8,7 @@ export class SharedController {
   @Inject(SharedStore)
   private readonly sharedStore: SharedStore;
 
-  async createFileStructureInState(data: BasicFileStructureInRootDto, isReplaced: boolean) {
+  async createFileStructureInState(data: RootFileStructure, isReplaced: boolean) {
     runInAction(() => {
       //! 1. handle active body state first (check if url and parent id matches)
       if (
@@ -42,16 +42,16 @@ export class SharedController {
         }
       } else {
         isReplaced
-          ? this.sharedStore.replaceActiveFileStructureInRoot(data)
-          : this.sharedStore.pushActiveFileStructureInRoot(data);
+          ? this.sharedStore.replaceActiveRootFileStructure(data)
+          : this.sharedStore.pushActiveRootFileStructure(data);
       }
     });
 
     console.log('='.repeat(20));
-    console.log(toJS(this.sharedStore.activeFileStructureInRoot));
+    console.log(toJS(this.sharedStore.activeRootFileStructure));
   }
 
-  setFileStructureBodyFromRoot(value: BasicFileStructureInRootDto[]) {
+  setFileStructureBodyFromRoot(value: RootFileStructure[]) {
     const newArr = BasicFileStructureInBodyDto.transformMany(value);
     newArr.forEach(e => e.setExtraParams({ isSelected: false }));
 

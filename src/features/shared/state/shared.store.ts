@@ -1,5 +1,5 @@
 import { makeAutoObservable } from 'mobx';
-import { BasicFileStructureInRootDto, Singleton } from '../../../shared';
+import { RootFileStructure, Singleton } from '../../../shared';
 import { BasicFileStructureInBodyDto } from './shared.type';
 
 @Singleton
@@ -9,7 +9,7 @@ export class SharedStore {
 
   private _shouldRender: boolean;
   private _activeFileStructureInBody: BasicFileStructureInBodyDto[];
-  private _activeFileStructureInRoot: BasicFileStructureInRootDto[];
+  private _activeRootFileStructure: RootFileStructure[];
 
   constructor() {
     makeAutoObservable(this);
@@ -30,8 +30,8 @@ export class SharedStore {
     return this._activeFileStructureInBody;
   }
 
-  get activeFileStructureInRoot(): BasicFileStructureInRootDto[] {
-    return this._activeFileStructureInRoot;
+  get activeRootFileStructure(): RootFileStructure[] {
+    return this._activeRootFileStructure;
   }
 
   get activeId(): number | 'root' {
@@ -51,8 +51,8 @@ export class SharedStore {
   setActiveFileStructureInBody(value: BasicFileStructureInBodyDto[]) {
     this._activeFileStructureInBody = value;
   }
-  setActiveFileStructureInRoot(value: BasicFileStructureInRootDto[]) {
-    this._activeFileStructureInRoot = value;
+  setActiveRootFileStructure(value: RootFileStructure[]) {
+    this._activeRootFileStructure = value;
   }
 
   //====================================================
@@ -75,16 +75,16 @@ export class SharedStore {
     }
   }
 
-  pushActiveFileStructureInRoot(value: BasicFileStructureInRootDto) {
-    this._activeFileStructureInRoot.push(value);
+  pushActiveRootFileStructure(value: RootFileStructure) {
+    this._activeRootFileStructure.push(value);
   }
 
-  replaceActiveFileStructureInRoot(value: BasicFileStructureInRootDto) {
+  replaceActiveRootFileStructure(value: RootFileStructure) {
     // find by path and type because file and folder can have same path in same parent
-    const index = this._activeFileStructureInRoot.findIndex(e => e.path === value.path);
+    const index = this._activeRootFileStructure.findIndex(e => e.path === value.path);
 
     if (index !== -1) {
-      this._activeFileStructureInRoot[index] = value;
+      this._activeRootFileStructure[index] = value;
     }
   }
 
@@ -94,8 +94,8 @@ export class SharedStore {
     });
   }
 
-  search(id: number): BasicFileStructureInRootDto | null {
-    for (const child of this.activeFileStructureInRoot) {
+  search(id: number): RootFileStructure | null {
+    for (const child of this._activeRootFileStructure) {
       if (child.isFile) {
         continue;
       }
@@ -109,14 +109,23 @@ export class SharedStore {
     return null;
   }
 
+  forEachNode(callback: (node: RootFileStructure) => void): void {
+    for (const child of this._activeRootFileStructure) {
+      if (child.isFile) {
+        continue;
+      }
+
+      callback(child);
+
+      this.forEachNodeHelper(child, callback);
+    }
+  }
+
   //====================================================
   // Helpers (Private)
   //====================================================
 
-  private _searchHelper(
-    node: BasicFileStructureInRootDto,
-    id: number
-  ): BasicFileStructureInRootDto | null {
+  private _searchHelper(node: RootFileStructure, id: number): RootFileStructure | null {
     if (!node) return null;
     if (node.id === id) return node;
 
@@ -132,5 +141,22 @@ export class SharedStore {
     }
 
     return null;
+  }
+
+  private forEachNodeHelper(
+    node: RootFileStructure,
+    callback: (node: RootFileStructure) => void
+  ): void {
+    if (!node) return;
+
+    for (const child of node.children) {
+      if (child.isFile) {
+        continue;
+      }
+
+      callback(child);
+
+      this.forEachNodeHelper(child, callback);
+    }
   }
 }

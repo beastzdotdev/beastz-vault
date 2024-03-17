@@ -3,27 +3,30 @@ import { AxiosApiResponse } from '../../types';
 import { ClientApiError } from '../../errors/client-error.schema';
 import { Singleton } from '../../ioc';
 import {
-  BasicFileStructureInRootDto,
+  BasicFileStructureResponseDto,
   DetectDuplicateResponseDto,
 } from './file-structure-api.schema';
+import { RootFileStructure } from '../..';
 
 @Singleton
 export class FileStructureApiService {
-  async getContent(parentId?: number): Promise<AxiosApiResponse<BasicFileStructureInRootDto[]>> {
+  async getContent(parentId?: number): Promise<AxiosApiResponse<RootFileStructure[]>> {
     try {
-      const result = await api.get(`file-structure/content`, { params: { parentId } });
+      const result = await api.get<BasicFileStructureResponseDto[]>(`file-structure/content`, {
+        params: { parentId },
+      });
 
-      return { data: BasicFileStructureInRootDto.transformMany(result.data) };
+      return { data: result.data.map(e => RootFileStructure.customTransform(e)) };
     } catch (e: unknown) {
       return { error: e as ClientApiError };
     }
   }
 
-  async getById(id: string): Promise<AxiosApiResponse<BasicFileStructureInRootDto>> {
+  async getById(id: string): Promise<AxiosApiResponse<RootFileStructure>> {
     try {
-      const result = await api.get(`file-structure/${id}`);
+      const result = await api.get<BasicFileStructureResponseDto>(`file-structure/${id}`);
 
-      return { data: BasicFileStructureInRootDto.transform(result.data) };
+      return { data: RootFileStructure.customTransform(result.data) };
     } catch (e: unknown) {
       return { error: e as ClientApiError };
     }
@@ -35,7 +38,10 @@ export class FileStructureApiService {
     isFile: boolean;
   }): Promise<AxiosApiResponse<DetectDuplicateResponseDto[]>> {
     try {
-      const result = await api.get(`file-structure/detect-duplicate`, { params });
+      const result = await api.get<DetectDuplicateResponseDto[]>(
+        `file-structure/detect-duplicate`,
+        { params }
+      );
 
       return { data: result.data };
     } catch (e: unknown) {
@@ -48,7 +54,7 @@ export class FileStructureApiService {
     keepBoth: boolean;
     parentId?: number;
     rootParentId?: number;
-  }): Promise<AxiosApiResponse<BasicFileStructureInRootDto>> {
+  }): Promise<AxiosApiResponse<RootFileStructure>> {
     const { file, parentId, rootParentId } = params;
 
     const formData = new FormData();
@@ -66,13 +72,17 @@ export class FileStructureApiService {
     }
 
     try {
-      const result = await api.post('file-structure/upload-file', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const result = await api.post<BasicFileStructureResponseDto>(
+        'file-structure/upload-file',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
 
-      return { data: BasicFileStructureInRootDto.transform(result.data) };
+      return { data: RootFileStructure.customTransform(result.data) };
     } catch (e: unknown) {
       return { error: e as ClientApiError };
     }
@@ -83,11 +93,14 @@ export class FileStructureApiService {
     keepBoth: boolean;
     parentId?: number;
     rootParentId?: number;
-  }): Promise<AxiosApiResponse<BasicFileStructureInRootDto>> {
+  }): Promise<AxiosApiResponse<RootFileStructure>> {
     try {
-      const result = await api.post('file-structure/create-folder', params);
+      const result = await api.post<BasicFileStructureResponseDto>(
+        'file-structure/create-folder',
+        params
+      );
 
-      return { data: BasicFileStructureInRootDto.transform(result.data) };
+      return { data: RootFileStructure.customTransform(result.data) };
     } catch (e: unknown) {
       return { error: e as ClientApiError };
     }

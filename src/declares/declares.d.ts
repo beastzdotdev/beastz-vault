@@ -12,16 +12,15 @@ declare module '*.svg' {
  * and i do not wanted to map every BasicFileStructureInRootDto into TreeNodeInfo which would have cause
  * lot of perfomance issues (on recursively creating new object) so I just took TreeNodeInfo as is and
  * just declared it again as bellow.
- * Finally because TreeNodeInfo is no longer "pure" it was aliased as RootFS (Root file structure)
  *
  * Better example for perfomance would be to just add additional parameter (e.g. BasicFileStructureInRootDto)
  * to existing object (e.g. TreeNodeInfo) rather than creating new one and allocating more memory
  */
 declare module '@blueprintjs/core/lib/esm/components/tree/treeTypes' {
   interface TreeNodeInfo extends BasicFileStructureInRootDto {}
-  export type RootFS = TreeNodeInfo;
-}
 
+  // static nodeFromPath<U>(path: readonly number[], treeNodes?: ReadonlyArray<TreeNodeInfo<U>>): TreeNodeInfo<U>;
+}
 /**
  * ///TODO this needs ground up refactor here is list what we can do
  *

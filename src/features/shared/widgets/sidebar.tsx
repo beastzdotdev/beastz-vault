@@ -1,119 +1,22 @@
 import { Button, ButtonGroup, Menu, MenuDivider, MenuItem, Popover, Icon } from '@blueprintjs/core';
 import logo from '../../../assets/images/profile/doodle-man-1.svg';
 import { useRef, useState } from 'react';
-import { SidebarNodeInfo, SidebarTree } from '../../../widgets/sidebar-tree';
+import { SidebarTree } from '../../../widgets/sidebar-tree';
 import { router } from '../../../router';
-import { BasicFileStructureInRootDto, constants } from '../../../shared';
+import { constants } from '../../../shared';
 import { useResize } from '../../../hooks/use-resize.hook';
 import { FileUploadItem } from './file-upload/file-upload-item';
 import { FolderUploadItem } from './folder-upload/folder-upload-item';
 import { CreateFolderDialogWidget } from './create-folder-dialog/create-folder-dialog.widget';
-import { observer } from 'mobx-react-lite';
-import { useInjection } from 'inversify-react';
-import { SharedStore } from '../state/shared.store';
 
-// const INITIAL_STATE: SidebarNodeInfo[] = [
-//   {
-//     id: 0,
-//     icon: 'folder-close',
-//     label: 'Folder -1',
-//     childNodes: [],
-//   },
-//   {
-//     id: 1,
-//     icon: 'folder-close',
-//     label: 'Folder 0',
-//     childNodes: [
-//       // eslint-disable-next-line no-constant-condition
-//       ...(1 >= 1
-//         ? Array.from({ length: 20 }, () => ({
-//             id: uuid(),
-//             icon: 'document' as const,
-//             label: uuid(),
-//           }))
-//         : []),
-//     ],
-//   },
-
-//   {
-//     id: 2,
-//     icon: 'folder-close',
-//     isExpanded: false,
-//     label: 'Folder 1',
-//     nodeData: {
-//       link: '/profile',
-//     },
-//     childNodes: [
-//       {
-//         id: 1,
-//         icon: 'document',
-//         label: 'Something.txt',
-//       },
-//       {
-//         id: 2,
-//         icon: 'document',
-//         label: 'Profile-backup.jpg',
-//       },
-
-//       {
-//         id: 3,
-//         label: 'Something',
-//       },
-//       {
-//         id: 4,
-//         hasCaret: true,
-//         icon: 'folder-close',
-//         label: (
-//           <ContextMenu content={<div>Hello there!</div>}>
-//             <Tooltip content="foo" placement="right">
-//               Folder 2
-//             </Tooltip>
-//           </ContextMenu>
-//         ),
-//       },
-//     ],
-//   },
-// ];
-
-// const INITIAL_STATE2: SidebarNodeInfo[] = [
-//   {
-//     id: 0,
-//     icon: 'folder-close',
-//     label: 'Some stuff',
-//     childNodes: [],
-//     isExpanded: false,
-//   },
-//   {
-//     id: 1,
-//     icon: 'folder-close',
-//     label: 'Misc',
-//     childNodes: [],
-//     isExpanded: false,
-//   },
-//   {
-//     id: 2,
-//     icon: 'folder-close',
-//     isExpanded: false,
-//     label: 'Interseting stuff',
-//     nodeData: {
-//       link: '/xprofile',
-//     },
-//   },
-// ];
-
-export const Sidebar = observer(() => {
+export const Sidebar = () => {
   const { sidebarRef, sidebarWidth, startResizing } = useResize();
-  // const [showBookmarks, setShowBookmarks] = useState(true);
+  const [showBookmarks, setShowBookmarks] = useState(true);
   const [showFiles, setShowFiles] = useState(true);
   const fileUploadRef = useRef<HTMLInputElement>(null);
   const folderUploadRef = useRef<HTMLInputElement>(null);
 
-  const sharedStore = useInjection(SharedStore);
-
   const [isFolderCreateOpen, setIsFolderCreateOpen] = useState(false);
-
-  // console.log('='.repeat(20));
-  // console.log(convertDataForTree(sharedStore.activeFileStructureInRoot));
 
   return (
     <div
@@ -202,13 +105,13 @@ export const Sidebar = observer(() => {
 
         <div className="flex-1 overflow-y-auto z-10">
           {/*TODO Bookmarks are temporary disabled */}
-          {/* <div
+          <div
             className="hover:bg-zinc-800 active:bg-zinc-700 w-fit ml-3"
             onClick={() => setShowBookmarks(!showBookmarks)}
           >
             <p className="text-xs text-zinc-500 font-bold cursor-pointer">Bookmarks</p>
           </div>
-          {showBookmarks && <SidebarTree state={INITIAL_STATE} />} */}
+          {/* {showBookmarks && <SidebarTree state={INITIAL_STATE} />} */}
 
           <div className="my-2"></div>
 
@@ -219,9 +122,7 @@ export const Sidebar = observer(() => {
             <p className="text-xs text-zinc-500 font-bold cursor-pointer">Files</p>
           </div>
 
-          {showFiles && (
-            <SidebarTree state={convertDataForTree(sharedStore.activeFileStructureInRoot)} />
-          )}
+          {showFiles && <SidebarTree />}
 
           <div className="my-5"></div>
 
@@ -248,40 +149,4 @@ export const Sidebar = observer(() => {
       </div>
     </div>
   );
-});
-
-function convertDataForTree(data: BasicFileStructureInRootDto[]): SidebarNodeInfo[] {
-  return data.map(item => {
-    const newItem = item as unknown as SidebarNodeInfo;
-
-    newItem.icon = item.isFile ? 'document' : 'folder-close';
-    newItem.label = item.isFile ? item.title + item.fileExstensionRaw : item.title;
-    newItem.isExpanded = false;
-    newItem.childNodes = item.isFile ? undefined : [];
-
-    if (item.isFile) {
-      newItem.nodeData = {
-        isFile: true,
-        path: item.path,
-      };
-    } else {
-      newItem.nodeData = {
-        isFile: false,
-        path: item.path,
-        link: item.rootParentId
-          ? `/file-structure?id=${item.id}&root_parent_id=${item.rootParentId}`
-          : `/file-structure?id=${item.id}&root_parent_id=${item.id}`,
-      };
-    }
-
-    newItem.hasCaret = false;
-    if (item?.children?.length) {
-      newItem.childNodes = convertDataForTree(item.children);
-      newItem.hasCaret = true;
-
-      return newItem;
-    } else {
-      return newItem;
-    }
-  });
-}
+};

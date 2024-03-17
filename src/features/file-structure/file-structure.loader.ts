@@ -30,13 +30,14 @@ export const fileStructureLoader = async (_args: LoaderFunctionArgs) => {
 
   // root content must always be set like if user is in deeply nested folder and user resets page
   const { data: rootData, error: rootDataError } = await fileStructureApiService.getContent();
+  // console.log(JSON.stringify(rootData, null, 2));
 
   if (rootDataError || !rootData) {
     throw new Error('Sorry, something went wrong');
   }
 
   //! Always set root data when initial loading for sidebar
-  sharedStore.setActiveFileStructureInRoot(rootData);
+  sharedStore.setActiveRootFileStructure(rootData);
 
   // 3. if id is root then ignore because it is already set
   if (id === 'root') {

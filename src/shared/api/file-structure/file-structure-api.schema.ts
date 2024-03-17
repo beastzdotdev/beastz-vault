@@ -1,13 +1,6 @@
-import { Type, plainToInstance } from 'class-transformer';
 import { FileMimeType } from '../../enum/file-mimte-type.enum';
-import { makeAutoObservable, runInAction } from 'mobx';
-import { BasicFileStructure } from '../..';
 
-export class BasicFileStructureInRootDto implements BasicFileStructure {
-  constructor() {
-    makeAutoObservable(this);
-  }
-
+export class BasicFileStructureResponseDto {
   id: number;
   path: string;
   title: string;
@@ -22,30 +15,9 @@ export class BasicFileStructureInRootDto implements BasicFileStructure {
   rootParentId: number | null;
   parentId: number | null;
 
-  @Type(() => Date)
   lastModifiedAt: Date | null;
-
-  @Type(() => Date)
   createdAt: Date;
-
-  @Type(() => BasicFileStructureInRootDto)
-  children: BasicFileStructureInRootDto[];
-
-  static transformMany<V extends Array<V>>(data: V): BasicFileStructureInRootDto[] {
-    return runInAction(() => {
-      return plainToInstance<BasicFileStructureInRootDto, V>(BasicFileStructureInRootDto, data, {
-        enableImplicitConversion: true,
-      });
-    });
-  }
-
-  static transform<V>(data: V): BasicFileStructureInRootDto {
-    return runInAction(() => {
-      return plainToInstance<BasicFileStructureInRootDto, V>(BasicFileStructureInRootDto, data, {
-        enableImplicitConversion: true,
-      });
-    });
-  }
+  children: BasicFileStructureResponseDto[];
 }
 
 export class DetectDuplicateResponseDto {
