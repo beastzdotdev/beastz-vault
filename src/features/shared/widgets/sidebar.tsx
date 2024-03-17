@@ -1,9 +1,9 @@
 import { Button, ButtonGroup, Menu, MenuDivider, MenuItem, Popover, Icon } from '@blueprintjs/core';
 import logo from '../../../assets/images/profile/doodle-man-1.svg';
 import { useRef, useState } from 'react';
-import { SidebarTree } from '../../../widgets/sidebar-tree';
+import { SidebarNodeInfo, SidebarTree } from '../../../widgets/sidebar-tree';
 import { router } from '../../../router';
-import { constants } from '../../../shared';
+import { BasicFileStructureInRootDto, constants } from '../../../shared';
 import { useResize } from '../../../hooks/use-resize.hook';
 import { FileUploadItem } from './file-upload/file-upload-item';
 import { FolderUploadItem } from './folder-upload/folder-upload-item';
@@ -112,6 +112,9 @@ export const Sidebar = observer(() => {
 
   const [isFolderCreateOpen, setIsFolderCreateOpen] = useState(false);
 
+  // console.log('='.repeat(20));
+  // console.log(convertDataForTree(sharedStore.activeFileStructureInRoot));
+
   return (
     <div
       className="gorilla-sidebar bg-zinc-900 h-screen relative max-w-[600px] min-w-[250px] select-none"
@@ -217,31 +220,7 @@ export const Sidebar = observer(() => {
           </div>
 
           {showFiles && (
-            <SidebarTree
-              state={
-                sharedStore.activeFileStructureInRoot?.map(e => ({
-                  id: e.id,
-                  icon: e.isFile ? 'document' : 'folder-close',
-                  label: e.isFile ? e.title + e.fileExstensionRaw : e.title,
-                  isExpanded: false,
-                  childNodes: e.isFile ? undefined : [],
-                  ...(e.isFile
-                    ? {
-                        nodeData: {
-                          isFile: true,
-                        },
-                      }
-                    : {
-                        nodeData: {
-                          isFile: false,
-                          link: e.rootParentId
-                            ? `/file-structure?id=${e.id}&root_parent_id=${e.rootParentId}`
-                            : `/file-structure?id=${e.id}&root_parent_id=${e.id}`,
-                        },
-                      }),
-                })) ?? []
-              }
-            />
+            <SidebarTree state={convertDataForTree(sharedStore.activeFileStructureInRoot)} />
           )}
 
           <div className="my-5"></div>
@@ -270,3 +249,39 @@ export const Sidebar = observer(() => {
     </div>
   );
 });
+
+function convertDataForTree(data: BasicFileStructureInRootDto[]): SidebarNodeInfo[] {
+  return data.map(item => {
+    const newItem = item as unknown as SidebarNodeInfo;
+
+    newItem.icon = item.isFile ? 'document' : 'folder-close';
+    newItem.label = item.isFile ? item.title + item.fileExstensionRaw : item.title;
+    newItem.isExpanded = false;
+    newItem.childNodes = item.isFile ? undefined : [];
+
+    if (item.isFile) {
+      newItem.nodeData = {
+        isFile: true,
+        path: item.path,
+      };
+    } else {
+      newItem.nodeData = {
+        isFile: false,
+        path: item.path,
+        link: item.rootParentId
+          ? `/file-structure?id=${item.id}&root_parent_id=${item.rootParentId}`
+          : `/file-structure?id=${item.id}&root_parent_id=${item.id}`,
+      };
+    }
+
+    newItem.hasCaret = false;
+    if (item?.children?.length) {
+      newItem.childNodes = convertDataForTree(item.children);
+      newItem.hasCaret = true;
+
+      return newItem;
+    } else {
+      return newItem;
+    }
+  });
+}

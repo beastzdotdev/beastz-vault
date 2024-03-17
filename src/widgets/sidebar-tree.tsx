@@ -2,7 +2,7 @@ import { TreeNodeInfo, Tree } from '@blueprintjs/core';
 import { useCallback, useEffect, useReducer } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-type SidebarNodeInfo = TreeNodeInfo<{ link?: string; isFile: boolean }>;
+export type SidebarNodeInfo = TreeNodeInfo<{ link?: string; isFile: boolean; path: string }>;
 
 type ReactClick = React.MouseEvent<HTMLElement>;
 type NodePath = number[];
@@ -12,6 +12,8 @@ type TreeAction =
   | { type: 'SET_IS_SELECTED'; payload: { path: NodePath; isSelected: boolean } }
   | { type: 'SELECT_ON_ROUTE_CHANGE'; payload: { path: string } }
   | { type: 'UPDATE_STATE'; payload: { data: SidebarNodeInfo[] } };
+
+type SelectOnRouteChangeAction = Extract<TreeAction, { type: 'SELECT_ON_ROUTE_CHANGE' }>;
 
 const forEachNode = (
   nodes: SidebarNodeInfo[] | undefined,
@@ -27,19 +29,41 @@ const forEachNode = (
   }
 };
 
-const forEachNodeFindByUrl = (nodes: SidebarNodeInfo[] | undefined, path: string) => {
+const forEachNodeFindByUrl = (
+  nodes: SidebarNodeInfo[] | undefined,
+  path: string
+): SidebarNodeInfo | undefined => {
   if (nodes === undefined) {
     return;
   }
 
   for (const node of nodes) {
-    // if (node.nodeData?.link?.startsWith(path)) { // <- can be used later
     if (node.nodeData?.link === path) {
       node.isSelected = true;
+      return node;
+    }
+
+    const foundNode = forEachNodeFindByUrl(node.childNodes, path);
+    if (foundNode) {
+      return foundNode;
+    }
+  }
+
+  return;
+};
+
+const forEachNodeExpand = (nodes: SidebarNodeInfo[] | undefined, path: string) => {
+  if (nodes === undefined) {
+    return;
+  }
+
+  for (const node of nodes) {
+    if (path.startsWith(node.nodeData!.path)) {
+      node.isExpanded = true;
       return;
     }
 
-    forEachNodeFindByUrl(node.childNodes, path);
+    forEachNodeExpand(node.childNodes, path);
   }
 };
 
@@ -48,7 +72,9 @@ function treeExampleReducer(state: SidebarNodeInfo[], action: TreeAction) {
 
   switch (action.type) {
     case 'DESELECT_ALL':
-      forEachNode(newState, node => (node.isSelected = false));
+      forEachNode(newState, node => {
+        node.isSelected = false;
+      });
       break;
     case 'SET_IS_EXPANDED':
       Tree.nodeFromPath(action.payload.path, newState).isExpanded = action.payload.isExpanded;
@@ -57,13 +83,26 @@ function treeExampleReducer(state: SidebarNodeInfo[], action: TreeAction) {
       Tree.nodeFromPath(action.payload.path, newState).isSelected = action.payload.isSelected;
       break;
     case 'SELECT_ON_ROUTE_CHANGE':
-      forEachNodeFindByUrl(newState, action.payload.path);
+      // forEachNodeFindByUrl(newState, action.payload.path);
+      selectAndExpandOnRouteChange(newState, action);
       break;
     case 'UPDATE_STATE':
       return action.payload.data;
   }
 
   return newState;
+}
+
+function selectAndExpandOnRouteChange(
+  newState: SidebarNodeInfo[],
+  action: SelectOnRouteChangeAction
+) {
+  const x = forEachNodeFindByUrl(newState, action.payload.path);
+  console.log('='.repeat(20));
+  console.log(x);
+  if (x && x.parentId !== null) {
+    forEachNodeExpand(newState, x.nodeData!.path);
+  }
 }
 
 export const SidebarTree = (params: { state: SidebarNodeInfo[] }) => {
@@ -102,7 +141,7 @@ export const SidebarTree = (params: { state: SidebarNodeInfo[] }) => {
       },
     });
 
-    revalidateTreeSelectionStatus();
+    // revalidateTreeSelectionStatus();
   }, [params.state, revalidateTreeSelectionStatus]);
 
   const handleNodeClick = useCallback(
@@ -128,7 +167,7 @@ export const SidebarTree = (params: { state: SidebarNodeInfo[] }) => {
         const nodeDataUrlObj = new URL(existingLocation.origin + nodeData.link);
         const existingUrlObj = new URL(existingLocation.href);
 
-        // this means node data click happens on same page
+        // check node data click happens on same page
         if (
           nodeDataUrlObj.searchParams.get('id') === existingUrlObj.searchParams.get('id') &&
           nodeDataUrlObj.searchParams.get('root_parent_id') ===

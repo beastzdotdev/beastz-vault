@@ -45,3 +45,8 @@ TODO create intro website and could use this lib: https://ui.aceternity.com/comp
 
 
 TODO right now folder and files upload works only on at a time if you want to upload another folder or files while others are uploading than u need to implement like drive does just run another start function and add toasts to main toast (reset must be adjusted) 
+
+
+
+TODO checkout this https://etherpad.org/#/#download
+TODO checkout this https://million.dev/lint
