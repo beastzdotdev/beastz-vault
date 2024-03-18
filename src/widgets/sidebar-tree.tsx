@@ -1,9 +1,9 @@
-import { Tree, TreeProps } from '@blueprintjs/core';
+import { Intent, Spinner, Tree, TreeProps } from '@blueprintjs/core';
 import { useInjection } from 'inversify-react';
 import { SharedStore } from '../features/shared/state/shared.store';
 import { useCallback, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { RootFileStructure } from '../shared';
+import { FileStructureApiService, RootFileStructure } from '../shared';
 import { getFileStructureUrlParams } from '../features/shared/helper/get-url-params';
 import { observer } from 'mobx-react-lite';
 
@@ -14,9 +14,12 @@ export const SidebarTree = observer(() => {
   const navigate = useNavigate();
 
   const sharedStore = useInjection(SharedStore);
+  const fileStructureApiService = useInjection(FileStructureApiService);
   const [render, setRender] = useState(true);
 
   const revalidateTreeSelectionStatus = useCallback(() => {
+    console.log('='.repeat(20));
+    console.log('revalidateTreeSelectionStatus');
     if (location.pathname === '/') {
       return;
     }
@@ -30,10 +33,8 @@ export const SidebarTree = observer(() => {
     sharedStore.forEachNode(node => {
       node.setIsSelected(node.id === parentId);
 
-      if (
-        folderPath.startsWith(node.path) &&
-        (folderPath === node.path || folderPath[node.path.length] === '/')
-      ) {
+      // expand all parent only
+      if (folderPath.startsWith(node.path) && folderPath[node.path.length] === '/') {
         node.setIsExpanded(true);
       }
     });
@@ -50,6 +51,8 @@ export const SidebarTree = observer(() => {
 
   const handleNodeClick = useCallback(
     (node: RootFileStructure, _nodePath: NodePath, _e: React.MouseEvent<HTMLElement>) => {
+      console.log('='.repeat(20));
+      console.log('handleNodeClick');
       if (node.isFile) {
         console.log('='.repeat(20));
         console.log('Is file');
@@ -78,13 +81,52 @@ export const SidebarTree = observer(() => {
     [navigate]
   );
 
-  const toggleNode = useCallback(
-    (id: number, value: boolean) => {
-      sharedStore.search(id)?.setIsExpanded(value);
-      setRender(!render);
-    },
-    [sharedStore, render]
-  );
+  const toggleNode = useCallback(async (id: number, value: boolean) => {
+    console.log('='.repeat(20));
+    console.log('toggleNode');
+
+    const node = sharedStore.search(id);
+
+    if (value === true) {
+      if (node && !node.childNodes?.length) {
+        node.disabled = true;
+        node.secondaryLabel = <Spinner size={20} intent={Intent.PRIMARY} />;
+        setRender(prevRender => !prevRender);
+
+        // fetch data
+        console.log('='.repeat(20));
+        console.log('started');
+
+        const startTime = new Date(); // Start time
+        const { data, error } = await fileStructureApiService.getContent(id);
+        // Calculate time taken
+        const endTime = new Date();
+
+        if (data) {
+          for (const item of data) {
+            node.children?.push(item);
+            node.childNodes = node.children;
+          }
+        }
+
+        // this is necessary because if axios took less than 1 second junk animation happens
+        if (endTime.getTime() - startTime.getTime() < 1000) {
+          // wait for 1 second
+          await new Promise(f => setTimeout(f, 1000));
+        }
+
+        node.secondaryLabel = undefined;
+        node.disabled = false;
+      }
+
+      node?.setIsExpanded(true);
+    } else {
+      node?.setIsExpanded(false);
+    }
+
+    console.log('done');
+    setRender(prevRender => !prevRender);
+  }, []);
 
   const handleNodeCollapse = useCallback(
     (node: RootFileStructure, _nodePath: NodePath) => toggleNode(node.id, false),

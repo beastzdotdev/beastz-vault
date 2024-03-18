@@ -26,7 +26,7 @@ export class RootFileStructure implements TreeNodeInfo<SidebarNodeData> {
 
   //! From original TreeNodeInfo
   className?: string | undefined;
-  childNodes?: TreeNodeInfo<SidebarNodeData>[] | undefined;
+  childNodes?: RootFileStructure[] | undefined;
   disabled?: boolean | undefined;
   hasCaret?: boolean | undefined;
   icon?: IconName | MaybeElement;
@@ -79,11 +79,11 @@ export class RootFileStructure implements TreeNodeInfo<SidebarNodeData> {
         };
       }
 
-      newItem.hasCaret = false;
+      // newItem.hasCaret = false;
       if (data?.children?.length) {
         newItem.children = data.children.map(e => this.customTransform(e));
         newItem.childNodes = newItem.children; // chilod node are only reference
-        newItem.hasCaret = true;
+        // newItem.hasCaret = true;
 
         return newItem;
       } else {

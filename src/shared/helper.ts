@@ -1,7 +1,7 @@
 import queryString from 'query-string';
 
 import { ZodError, z } from 'zod';
-import { FormikValidationError } from '.';
+import { FormikValidationError, RootFileStructure } from '.';
 
 export const stringEncode = (text: string): Uint8Array => new TextEncoder().encode(text);
 export const stringDecode = (buffer: ArrayBuffer): string => new TextDecoder().decode(buffer);
@@ -127,3 +127,14 @@ export const classNames = (
 };
 
 export const sleep = (ms: number = 1000) => new Promise(f => setTimeout(f, ms));
+
+export const mapRecursiveFileStructure = (
+  data: RootFileStructure,
+  callBack: (item: RootFileStructure) => void
+) => {
+  callBack(data);
+
+  for (const child of data.childNodes || []) {
+    mapRecursiveFileStructure(child, callBack);
+  }
+};
