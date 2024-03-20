@@ -1,15 +1,25 @@
 import { LoaderFunctionArgs, redirect } from 'react-router-dom';
-import { FileStructureApiService, getQueryParams, ioc } from '../../shared';
 import { SharedController } from '../shared/state/shared.controller';
 import { SharedStore } from '../shared/state/shared.store';
+import {
+  AxiosApiResponse,
+  FileStructureApiService,
+  RootFileStructure,
+  getQueryParams,
+  ioc,
+} from '../../shared';
 
 /**
  * @description
  * ! Here _args.request.url will definitely have pathname of /file-structure so no need to check that
  */
 export const fileStructureLoader = async (_args: LoaderFunctionArgs) => {
-  const queryParams = getQueryParams<{ id?: string; root_parent_id?: number }>(_args.request.url);
-  const { id, root_parent_id: rootParentId } = queryParams;
+  const queryParams = getQueryParams<{
+    id?: number | 'root';
+    root_parent_id?: number;
+    path?: string;
+  }>(_args.request.url);
+  const { id, root_parent_id: rootParentId, path } = queryParams;
   const fileStructureApiService = ioc.getContainer().get(FileStructureApiService);
   const sharedController = ioc.getContainer().get(SharedController);
   const sharedStore = ioc.getContainer().get(SharedStore);
@@ -23,13 +33,27 @@ export const fileStructureLoader = async (_args: LoaderFunctionArgs) => {
   }
 
   // 2. Validate url query parameters
-  const correctRouteParams = !!((id && id === 'root') || (id && rootParentId && id !== 'root'));
+  const correctRouteParams = !!(
+    (id && id === 'root') ||
+    (id && rootParentId && path && typeof id === 'number')
+  );
   if (!correctRouteParams) {
     throw new Error(); // router will handle this error
   }
 
+  let rootResponse: AxiosApiResponse<RootFileStructure[]>;
+
   // root content must always be set like if user is in deeply nested folder and user resets page
-  const { data: rootData, error: rootDataError } = await fileStructureApiService.getContent();
+  if (typeof id === 'number' && id !== rootParentId) {
+    rootResponse = await fileStructureApiService.getContent({
+      rootParentId,
+      focusParentId: id,
+    });
+  } else {
+    rootResponse = await fileStructureApiService.getContent();
+  }
+
+  const { data: rootData, error: rootDataError } = rootResponse;
 
   if (rootDataError || !rootData) {
     throw new Error('Sorry, something went wrong');
@@ -44,14 +68,14 @@ export const fileStructureLoader = async (_args: LoaderFunctionArgs) => {
     return 'ok';
   }
 
-  const parentId = parseInt(id);
+  const parentId = id;
 
   if (!parentId) {
     throw new Error('Sorry, something went wrong');
   }
 
   // 4. else handle get by id of file structure item (overrides only active file structure)
-  const { data, error } = await fileStructureApiService.getContent(parentId);
+  const { data, error } = await fileStructureApiService.getContent({ parentId });
 
   if (error || !data) {
     throw new Error('Sorry, something went wrong');

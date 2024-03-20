@@ -10,10 +10,14 @@ import { RootFileStructure } from '../..';
 
 @Singleton
 export class FileStructureApiService {
-  async getContent(parentId?: number): Promise<AxiosApiResponse<RootFileStructure[]>> {
+  async getContent(params?: {
+    parentId?: number;
+    rootParentId?: number;
+    focusParentId?: number;
+  }): Promise<AxiosApiResponse<RootFileStructure[]>> {
     try {
       const result = await api.get<BasicFileStructureResponseDto[]>(`file-structure/content`, {
-        params: { parentId },
+        params,
       });
 
       return { data: result.data.map(e => RootFileStructure.customTransform(e)) };

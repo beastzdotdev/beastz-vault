@@ -1,5 +1,5 @@
 import { runInAction, toJS } from 'mobx';
-import { Singleton, Inject, RootFileStructure, mapRecursiveFileStructure } from '../../../shared';
+import { Singleton, Inject, RootFileStructure } from '../../../shared';
 import { SharedStore } from './shared.store';
 import { BasicFileStructureInBodyDto } from './shared.type';
 
@@ -49,19 +49,6 @@ export class SharedController {
 
     console.log('='.repeat(20));
     console.log(toJS(this.sharedStore.activeRootFileStructure));
-  }
-
-  async appendToSidebarFolder(data: RootFileStructure[]) {
-    console.log('='.repeat(20));
-    console.log(data);
-    // for (const item of data) {
-    //   mapRecursiveFileStructure(item, obj => {
-    //     console.log('+'.repeat(20));
-    //     console.log(obj);
-    //     this.createFileStructureInState(obj, false);
-    //     // sharedController.createFileStructureInState(obj, false);
-    //   });
-    // }
   }
 
   setFileStructureBodyFromRoot(value: RootFileStructure[]) {
