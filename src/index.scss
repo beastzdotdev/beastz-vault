@@ -2,24 +2,49 @@
 @tailwind components;
 @tailwind utilities;
 
+@import './variables.scss';
+
 @import 'normalize.css';
 @import '@blueprintjs/core/lib/css/blueprint.css';
-@import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 @import '@blueprintjs/colors/lib/scss/colors';
 @import '@blueprintjs/core/src/common/variables';
 @import '@blueprintjs/core/src/common/mixins';
 
 @import '@blueprintjs/table/lib/css/table.css';
 @import '@blueprintjs/datetime2/src/blueprint-datetime2.scss';
+@import '@blueprintjs/select/lib/css/blueprint-select.css';
 
-$main: #ffffff00;
 $primary: $blue4;
 $success: $green4;
 $warning: $orange4;
 $danger: $red4;
+$input-border-color: #ffffff00;
+
+$main-white-color: rgba(143, 153, 168, 0.4);
+$main-white-color-hover: rgba(143, 153, 168, 0.2);
 
 body {
   background-color: $dark-gray2;
+}
+
+* {
+  &::-webkit-scrollbar {
+    width: 7px; // for vertical scrollbar thickness
+    height: 7px; // for horizontal scrollbar thickness
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba($color: #abb2bf, $alpha: 0.5);
+    border-radius: 10px;
+
+    &:hover {
+      background-color: rgba($color: #abb2bf, $alpha: 0.8);
+    }
+  }
+
+  &::-webkit-scrollbar-corner {
+    display: none;
+  }
 }
 
 // Override
@@ -29,10 +54,10 @@ body {
 
 .bp5-input {
   box-shadow: none !important;
-  border: 1px solid rgba($main, 0.2);
+  border: 1px solid rgba($input-border-color, 0.2);
 
   &:focus {
-    border: 1px solid rgba($main, 0.5);
+    border: 1px solid rgba($input-border-color, 0.5);
   }
 }
 
@@ -69,4 +94,114 @@ body {
   color: #e76a6e !important;
   box-shadow: none !important;
   border: 1px solid rgba(231, 106, 110, 0.5);
+}
+
+//! Dont delete (could be helpfull)
+// This highlight can be added for HELPER feature activation on frontend
+// .bp5-tree-node-caret:hover {
+//   background-color: rgba(95, 107, 124, 0.7);
+// }
+
+.gorilla-sidebar {
+  $sidebar-font-size: 13px;
+
+  .gorilla-profile {
+    border-radius: $global-border-radius;
+
+    &:hover {
+      background-color: rgba(95, 107, 124, 0.15);
+    }
+
+    &:active {
+      background-color: rgba(95, 107, 124, 0.3);
+    }
+  }
+
+  .gorilla-sidebar-buttons {
+    .bp5-button {
+      font-size: $sidebar-font-size;
+      border-radius: $global-border-radius;
+    }
+  }
+
+  .gorilla-sidebar-tree-nodes {
+    .bp5-tree-node.bp5-tree-node-selected > .bp5-tree-node-content {
+      background: $main-white-color;
+    }
+
+    .bp5-tree-node-content {
+      border-radius: $global-border-radius;
+      font-size: $sidebar-font-size;
+      margin: 1px 0;
+
+      &:hover {
+        background: rgba(143, 153, 168, 0.15);
+      }
+    }
+  }
+
+  .resize-bar {
+    .resize-line {
+      position: absolute; // this line is relative to resize bar
+      bottom: 0;
+      top: 0px;
+      width: 1px;
+      right: 6px;
+      background-color: rgba(95, 107, 124, 0.2);
+
+      //! For debug
+      // background-color: green;
+    }
+
+    position: absolute;
+    bottom: 0;
+    top: 0;
+    width: 12px;
+    right: -6px;
+
+    //! For debug
+    // background-color: rgba(255, 0, 0, 0.158);
+
+    &:hover {
+      cursor: col-resize; // resize curson must be on big resize bar
+
+      .resize-line {
+        background-color: rgba(95, 107, 124);
+      }
+    }
+  }
+}
+
+.gorilla-file-structure {
+  .gorilla-file-structure-item {
+    @apply w-full rounded-none cursor-default select-none flex;
+    // transition-colors duration-75 ease-linear <- can bee added for animation
+
+    background-color: $dark-gray3;
+
+    &:not(.gorilla-file-structure-item-selected):hover {
+      background-color: $main-white-color-hover;
+    }
+  }
+
+  .gorilla-file-structure-item-selected {
+    background: $main-white-color;
+  }
+}
+
+.only-for-file-upload {
+  .bp5-toast-message {
+    padding: 0;
+  }
+
+  // remove button group from toast (cannot be done via props, this is hacky way)
+  .bp5-button-group {
+    display: none;
+  }
+}
+
+.gorilla-global-alert {
+  .bp5-alert-contents {
+    flex: 1;
+  }
 }

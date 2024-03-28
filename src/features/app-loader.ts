@@ -1,21 +1,36 @@
-import { LoaderFunctionArgs } from 'react-router-dom';
+import { LoaderFunctionArgs, redirect } from 'react-router-dom';
 import { ProfileController } from './profile/state/profile.controller';
-import { ioc, UserApiService } from '../shared';
-import { SharedController } from './shared/state/shared.controller';
+import { constants, ioc, UserApiService } from '../shared';
+import { ProfileStore } from './profile/state/profile.store';
+import { SharedStore } from './shared/state/shared.store';
+import { runInAction } from 'mobx';
 
-export const rootLoader = async (_args: LoaderFunctionArgs) => {
-  const profile = ioc.getContainer().get(ProfileController);
-  const sharedController = ioc.getContainer().get(SharedController);
+export const appLoader = async (_args: LoaderFunctionArgs) => {
+  const profileController = ioc.getContainer().get(ProfileController);
+  const profileStore = ioc.getContainer().get(ProfileStore);
+  const sharedStore = ioc.getContainer().get(SharedStore);
   const userApiService = ioc.getContainer().get(UserApiService);
 
-  //TODO get error and show appropriate messages
-  const { data } = await userApiService.getCurrentUser();
+  await runInAction(async () => {
+    if (!profileStore.user) {
+      //TODO get error and show appropriate messages, handle error
+      const { data } = await userApiService.getCurrentUser();
 
-  // Api call will make sure whether user is locked, blocked or not verified
-  sharedController.setShouldRender(data ? true : false);
+      // Api call will make sure whether user is locked, blocked or not verified
+      sharedStore.setShouldRender(data ? true : false);
 
-  if (data) {
-    profile.setUser(data);
+      if (data) {
+        profileController.setUser(data);
+      }
+    }
+  });
+
+  const url = new URL(_args.request.url);
+
+  // if request url is root redirect to {constants.path.fileStructure} route
+  if (url.pathname === '/') {
+    url.pathname = constants.path.fileStructure;
+    return redirect(url.toString());
   }
 
   return 'ok';

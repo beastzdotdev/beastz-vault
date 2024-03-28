@@ -1,4 +1,5 @@
 export * from './api/index';
+export * from './model/index';
 export * from './bus/index';
 export * from './ioc/index';
 export * from './ui/index';

@@ -22,5 +22,35 @@ class BusContainer {
     return this.bus as Nanobus<T>;
   }
 }
-
+/**
+ * @example
+ *
+ * ### Example on regular short message
+ *
+ * ```tsx
+ * bus.emit('show-alert', { message: 'Hello this is message' });
+ *```
+ *<br>
+ * ### Example on tsx
+ *
+ * ```tsx
+ * bus.emit('show-alert', {
+ *     message: (
+ *       <>
+ *         <H3>This is example title</H3>
+ *         <br />
+ *
+ *         <CardList compact className="whitespace-nowrap max-h-64">
+ *           {fileSizeLimitMessages.map(e => (
+ *             <Card className="flex justify-between">
+ *               <p>{e.name}</p>
+ *               <p className="ml-3">{e.size}</p>
+ *             </Card>
+ *           ))}
+ *         </CardList>
+ *       </>
+ *     ),
+ *   });
+ *```
+ */
 export const bus = BusContainer.instance.getBus<BusEvents>();

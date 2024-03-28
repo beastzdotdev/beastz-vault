@@ -1,23 +1,30 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { App } from './features/app';
-import { Root } from './features/root/ui/root';
-import { ErrorPage } from './features/error/ui/error';
-import { rootLoader } from './features/app-loader';
-import { TableTest } from './features/experimental/ui/table-test';
-import { AuthSignUp } from './features/auth/ui/auth-sign-up';
-import { Profile } from './features/profile/ui/profile';
-import { TreeNodesTest } from './features/experimental/ui/tree-node-test';
-import { AuthUserNotVerified } from './features/auth/ui/auth-user-not-verified';
-import { AuthUserBlockedPage } from './features/auth/ui/auth-user-blocked';
-import { AuthUserLockedPage } from './features/auth/ui/auth-user-locked';
-import { Support } from './features/support/ui/support';
-import { AuthVerify } from './features/auth/ui/auth-verify';
-import { AuthRecoverPassword } from './features/auth/ui/auth-recover-password';
-import { Oops } from './features/auth/ui/oops';
-import { EncryptionTest } from './features/experimental/ui/encryption-test';
-import { ExperimentalRoot } from './features/experimental/ui/root';
-import { AuthSignIn } from './features/auth/ui/auth-sign-in';
+import { Root } from './features/root/root.page';
+import { ErrorPage } from './features/error/error.page';
+import { appLoader } from './features/app-loader';
+import { TableTestPage } from './features/experimental/table-test.page';
+import { AuthSignUpPage } from './features/auth/auth-sign-up.page';
+import { ProfilePage } from './features/profile/profile.page';
+import { TreeNodesTestPage } from './features/experimental/tree-node-test.page';
+import { AuthUserNotVerifiedPage } from './features/auth/auth-user-not-verified.page';
+import { AuthUserBlockedPage } from './features/auth/auth-user-blocked.page';
+import { AuthUserLockedPage } from './features/auth/auth-user-locked.page';
+import { SupportPage } from './features/support/support.page';
+import { AuthVerifyPage } from './features/auth/auth-verify.page';
+import { AuthRecoverPasswordPage } from './features/auth/auth-recover-password.page';
+import { OopsPage } from './features/auth/oops.page';
+import { EncryptionTestPage } from './features/experimental/encryption-test.page';
+import { ExperimentalRootPage } from './features/experimental/root.page';
+import { AuthSignInPage } from './features/auth/auth-sign-in.page';
 import { constants } from './shared';
+import { rootLoader } from './features/root/root-loader';
+import { TestRefreshFlowPage } from './features/experimental/test-refresh-flow.page';
+import { FileStructurePage } from './features/file-structure/file-strucutre.page';
+import { GuidePage } from './features/guide/guide.page';
+import { fileStructureLoader } from './features/file-structure/file-structure.loader';
+import { AppErrorPage } from './features/app-error.page';
+import { CardListLoaderTestPage } from './features/experimental/card-list-loader-test-page';
 
 export const router = createBrowserRouter([
   // under / every page is under auth protection
@@ -25,34 +32,52 @@ export const router = createBrowserRouter([
     path: '/',
     element: <App />,
     errorElement: <ErrorPage />,
-    loader: rootLoader,
+    loader: appLoader,
     children: [
       {
-        index: true,
-        element: <Root />,
-      },
-
-      {
-        path: constants.path.profile,
-        element: <Profile />,
+        errorElement: <AppErrorPage />,
+        children: [
+          {
+            index: true,
+            element: <Root />,
+          },
+          {
+            path: constants.path.profile,
+            element: <ProfilePage />,
+          },
+          {
+            path: constants.path.fileStructure,
+            element: <FileStructurePage />,
+            loader: fileStructureLoader,
+          },
+          {
+            path: constants.path.guide,
+            element: <GuidePage />,
+          },
+          {
+            path: '/check-error',
+            loader: rootLoader,
+            element: <p>should not show</p>,
+          },
+        ],
       },
     ],
   },
   {
     path: constants.path.signIn,
-    element: <AuthSignIn />,
+    element: <AuthSignInPage />,
   },
   {
     path: constants.path.signUp,
-    element: <AuthSignUp />,
+    element: <AuthSignUpPage />,
   },
   {
     path: constants.path.authVerify,
-    element: <AuthVerify />,
+    element: <AuthVerifyPage />,
   },
   {
     path: constants.path.authUserNotVerified,
-    element: <AuthUserNotVerified />,
+    element: <AuthUserNotVerifiedPage />,
   },
   {
     path: constants.path.authUserBlocked,
@@ -64,31 +89,39 @@ export const router = createBrowserRouter([
   },
   {
     path: constants.path.authRecoverPassword,
-    element: <AuthRecoverPassword />,
+    element: <AuthRecoverPasswordPage />,
   },
   {
     path: constants.path.support,
-    element: <Support />,
+    element: <SupportPage />,
   },
   {
     path: constants.path.oops,
-    element: <Oops />,
+    element: <OopsPage />,
   },
   {
     path: 'experimental',
-    element: <ExperimentalRoot />,
+    element: <ExperimentalRootPage />,
     children: [
       {
         path: 'encryption',
-        element: <EncryptionTest />,
+        element: <EncryptionTestPage />,
       },
       {
         path: 'tree-node',
-        element: <TreeNodesTest />,
+        element: <TreeNodesTestPage />,
       },
       {
         path: 'table',
-        element: <TableTest />,
+        element: <TableTestPage />,
+      },
+      {
+        path: 'test-refresh-flow',
+        element: <TestRefreshFlowPage />,
+      },
+      {
+        path: 'test-card-list-loader',
+        element: <CardListLoaderTestPage />,
       },
     ],
   },

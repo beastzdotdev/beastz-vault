@@ -1,25 +1,36 @@
-import { Outlet } from 'react-router-dom';
-import { Sidebar } from './shared/ui/sidebar';
-import { TopBar } from './shared/ui/topbar';
+import queryString from 'query-string';
+import { Outlet, useLocation } from 'react-router-dom';
+import { Sidebar } from './shared/widgets/sidebar';
 import { observer } from 'mobx-react-lite';
 import { useInjection } from 'inversify-react';
 import { SharedStore } from './shared/state/shared.store';
+import { useEffect } from 'react';
+import { constants } from '../shared';
 
 export const App = observer((): React.JSX.Element => {
   const sharedStore = useInjection(SharedStore);
+  const location = useLocation();
+
+  useEffect(() => {
+    // track file structure active id and rootParentId
+    if (location.pathname.includes(constants.path.fileStructure)) {
+      const { id, root_parent_id } = queryString.parse(location.search, {
+        parseBooleans: true,
+        parseNumbers: true,
+      }) as { id: 'root' | number; root_parent_id?: number };
+
+      sharedStore.setRouterParams(id, root_parent_id);
+    }
+  }, [location, sharedStore]);
 
   return (
     <>
       {sharedStore.shouldRender && (
         <>
-          <TopBar />
-
           <div className="flex">
-            <div className="w-[250px] bg-slate-900 h-screen">
-              <Sidebar />
-            </div>
+            <Sidebar />
 
-            <div className="m-[100px]">
+            <div className="flex-1">
               <Outlet />
             </div>
           </div>
