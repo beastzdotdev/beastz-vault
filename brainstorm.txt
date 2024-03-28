@@ -1,0 +1,30 @@
+====================================================================================[Upload]
+file 
+  then upload file (for now only files under 30mb will be allowed)
+
+folder
+  then upload will be recursive and will be synced with state manager in mobx
+  if we have depth 3 folder then steps will be like this:
+    1. first all folder with name will be created on depth 1
+    2. then all files will be upload on parallel in step 1 (file limit will be same)
+    3. 
+
+====================================================================================
+
+====================================================================================[Show structure]
+This way url can be saved and later used !!!
+
+/file-structure?id={uuid} -> 
+  1. check first in state if id not exists then fetch selected form backend (file-structure entity)
+    * if item is file -> then preview file (text, image, video, audio, zip, etc - every one will have path to object storage)
+    * if item is folder -> then proceed with same system
+
+/file-structure?id=root -> 
+  1. fetch root items (on depth of 4 to make it fast)
+
+
+====================================================================================[Preview file]
+Text - read and show bytes
+Image - insert img tag
+Audio - insert input type audio
+Video - insert in video input (or some library)

@@ -6,22 +6,45 @@
 
 @import 'normalize.css';
 @import '@blueprintjs/core/lib/css/blueprint.css';
-@import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 @import '@blueprintjs/colors/lib/scss/colors';
 @import '@blueprintjs/core/src/common/variables';
 @import '@blueprintjs/core/src/common/mixins';
 
 @import '@blueprintjs/table/lib/css/table.css';
 @import '@blueprintjs/datetime2/src/blueprint-datetime2.scss';
+@import '@blueprintjs/select/lib/css/blueprint-select.css';
 
-$main: #ffffff00;
 $primary: $blue4;
 $success: $green4;
 $warning: $orange4;
 $danger: $red4;
+$input-border-color: #ffffff00;
+
+$main-white-color: rgba(143, 153, 168, 0.4);
+$main-white-color-hover: rgba(143, 153, 168, 0.2);
 
 body {
   background-color: $dark-gray2;
+}
+
+* {
+  &::-webkit-scrollbar {
+    width: 7px; // for vertical scrollbar thickness
+    height: 7px; // for horizontal scrollbar thickness
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba($color: #abb2bf, $alpha: 0.5);
+    border-radius: 10px;
+
+    &:hover {
+      background-color: rgba($color: #abb2bf, $alpha: 0.8);
+    }
+  }
+
+  &::-webkit-scrollbar-corner {
+    display: none;
+  }
 }
 
 // Override
@@ -31,10 +54,10 @@ body {
 
 .bp5-input {
   box-shadow: none !important;
-  border: 1px solid rgba($main, 0.2);
+  border: 1px solid rgba($input-border-color, 0.2);
 
   &:focus {
-    border: 1px solid rgba($main, 0.5);
+    border: 1px solid rgba($input-border-color, 0.5);
   }
 }
 
@@ -103,7 +126,7 @@ body {
 
   .gorilla-sidebar-tree-nodes {
     .bp5-tree-node.bp5-tree-node-selected > .bp5-tree-node-content {
-      background: rgba(143, 153, 168, 0.4);
+      background: $main-white-color;
     }
 
     .bp5-tree-node-content {
@@ -146,5 +169,39 @@ body {
         background-color: rgba(95, 107, 124);
       }
     }
+  }
+}
+
+.gorilla-file-structure {
+  .gorilla-file-structure-item {
+    @apply w-full rounded-none cursor-default select-none flex;
+    // transition-colors duration-75 ease-linear <- can bee added for animation
+
+    background-color: $dark-gray3;
+
+    &:not(.gorilla-file-structure-item-selected):hover {
+      background-color: $main-white-color-hover;
+    }
+  }
+
+  .gorilla-file-structure-item-selected {
+    background: $main-white-color;
+  }
+}
+
+.only-for-file-upload {
+  .bp5-toast-message {
+    padding: 0;
+  }
+
+  // remove button group from toast (cannot be done via props, this is hacky way)
+  .bp5-button-group {
+    display: none;
+  }
+}
+
+.gorilla-global-alert {
+  .bp5-alert-contents {
+    flex: 1;
   }
 }
