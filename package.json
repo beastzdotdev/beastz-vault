@@ -33,7 +33,6 @@
     "@total-typescript/ts-reset": "^0.5.1",
     "axios": "^1.6.7",
     "class-transformer": "^0.5.1",
-    "crypto-js": "^4.2.0",
     "filenamify": "^6.0.0",
     "formik": "^2.4.5",
     "inversify": "^6.0.2",
@@ -52,7 +51,6 @@
   },
   "devDependencies": {
     "@mobx-devtools/tools": "^0.0.4",
-    "@types/crypto-js": "^4.2.2",
     "@types/react": "^18.2.60",
     "@types/react-dom": "^18.2.19",
     "@types/uuid": "^9.0.8",
