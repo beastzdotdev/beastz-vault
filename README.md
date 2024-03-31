@@ -17,4 +17,4 @@ Empowered by cutting-edge technologies:
 * Formik
 * Zod
 
-#### Experience the next level of file management with Gorilla Vault React App – where simplicity meets security. 🚀
+#### Experience the next level of file management with Gorilla Vault 🚀
