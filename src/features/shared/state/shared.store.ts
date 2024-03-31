@@ -121,6 +121,13 @@ export class SharedStore {
     }
   }
 
+  expandAll() {
+    this.forEachNode(node => (node.isExpanded = true));
+  }
+  collapseAll() {
+    this.forEachNode(node => (node.isExpanded = false));
+  }
+
   //====================================================
   // Helpers (Private)
   //====================================================
