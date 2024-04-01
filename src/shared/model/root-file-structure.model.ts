@@ -1,6 +1,6 @@
 import { IconName } from '@blueprintjs/core';
 import { FileMimeType } from '../enum/file-mimte-type.enum';
-import { makeAutoObservable, runInAction } from 'mobx';
+import { makeAutoObservable, observable, runInAction } from 'mobx';
 import { Type, plainToInstance } from 'class-transformer';
 import { BasicFileStructureResponseDto, Combine } from '..';
 import { MobxTreeModel } from '@pulexui/core';
@@ -35,7 +35,11 @@ export class RootFileStructure
 
   //! New
   link?: string;
-  activeIcon: IconName;
+  activeIcon: IconName | 'spinner';
+
+  setActiveIcon(icon: IconName | 'spinner') {
+    this.activeIcon = icon;
+  }
 
   @Type(() => Date)
   lastModifiedAt: Date | null;
@@ -86,10 +90,9 @@ export class RootFileStructure
 
       if (data?.children?.length) {
         newItem.children = data.children.map(e => this.customTransform(e));
-        return newItem;
-      } else {
-        return newItem;
       }
+
+      return newItem;
     });
   }
 }

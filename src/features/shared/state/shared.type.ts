@@ -31,11 +31,7 @@ export class BasicFileStructureInBodyDto implements BasicFileStructure {
   @Type(() => BasicFileStructureInBodyDto)
   children: BasicFileStructureInBodyDto[];
 
-  isSelected: boolean;
-
-  setExtraParams(params: { isSelected: boolean }) {
-    this.isSelected = params.isSelected;
-  }
+  isSelected: boolean = false;
 
   setIsSelected(value: boolean) {
     this.isSelected = value;
@@ -46,6 +42,7 @@ export class BasicFileStructureInBodyDto implements BasicFileStructure {
     return runInAction(() => {
       return plainToInstance<BasicFileStructureInBodyDto, V>(BasicFileStructureInBodyDto, data, {
         enableImplicitConversion: true,
+        exposeDefaultValues: true,
       });
     });
   }
@@ -54,6 +51,7 @@ export class BasicFileStructureInBodyDto implements BasicFileStructure {
     return runInAction(() => {
       return plainToInstance<BasicFileStructureInBodyDto, V>(BasicFileStructureInBodyDto, data, {
         enableImplicitConversion: true,
+        exposeDefaultValues: true,
       });
     });
   }

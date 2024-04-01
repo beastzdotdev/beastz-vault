@@ -1,5 +1,5 @@
 import { runInAction, toJS } from 'mobx';
-import { Singleton, Inject, RootFileStructure } from '../../../shared';
+import { Singleton, Inject, RootFileStructure, FileStructureApiService } from '../../../shared';
 import { SharedStore } from './shared.store';
 import { BasicFileStructureInBodyDto } from './shared.type';
 
@@ -7,6 +7,9 @@ import { BasicFileStructureInBodyDto } from './shared.type';
 export class SharedController {
   @Inject(SharedStore)
   private readonly sharedStore: SharedStore;
+
+  @Inject(FileStructureApiService)
+  private readonly fileStructureApiService: FileStructureApiService;
 
   async createFileStructureInState(data: RootFileStructure, isReplaced: boolean) {
     runInAction(() => {
@@ -16,7 +19,6 @@ export class SharedController {
         data.parentId === this.sharedStore.activeId
       ) {
         const forBody = BasicFileStructureInBodyDto.transform(data);
-        forBody.setExtraParams({ isSelected: false });
 
         isReplaced
           ? this.sharedStore.replaceActiveFileStructureInBody(forBody)
@@ -51,10 +53,26 @@ export class SharedController {
     console.log(toJS(this.sharedStore.activeRootFileStructure));
   }
 
-  setFileStructureBodyFromRoot(value: RootFileStructure[]) {
-    const newArr = BasicFileStructureInBodyDto.transformMany(value);
-    newArr.forEach(e => e.setExtraParams({ isSelected: false }));
+  async setAcitveFileInBody(id: number | 'root', rootData?: RootFileStructure[]): Promise<void> {
+    // 3. if id is root then ignore because it is already set
+    if (id === 'root') {
+      this.sharedStore.setActiveFileStructureInBody(
+        BasicFileStructureInBodyDto.transformMany(rootData ?? [])
+      );
+      return;
+    }
 
-    this.sharedStore.setActiveFileStructureInBody(newArr);
+    if (!id) {
+      throw new Error('Sorry, something went wrong');
+    }
+
+    // 4. else handle get by id of file structure item (overrides only active file structure)
+    const { data, error } = await this.fileStructureApiService.getContent({ parentId: id });
+
+    if (error || !data) {
+      throw new Error('Sorry, something went wrong');
+    }
+
+    this.sharedStore.setActiveFileStructureInBody(BasicFileStructureInBodyDto.transformMany(data));
   }
 }

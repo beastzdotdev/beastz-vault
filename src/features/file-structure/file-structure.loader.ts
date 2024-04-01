@@ -37,6 +37,7 @@ export const fileStructureLoader = async (_args: LoaderFunctionArgs) => {
     (id && id === 'root') ||
     (id && rootParentId && path && typeof id === 'number')
   );
+
   if (!correctRouteParams) {
     throw new Error(); // router will handle this error
   }
@@ -62,25 +63,6 @@ export const fileStructureLoader = async (_args: LoaderFunctionArgs) => {
   //! Always set root data when initial loading for sidebar
   sharedStore.setActiveRootFileStructure(rootData);
 
-  // 3. if id is root then ignore because it is already set
-  if (id === 'root') {
-    sharedController.setFileStructureBodyFromRoot(rootData);
-    return 'ok';
-  }
-
-  const parentId = id;
-
-  if (!parentId) {
-    throw new Error('Sorry, something went wrong');
-  }
-
-  // 4. else handle get by id of file structure item (overrides only active file structure)
-  const { data, error } = await fileStructureApiService.getContent({ parentId });
-
-  if (error || !data) {
-    throw new Error('Sorry, something went wrong');
-  }
-
-  sharedController.setFileStructureBodyFromRoot(data);
+  await sharedController.setAcitveFileInBody(id, rootData);
   return 'ok';
 };

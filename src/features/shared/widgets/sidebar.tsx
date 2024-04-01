@@ -27,7 +27,6 @@ export const Sidebar = () => {
   const folderUploadRef = useRef<HTMLInputElement>(null);
   const sharedStore = useInjection(SharedStore);
   const [isFolderCreateOpen, setIsFolderCreateOpen] = useState(false);
-
   // const [showBookmarks, setShowBookmarks] = useState(true);
 
   return (
@@ -153,7 +152,7 @@ export const Sidebar = () => {
                   onClick={() => sharedStore.expandAll()}
                   icon="expand-all"
                   className="!text-zinc-500 hover:bg-zinc-800 active:bg-zinc-700 p-0.5 ml-2 cursor-pointer"
-                  size={14}
+                  size={13}
                 />
               </Tooltip>
 
@@ -164,15 +163,28 @@ export const Sidebar = () => {
                 compact
                 canEscapeKeyClose={false}
                 hoverOpenDelay={500}
-                popoverClassName="bg-red-600!"
-                portalClassName="bg-red-600!"
-                className="bg-red-600!"
               >
                 <Icon
                   onClick={() => sharedStore.collapseAll()}
                   icon="collapse-all"
                   className="!text-zinc-500 hover:bg-zinc-800 active:bg-zinc-700 p-0.5 ml-1 cursor-pointer"
-                  size={14}
+                  size={13}
+                />
+              </Tooltip>
+
+              <Tooltip
+                content="Go to root"
+                placement="bottom"
+                intent="none"
+                compact
+                canEscapeKeyClose={false}
+                hoverOpenDelay={500}
+              >
+                <Icon
+                  onClick={() => router.navigate(constants.path.fileStructure)}
+                  icon="selection"
+                  className="!text-zinc-500 hover:bg-zinc-800 active:bg-zinc-700 p-0.5 ml-1 cursor-pointer"
+                  size={13}
                 />
               </Tooltip>
             </div>

@@ -1,47 +1,63 @@
 import { useInjection } from 'inversify-react';
 import { SharedStore } from '../features/shared/state/shared.store';
 import { useLocation } from 'react-router-dom';
-import { FileStructureApiService, RootFileStructure } from '../shared';
+import { FileStructureApiService, RootFileStructure, sleep } from '../shared';
 import { observer } from 'mobx-react-lite';
 import { MobxTree } from '@pulexui/core';
-import { toJS } from 'mobx';
-import { useCallback } from 'react';
+import { runInAction, toJS } from 'mobx';
+import { useCallback, useEffect } from 'react';
+import { getFileStructureUrlParams } from '../features/shared/helper/get-url-params';
+import { router } from '../router';
+import { SharedController } from '../features/shared/state/shared.controller';
+import { Icon, Intent, Spinner } from '@blueprintjs/core';
 
 export const SidebarTree = observer(({ className }: { className?: string }) => {
   const location = useLocation();
   const sharedStore = useInjection(SharedStore);
+  const sharedController = useInjection(SharedController);
   const fileStructureApiService = useInjection(FileStructureApiService);
 
-  // const revalidateTreeSelectionStatus = useCallback(() => {
-  //   if (location.pathname === '/') {
-  //     return;
-  //   }
+  const revalidateTreeSelectionStatus = useCallback(() => {
+    if (location.pathname === '/') {
+      return;
+    }
 
-  //   const { parentId, folderPath } = getFileStructureUrlParams();
+    const { parentId, folderPath } = getFileStructureUrlParams();
 
-  //   if (!parentId || !folderPath) {
-  //     return;
-  //   }
+    if (!parentId || !folderPath) {
+      return;
+    }
 
-  //   sharedStore.forEachNode(node => {
-  //     node.setIsSelected(node.id === parentId);
+    console.log('revalidateTreeSelectionStatus');
 
-  //     // expand all parent only
-  //     if (folderPath.startsWith(node.path) && folderPath[node.path.length] === '/') {
-  //       node.setIsExpanded(true);
-  //     }
-  //   });
+    sharedStore.forEachNode(node => {
+      if (node.id === parentId && !node.isSelected) {
+        node.setIsSelected(true);
+      }
 
-  //   // Check if it's the initial load
-  //   if (isInitialLoad) {
-  //     setIsInitialLoad(() => false);
-  //     setRender(prevRender => !prevRender);
-  //     return;
-  //   }
-  // }, [isInitialLoad, location.pathname, sharedStore]);
+      // expand all parent only
+      if (
+        folderPath.startsWith(node.path) &&
+        folderPath[node.path.length] === '/' &&
+        !node.isExpanded
+      ) {
+        node.setIsExpanded(true);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    revalidateTreeSelectionStatus();
+
+    router.subscribe(params => {
+      console.log(123);
+      console.log(params);
+      revalidateTreeSelectionStatus();
+    });
+  }, []);
 
   const handleNodeClick = useCallback(
-    (node: RootFileStructure) => {
+    async (node: RootFileStructure) => {
       console.log('click', toJS(node));
 
       if (node.isFile) {
@@ -61,25 +77,30 @@ export const SidebarTree = observer(({ className }: { className?: string }) => {
       });
 
       //TODO
-      // if (node && node.nodeData?.link) {
-      //   const existingLocation = window.location;
+      if (node && node.link) {
+        const existingLocation = window.location;
 
-      //   const nodeUrlObj = new URL(existingLocation.origin + node.nodeData.link);
-      //   const existingUrlObj = new URL(existingLocation.href);
+        const nodeUrlObj = new URL(existingLocation.origin + node.link);
+        const existingUrlObj = new URL(existingLocation.href);
 
-      //   // check node data click happens on same page
-      //   if (
-      //     nodeUrlObj.searchParams.get('id') === existingUrlObj.searchParams.get('id') &&
-      //     nodeUrlObj.searchParams.get('root_parent_id') ===
-      //       existingUrlObj.searchParams.get('root_parent_id')
-      //   ) {
-      //     return;
-      //   }
+        // check node data click happens on same page
+        if (
+          nodeUrlObj.searchParams.get('id') === existingUrlObj.searchParams.get('id') &&
+          nodeUrlObj.searchParams.get('root_parent_id') ===
+            existingUrlObj.searchParams.get('root_parent_id')
+        ) {
+          return;
+        }
 
-      //   router.navigate(node.nodeData.link).then(e => {
-      //     revalidateTreeSelectionStatus();
-      //   });
-      // }
+        window.history.pushState(node.link, '', node.link); // do not cause rerender
+        revalidateTreeSelectionStatus();
+
+        const id = new URL(window.location.href).searchParams.get('id');
+
+        if (id) {
+          await sharedController.setAcitveFileInBody(parseInt(id));
+        }
+      }
     },
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -90,48 +111,38 @@ export const SidebarTree = observer(({ className }: { className?: string }) => {
     async (node: RootFileStructure, value: boolean) => {
       console.log('toggle', toJS(node));
 
+      if (value === true && node && !node.children?.length) {
+        const { parentId } = getFileStructureUrlParams();
+
+        //TODO why only native properties in MobxTreeModel causes rerender not some added properties
+        node.setActiveIcon('spinner');
+        node.name = node.name + Math.random().toFixed(2); //TODO remove
+
+        const startTime = new Date(); // Start time
+        const { data, error } = await fileStructureApiService.getContent({ parentId });
+
+        if (error) {
+          throw new Error('Something went wrong');
+        }
+
+        // Calculate time taken
+        const endTime = new Date();
+
+        if (data) {
+          node.children?.push(...data);
+        }
+
+        // this is necessary because if axios took less than 200ms animation seems weird
+        if (endTime.getTime() - startTime.getTime() < 200) {
+          // add another 200 ms waiting
+          await sleep(200);
+        }
+
+        node.activeIcon = 'folder-close';
+        node.name = node.name + Math.random().toFixed(2); //TODO remove
+      }
+
       node.setIsExpanded(value);
-
-      //TODO
-      // if (value === true) {
-      //   if (node && !node.childNodes?.length) {
-      //     node.hasCaret = false;
-      //     node.disabled = true;
-      //     node.secondaryLabel = <Spinner size={20} intent={Intent.PRIMARY} />;
-      //     setRender(prevRender => !prevRender);
-
-      //     const startTime = new Date(); // Start time
-      //     const { data, error } = await fileStructureApiService.getContent({ parentId: id });
-
-      //     if (error) {
-      //       throw new Error('Something went wrong');
-      //     }
-
-      //     // Calculate time taken
-      //     const endTime = new Date();
-
-      //     if (data) {
-      //       for (const item of data) {
-      //         node.children?.push(item);
-      //         node.childNodes = node.children;
-      //       }
-      //     }
-
-      //     // this is necessary because if axios took less than 200ms animation seems weird
-      //     if (endTime.getTime() - startTime.getTime() < 200) {
-      //       // add another 200 ms waiting
-      //       await sleep(200);
-      //     }
-
-      //     node.hasCaret = true;
-      //     node.secondaryLabel = undefined;
-      //     node.disabled = false;
-      //   }
-
-      //   node?.setIsExpanded(value);
-      // } else {
-      //   node?.setIsExpanded(value);
-      // }
     },
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -159,6 +170,13 @@ export const SidebarTree = observer(({ className }: { className?: string }) => {
         onToggle={handleNodeToggle}
         onClick={handleNodeClick}
         onContextMenu={handleContextMenu}
+        renderTypeIcon={node => {
+          if (node.activeIcon === 'spinner') {
+            return <Spinner size={20} intent={Intent.PRIMARY} />;
+          }
+
+          return <Icon icon={node.activeIcon} />;
+        }}
       />
     </>
   );

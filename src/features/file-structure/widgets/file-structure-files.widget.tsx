@@ -33,9 +33,9 @@ export const FileStructureFilesWidget = observer((): React.JSX.Element => {
                   'root_parent_id',
                   rootParentId ? rootParentId.toString() : id.toString()
                 );
-                const redirectUrl = redirectUrlObj.pathname + redirectUrlObj.search;
+                redirectUrlObj.searchParams.set('path', encodeURIComponent(e.path));
 
-                navigate(redirectUrl);
+                navigate(redirectUrlObj.pathname + redirectUrlObj.search);
               }}
             />
           );
