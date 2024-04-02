@@ -29,7 +29,10 @@ export class SharedController {
 
       //! 2. handle root data then
       if (data.parentId) {
-        const node = this.sharedStore.search(data.parentId);
+        const node = this.sharedStore.search(
+          this.sharedStore.activeRootFileStructure,
+          data.parentId
+        );
 
         // if not found just ignore
         if (!node) {

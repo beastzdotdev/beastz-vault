@@ -19,9 +19,6 @@ export class SharedStore {
   get isRoot(): boolean {
     return this._activeId === 'root';
   }
-  get isNotRoot(): boolean {
-    return !this.isRoot;
-  }
 
   get shouldRender(): boolean {
     return this._shouldRender;
@@ -38,6 +35,7 @@ export class SharedStore {
   get activeId(): number | 'root' {
     return this._activeId;
   }
+
   get activeRootParentId(): number | undefined {
     return this._activeRootParentId;
   }
@@ -49,9 +47,11 @@ export class SharedStore {
   setShouldRender(value: boolean) {
     this._shouldRender = value;
   }
+
   setActiveFileStructureInBody(value: BasicFileStructureInBodyDto[]) {
     this._activeFileStructureInBody = value;
   }
+
   setActiveRootFileStructure(value: RootFileStructure[]) {
     this._activeRootFileStructure = value;
   }
@@ -68,6 +68,7 @@ export class SharedStore {
   pushActiveFileStructureInBody(value: BasicFileStructureInBodyDto) {
     this._activeFileStructureInBody.push(value);
   }
+
   replaceActiveFileStructureInBody(value: BasicFileStructureInBodyDto) {
     const index = this._activeFileStructureInBody.findIndex(e => e.path === value.path);
 
@@ -95,76 +96,35 @@ export class SharedStore {
     });
   }
 
-  search(id: number): RootFileStructure | null {
-    for (const child of this._activeRootFileStructure) {
-      if (child.isFile) {
-        continue;
+  search(node: RootFileStructure[], id: number): RootFileStructure | null {
+    for (let i = 0; i < node?.length; i++) {
+      if (node[i].id === id) {
+        return node[i];
       }
 
-      const node = this._searchHelper(child, id);
-      if (node) {
-        return node;
-      }
-    }
+      const found = this.search(node[i]?.children ?? [], id);
 
-    return null;
-  }
-
-  forEachNode(callback: (node: RootFileStructure) => void): void {
-    for (const child of this._activeRootFileStructure) {
-      if (child.isFile) {
-        continue;
-      }
-
-      callback(child);
-
-      this.forEachNodeHelper(child, callback);
-    }
-  }
-
-  expandAll() {
-    this.forEachNode(node => (node.isExpanded = true));
-  }
-  collapseAll() {
-    this.forEachNode(node => (node.isExpanded = false));
-  }
-
-  //====================================================
-  // Helpers (Private)
-  //====================================================
-
-  private _searchHelper(node: RootFileStructure, id: number): RootFileStructure | null {
-    if (!node) return null;
-    if (node.id === id) return node;
-
-    for (const child of node.children) {
-      if (child.isFile) {
-        continue;
-      }
-
-      const node = this._searchHelper(child, id);
-      if (node) {
-        return node;
+      if (found) {
+        return found;
       }
     }
 
     return null;
   }
 
-  private forEachNodeHelper(
-    node: RootFileStructure,
-    callback: (node: RootFileStructure) => void
-  ): void {
-    if (!node) return;
+  recusive(node: RootFileStructure[], cb?: (node: RootFileStructure) => void): void {
+    for (let i = 0; i < node?.length; i++) {
+      cb?.(node[i]);
 
-    for (const child of node.children) {
-      if (child.isFile) {
-        continue;
+      if (node[i].children !== undefined) {
+        this.recusive(node[i].children, cb);
       }
-
-      callback(child);
-
-      this.forEachNodeHelper(child, callback);
     }
+  }
+
+  toggleAllExpand(value: boolean) {
+    this.recusive(this._activeRootFileStructure, node =>
+      node.isFile ? null : (node.isExpanded = value)
+    );
   }
 }

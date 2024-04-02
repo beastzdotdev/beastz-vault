@@ -150,7 +150,7 @@ export const Sidebar = () => {
                 hoverOpenDelay={500}
               >
                 <Icon
-                  onClick={() => sharedStore.expandAll()}
+                  onClick={() => sharedStore.toggleAllExpand(true)}
                   icon="expand-all"
                   className="!text-zinc-500 hover:bg-zinc-800 active:bg-zinc-700 p-0.5 ml-2 cursor-pointer"
                   size={13}
@@ -166,7 +166,7 @@ export const Sidebar = () => {
                 hoverOpenDelay={500}
               >
                 <Icon
-                  onClick={() => sharedStore.collapseAll()}
+                  onClick={() => sharedStore.toggleAllExpand(false)}
                   icon="collapse-all"
                   className="!text-zinc-500 hover:bg-zinc-800 active:bg-zinc-700 p-0.5 ml-1 cursor-pointer"
                   size={13}

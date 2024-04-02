@@ -33,7 +33,11 @@ export const SidebarTree = observer(({ className }: { className?: string }) => {
 
       console.log('revalidateTreeSelectionStatus');
 
-      sharedStore.forEachNode(node => {
+      sharedStore.recusive(sharedStore.activeRootFileStructure, node => {
+        if (node.isFile) {
+          return;
+        }
+
         if (node.id === parentId && !node.isSelected) {
           node.setIsSelected(true);
         }
