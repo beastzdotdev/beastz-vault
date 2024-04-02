@@ -20,6 +20,8 @@ export class RootFileStructure
   isSelected: boolean;
   isExpanded: boolean;
   isFile: boolean;
+  hasCaret: boolean;
+  isDisabled: boolean;
 
   //! From BasicFileStructureInRootDto
   path: string;
@@ -60,6 +62,14 @@ export class RootFileStructure
     this.isSelected = value;
   }
 
+  setDisabled(value: boolean) {
+    this.isDisabled = value;
+  }
+
+  setHasCaret(value: boolean) {
+    this.hasCaret = value;
+  }
+
   recusive(node: RootFileStructure[], callback?: (node: RootFileStructure) => void): void {
     for (let i = 0; i < node?.length; i++) {
       callback?.(node[i]);
@@ -77,7 +87,9 @@ export class RootFileStructure
       newItem.name = data.isFile ? data.title + data.fileExstensionRaw : data.title;
       newItem.isSelected = false;
       newItem.isExpanded = false;
+      newItem.isDisabled = false;
       newItem.activeIcon = data.isFile ? 'document' : 'folder-close';
+      newItem.hasCaret = !data.isFile;
 
       if (!data.isFile) {
         newItem.link = data.rootParentId

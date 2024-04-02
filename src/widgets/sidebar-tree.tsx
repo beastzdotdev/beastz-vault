@@ -11,6 +11,7 @@ import { SharedController } from '../features/shared/state/shared.controller';
 import { SharedStore } from '../features/shared/state/shared.store';
 import { FileStructureApiService } from '../shared/api';
 import { RootFileStructure } from '../shared/model';
+import { sleep } from '../shared/helper';
 
 export const SidebarTree = observer(({ className }: { className?: string }) => {
   const location = useLocation();
@@ -118,41 +119,37 @@ export const SidebarTree = observer(({ className }: { className?: string }) => {
 
   const handleNodeToggle = useCallback(
     async (node: RootFileStructure, value: boolean) => {
-      console.log('toggle', toJS(node));
+      if (value && node && !node.children?.length) {
+        node.setActiveIcon('spinner');
+        node.setHasCaret(false);
+        node.setDisabled(true);
 
-      // if (value === true && node && !node.children?.length) {
-      //   const { parentId } = getFileStructureUrlParams();
+        const startTime = new Date(); // Start time
+        const { data, error } = await fileStructureApiService.getContent({ parentId: node.id });
 
-      //   //TODO why only native properties in MobxTreeModel causes rerender not some added properties
-      //   node.setActiveIcon('spinner');
-      //   node.name = node.name + Math.random().toFixed(2); //TODO remove
+        if (error) {
+          throw new Error('Something went wrong');
+        }
 
-      //   const startTime = new Date(); // Start time
-      //   const { data, error } = await fileStructureApiService.getContent({ parentId });
+        // Calculate time taken
+        const endTime = new Date();
 
-      //   if (error) {
-      //     throw new Error('Something went wrong');
-      //   }
+        if (data) {
+          node.children?.push(...data);
+        }
 
-      //   // Calculate time taken
-      //   const endTime = new Date();
+        // this is necessary because if axios took less than 200ms animation seems weird
+        if (endTime.getTime() - startTime.getTime() < 200) {
+          // add another 400 ms waiting
+          await sleep(400);
+        }
 
-      //   if (data) {
-      //     node.children?.push(...data);
-      //   }
+        node.setActiveIcon('folder-close');
+        node.setHasCaret(true);
+        node.setDisabled(false);
+      }
 
-      //   // this is necessary because if axios took less than 200ms animation seems weird
-      //   if (endTime.getTime() - startTime.getTime() < 200) {
-      //     // add another 200 ms waiting
-      //     await sleep(200);
-      //   }
-
-      //   node.activeIcon = 'folder-close';
-      //   node.name = node.name + Math.random().toFixed(2); //TODO remove
-      // }
-
-      // node.setIsExpanded(value);
-      node.setActiveIcon('spinner');
+      node.setIsExpanded(value);
     },
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
