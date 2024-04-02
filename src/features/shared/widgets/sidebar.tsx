@@ -8,7 +8,7 @@ import {
   Icon,
   Tooltip,
 } from '@blueprintjs/core';
-import { lazy, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useInjection } from 'inversify-react';
 import { SidebarTree } from '../../../widgets/sidebar-tree';
 import { router } from '../../../router';
@@ -18,8 +18,7 @@ import { FolderUploadItem } from './folder-upload/folder-upload-item';
 import { CreateFolderDialogWidget } from './create-folder-dialog/create-folder-dialog.widget';
 import { SharedStore } from '../state/shared.store';
 import { constants } from '../../../shared/constants';
-
-const Logo = lazy(() => import('../../../assets/images/profile/doodle-man-1.svg?react'));
+import { ProfileIcon } from './profile';
 
 export const Sidebar = () => {
   const { sidebarRef, sidebarWidth, startResizing } = useResize();
@@ -28,7 +27,6 @@ export const Sidebar = () => {
   const folderUploadRef = useRef<HTMLInputElement>(null);
   const sharedStore = useInjection(SharedStore);
   const [isFolderCreateOpen, setIsFolderCreateOpen] = useState(false);
-  // const [showBookmarks, setShowBookmarks] = useState(true);
 
   return (
     <div
@@ -51,13 +49,7 @@ export const Sidebar = () => {
               router.navigate(constants.path.fileStructure);
             }}
           >
-            <div className="flex items-center">
-              <Logo width={24} height={24} className="rounded-sm ml-1.5" />
-
-              <p className="ml-2 font-medium">Giorgi Kumelashvili</p>
-            </div>
-
-            <Icon icon="expand-all" className="justify-self-end mr-2.5" />
+            <ProfileIcon />
           </div>
 
           <div>
@@ -116,20 +108,6 @@ export const Sidebar = () => {
         </div>
 
         <div className="flex-1 overflow-y-auto z-10">
-          {/*TODO Bookmarks are temporary disabled */}
-          {/* <div className="p-1.5">
-            <div className="flex items-center mb-2">
-              <div
-                className="hover:bg-zinc-800 active:bg-zinc-700 w-fit ml-2"
-                onClick={() => setShowBookmarks(!showBookmarks)}
-              >
-                <p className="text-xs text-zinc-500 font-bold cursor-pointer">Bookmarks</p>
-              </div>
-            </div>
-
-            {showBookmarks && <SidebarTree />}
-          </div> */}
-
           <div className="my-2"></div>
 
           <div className="p-1.5">

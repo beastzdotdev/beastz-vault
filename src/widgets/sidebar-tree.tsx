@@ -61,7 +61,7 @@ export const SidebarTree = observer(({ className }: { className?: string }) => {
       revalidateTreeSelectionStatus();
 
       router.subscribe(params => {
-        console.log(123);
+        console.log('='.repeat(20));
         console.log(params);
         revalidateTreeSelectionStatus();
       });
@@ -182,8 +182,6 @@ export const SidebarTree = observer(({ className }: { className?: string }) => {
         onClick={({ node }) => handleNodeClick(node)}
         onContextMenu={({ node, e }) => handleContextMenu(e, node)}
         renderTypeIcon={node => {
-          console.log('executed', node.id);
-
           if (node.activeIcon === 'spinner') {
             return <Spinner size={20} intent={Intent.PRIMARY} />;
           }
