@@ -1,15 +1,16 @@
 import { useInjection } from 'inversify-react';
-import { SharedStore } from '../features/shared/state/shared.store';
 import { useLocation } from 'react-router-dom';
-import { FileStructureApiService, RootFileStructure, sleep } from '../shared';
 import { observer } from 'mobx-react-lite';
 import { MobxTree } from '@pulexui/core';
-import { runInAction, toJS } from 'mobx';
+import { toJS } from 'mobx';
 import { useCallback, useEffect } from 'react';
+import { Icon, Intent, Spinner } from '@blueprintjs/core';
 import { getFileStructureUrlParams } from '../features/shared/helper/get-url-params';
 import { router } from '../router';
 import { SharedController } from '../features/shared/state/shared.controller';
-import { Icon, Intent, Spinner } from '@blueprintjs/core';
+import { SharedStore } from '../features/shared/state/shared.store';
+import { FileStructureApiService } from '../shared/api';
+import { RootFileStructure } from '../shared/model';
 
 export const SidebarTree = observer(({ className }: { className?: string }) => {
   const location = useLocation();
@@ -17,44 +18,52 @@ export const SidebarTree = observer(({ className }: { className?: string }) => {
   const sharedController = useInjection(SharedController);
   const fileStructureApiService = useInjection(FileStructureApiService);
 
-  const revalidateTreeSelectionStatus = useCallback(() => {
-    if (location.pathname === '/') {
-      return;
-    }
-
-    const { parentId, folderPath } = getFileStructureUrlParams();
-
-    if (!parentId || !folderPath) {
-      return;
-    }
-
-    console.log('revalidateTreeSelectionStatus');
-
-    sharedStore.forEachNode(node => {
-      if (node.id === parentId && !node.isSelected) {
-        node.setIsSelected(true);
+  const revalidateTreeSelectionStatus = useCallback(
+    () => {
+      if (location.pathname === '/') {
+        return;
       }
 
-      // expand all parent only
-      if (
-        folderPath.startsWith(node.path) &&
-        folderPath[node.path.length] === '/' &&
-        !node.isExpanded
-      ) {
-        node.setIsExpanded(true);
+      const { parentId, folderPath } = getFileStructureUrlParams();
+
+      if (!parentId || !folderPath) {
+        return;
       }
-    });
-  }, []);
 
-  useEffect(() => {
-    revalidateTreeSelectionStatus();
+      console.log('revalidateTreeSelectionStatus');
 
-    router.subscribe(params => {
-      console.log(123);
-      console.log(params);
+      sharedStore.forEachNode(node => {
+        if (node.id === parentId && !node.isSelected) {
+          node.setIsSelected(true);
+        }
+
+        // expand all parent only
+        if (
+          folderPath.startsWith(node.path) &&
+          folderPath[node.path.length] === '/' &&
+          !node.isExpanded
+        ) {
+          node.setIsExpanded(true);
+        }
+      });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
+  useEffect(
+    () => {
       revalidateTreeSelectionStatus();
-    });
-  }, []);
+
+      router.subscribe(params => {
+        console.log(123);
+        console.log(params);
+        revalidateTreeSelectionStatus();
+      });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
   const handleNodeClick = useCallback(
     async (node: RootFileStructure) => {
@@ -111,38 +120,39 @@ export const SidebarTree = observer(({ className }: { className?: string }) => {
     async (node: RootFileStructure, value: boolean) => {
       console.log('toggle', toJS(node));
 
-      if (value === true && node && !node.children?.length) {
-        const { parentId } = getFileStructureUrlParams();
+      // if (value === true && node && !node.children?.length) {
+      //   const { parentId } = getFileStructureUrlParams();
 
-        //TODO why only native properties in MobxTreeModel causes rerender not some added properties
-        node.setActiveIcon('spinner');
-        node.name = node.name + Math.random().toFixed(2); //TODO remove
+      //   //TODO why only native properties in MobxTreeModel causes rerender not some added properties
+      //   node.setActiveIcon('spinner');
+      //   node.name = node.name + Math.random().toFixed(2); //TODO remove
 
-        const startTime = new Date(); // Start time
-        const { data, error } = await fileStructureApiService.getContent({ parentId });
+      //   const startTime = new Date(); // Start time
+      //   const { data, error } = await fileStructureApiService.getContent({ parentId });
 
-        if (error) {
-          throw new Error('Something went wrong');
-        }
+      //   if (error) {
+      //     throw new Error('Something went wrong');
+      //   }
 
-        // Calculate time taken
-        const endTime = new Date();
+      //   // Calculate time taken
+      //   const endTime = new Date();
 
-        if (data) {
-          node.children?.push(...data);
-        }
+      //   if (data) {
+      //     node.children?.push(...data);
+      //   }
 
-        // this is necessary because if axios took less than 200ms animation seems weird
-        if (endTime.getTime() - startTime.getTime() < 200) {
-          // add another 200 ms waiting
-          await sleep(200);
-        }
+      //   // this is necessary because if axios took less than 200ms animation seems weird
+      //   if (endTime.getTime() - startTime.getTime() < 200) {
+      //     // add another 200 ms waiting
+      //     await sleep(200);
+      //   }
 
-        node.activeIcon = 'folder-close';
-        node.name = node.name + Math.random().toFixed(2); //TODO remove
-      }
+      //   node.activeIcon = 'folder-close';
+      //   node.name = node.name + Math.random().toFixed(2); //TODO remove
+      // }
 
-      node.setIsExpanded(value);
+      // node.setIsExpanded(value);
+      node.setActiveIcon('spinner');
     },
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -167,10 +177,12 @@ export const SidebarTree = observer(({ className }: { className?: string }) => {
         nodes={sharedStore.activeRootFileStructure}
         nodeClassName="gorilla-sidebar-tree-node"
         className={className ?? ''}
-        onToggle={handleNodeToggle}
-        onClick={handleNodeClick}
-        onContextMenu={handleContextMenu}
+        onToggle={({ node, value }) => handleNodeToggle(node, value)}
+        onClick={({ node }) => handleNodeClick(node)}
+        onContextMenu={({ node, e }) => handleContextMenu(e, node)}
         renderTypeIcon={node => {
+          console.log('executed', node.id);
+
           if (node.activeIcon === 'spinner') {
             return <Spinner size={20} intent={Intent.PRIMARY} />;
           }

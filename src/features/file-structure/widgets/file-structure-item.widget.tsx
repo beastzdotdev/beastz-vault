@@ -1,6 +1,6 @@
 import { Button, Icon, Menu, MenuDivider, MenuItem, Popover } from '@blueprintjs/core';
 import { FileMimeType } from '../../../shared/enum/file-mimte-type.enum';
-import { formatFileSize } from '../../../shared';
+import { formatFileSize } from '../../../shared/helper';
 
 interface FileStuructureFileItemParams {
   userName: string;

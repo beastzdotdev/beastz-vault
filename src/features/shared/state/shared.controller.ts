@@ -1,7 +1,9 @@
 import { runInAction, toJS } from 'mobx';
-import { Singleton, Inject, RootFileStructure, FileStructureApiService } from '../../../shared';
 import { SharedStore } from './shared.store';
 import { BasicFileStructureInBodyDto } from './shared.type';
+import { FileStructureApiService } from '../../../shared/api';
+import { Singleton, Inject } from '../../../shared/ioc';
+import { RootFileStructure } from '../../../shared/model';
 
 @Singleton
 export class SharedController {

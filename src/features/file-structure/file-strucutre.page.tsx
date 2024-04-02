@@ -1,12 +1,12 @@
 import { v4 as uuid } from 'uuid';
 import { useState } from 'react';
 import { Breadcrumbs } from '@blueprintjs/core';
+import { observer } from 'mobx-react-lite';
+import { useInjection } from 'inversify-react';
 import { FileStructureTopBar } from './widgets/file-structure-topbar';
 import { AdvancedSelect, AdvancedSelectItem } from '../../components/advanced-select';
 import { useDebounceHook } from '../../hooks/use-debounce.hook';
 import { FileStructureFilesWidget } from './widgets/file-structure-files.widget';
-import { observer } from 'mobx-react-lite';
-import { useInjection } from 'inversify-react';
 import { SharedStore } from '../shared/state/shared.store';
 
 const typeItems: AdvancedSelectItem[] = [

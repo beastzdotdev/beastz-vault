@@ -1,7 +1,7 @@
 import { makeAutoObservable, runInAction } from 'mobx';
-import { BasicFileStructure } from '../../../shared';
-import { FileMimeType } from '../../../shared/enum/file-mimte-type.enum';
 import { Type, plainToInstance } from 'class-transformer';
+import { FileMimeType } from '../../../shared/enum/file-mimte-type.enum';
+import { BasicFileStructure } from '../../../shared/types';
 
 export class BasicFileStructureInBodyDto implements BasicFileStructure {
   constructor() {

@@ -8,17 +8,18 @@ import {
   Icon,
   Tooltip,
 } from '@blueprintjs/core';
-import logo from '../../../assets/images/profile/doodle-man-1.svg';
-import { useRef, useState } from 'react';
+import { lazy, useRef, useState } from 'react';
+import { useInjection } from 'inversify-react';
 import { SidebarTree } from '../../../widgets/sidebar-tree';
 import { router } from '../../../router';
-import { constants } from '../../../shared';
 import { useResize } from '../../../hooks/use-resize.hook';
 import { FileUploadItem } from './file-upload/file-upload-item';
 import { FolderUploadItem } from './folder-upload/folder-upload-item';
 import { CreateFolderDialogWidget } from './create-folder-dialog/create-folder-dialog.widget';
 import { SharedStore } from '../state/shared.store';
-import { useInjection } from 'inversify-react';
+import { constants } from '../../../shared/constants';
+
+const Logo = lazy(() => import('../../../assets/images/profile/doodle-man-1.svg?react'));
 
 export const Sidebar = () => {
   const { sidebarRef, sidebarWidth, startResizing } = useResize();
@@ -51,7 +52,7 @@ export const Sidebar = () => {
             }}
           >
             <div className="flex items-center">
-              <img width={24} height={24} src={logo} alt="" className="rounded-sm ml-1.5" />
+              <Logo width={24} height={24} className="rounded-sm ml-1.5" />
 
               <p className="ml-2 font-medium">Giorgi Kumelashvili</p>
             </div>

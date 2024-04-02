@@ -1,6 +1,8 @@
 import filenamify from 'filenamify/browser';
 import { H3, CardList, Card } from '@blueprintjs/core';
-import { constants, bus, formatFileSize } from '../../../shared';
+import { bus } from '../../../shared/bus';
+import { constants } from '../../../shared/constants';
+import { formatFileSize } from '../../../shared/helper';
 
 export const validateFileSize = (files: FileList | null): files is FileList => {
   if (!files?.length) {

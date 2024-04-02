@@ -1,6 +1,7 @@
 import { makeAutoObservable } from 'mobx';
-import { RootFileStructure, Singleton } from '../../../shared';
 import { BasicFileStructureInBodyDto } from './shared.type';
+import { Singleton } from '../../../shared/ioc';
+import { RootFileStructure } from '../../../shared/model';
 
 @Singleton
 export class SharedStore {

@@ -1,9 +1,10 @@
 import { IconName } from '@blueprintjs/core';
-import { FileMimeType } from '../enum/file-mimte-type.enum';
-import { makeAutoObservable, observable, runInAction } from 'mobx';
+import { makeAutoObservable, runInAction } from 'mobx';
 import { Type, plainToInstance } from 'class-transformer';
-import { BasicFileStructureResponseDto, Combine } from '..';
 import { MobxTreeModel } from '@pulexui/core';
+import { FileMimeType } from '../enum/file-mimte-type.enum';
+import { BasicFileStructureResponseDto } from '../api';
+import { Combine } from '../types';
 
 export class RootFileStructure
   implements Combine<BasicFileStructureResponseDto, MobxTreeModel<number>>

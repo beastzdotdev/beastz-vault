@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Button, Card, Elevation, FormGroup, InputGroup } from '@blueprintjs/core';
-import { encryption, toast } from '../../shared';
+import { encryption } from '../../shared/encryption';
+import { toast } from '../../shared/ui';
 
 function getStringInputNoMatterWhat(text?: string): string {
   let isValidInput = false;

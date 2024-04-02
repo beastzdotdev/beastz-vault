@@ -1,11 +1,11 @@
 import queryString from 'query-string';
 import { Outlet, useLocation } from 'react-router-dom';
-import { Sidebar } from './shared/widgets/sidebar';
 import { observer } from 'mobx-react-lite';
 import { useInjection } from 'inversify-react';
-import { SharedStore } from './shared/state/shared.store';
 import { useEffect } from 'react';
-import { constants } from '../shared';
+import { SharedStore } from './shared/state/shared.store';
+import { Sidebar } from './shared/widgets/sidebar';
+import { constants } from '../shared/constants';
 
 export const App = observer((): React.JSX.Element => {
   const sharedStore = useInjection(SharedStore);

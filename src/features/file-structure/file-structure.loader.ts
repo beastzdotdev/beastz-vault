@@ -1,13 +1,11 @@
 import { LoaderFunctionArgs, redirect } from 'react-router-dom';
 import { SharedController } from '../shared/state/shared.controller';
 import { SharedStore } from '../shared/state/shared.store';
-import {
-  AxiosApiResponse,
-  FileStructureApiService,
-  RootFileStructure,
-  getQueryParams,
-  ioc,
-} from '../../shared';
+import { FileStructureApiService } from '../../shared/api';
+import { getQueryParams } from '../../shared/helper';
+import { ioc } from '../../shared/ioc';
+import { RootFileStructure } from '../../shared/model';
+import { AxiosApiResponse } from '../../shared/types';
 
 /**
  * @description

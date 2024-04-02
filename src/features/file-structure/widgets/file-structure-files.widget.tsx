@@ -1,8 +1,8 @@
 import { Button, Intent, NonIdealState, NonIdealStateIconSize } from '@blueprintjs/core';
 import { observer } from 'mobx-react-lite';
 import { useInjection } from 'inversify-react';
-import { SharedStore } from '../../shared/state/shared.store';
 import { useNavigate } from 'react-router-dom';
+import { SharedStore } from '../../shared/state/shared.store';
 import { FileStuructureFileItem } from './file-structure-item.widget';
 
 export const FileStructureFilesWidget = observer((): React.JSX.Element => {
