@@ -44,10 +44,7 @@ export const Sidebar = () => {
         <div className="pt-2">
           <div
             className="gorilla-profile flex items-center justify-between py-2 mx-1.5 mb-1 cursor-pointer"
-            onClick={() => {
-              //TODO this here is temporary
-              router.navigate(constants.path.fileStructure);
-            }}
+            onClick={() => router.navigate(constants.path.fileStructure)}
           >
             <ProfileIcon />
           </div>

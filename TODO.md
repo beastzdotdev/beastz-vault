@@ -1,3 +1,23 @@
+TODO Global
+  remove searchbar and add omnibar bnut save searchbar as backup will be needed in future like settings search
+
+TODO FileStuructureFileItem:
+  can be added multi select by selecting command/windows keyword
+  add tooltip and shared username
+
+TODO SafeRenderArray:
+  add this to pulexui
+
+TODO AuthRecoverPasswordPage:
+  page not implemnted yet
+
+TODO ProfilePage:
+  sign out not implemented
+
+TODO Sidebar:
+  router.navigate(constants.path.fileStructure) <- is temporary
+
+
 //TODO on every unauthenticated routes like auth/ needs to be checks user identity status
 //TODO on every unauthentication use apiPure not api
 //TODO profile pics are in src/assest/images/prfile/*** use that on user account creation
@@ -18,6 +38,8 @@ TODO
   register (needs thorough testing)
   recover password (not started)
   account verify page (redirect links from sing-in)
+
+TODO support page
 
 
 http://demo.casaos.io/#/
@@ -50,3 +72,11 @@ TODO right now folder and files upload works only on at a time if you want to up
 
 TODO checkout this https://etherpad.org/#/#download
 TODO checkout this https://million.dev/lint
+
+
+
+
+
+
+
+

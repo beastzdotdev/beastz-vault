@@ -1,79 +1,22 @@
 import { useInjection } from 'inversify-react';
-import { useLocation } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import { MobxTree } from '@pulexui/core';
 import { toJS } from 'mobx';
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import { Icon, Intent, Spinner } from '@blueprintjs/core';
-import { getFileStructureUrlParams } from '../features/shared/helper/get-url-params';
-import { router } from '../router';
-import { SharedController } from '../features/shared/state/shared.controller';
 import { SharedStore } from '../features/shared/state/shared.store';
 import { FileStructureApiService } from '../shared/api';
 import { RootFileStructure } from '../shared/model';
 import { sleep } from '../shared/helper';
+import { SharedController } from '../features/shared/state/shared.controller';
 
 export const SidebarTree = observer(({ className }: { className?: string }) => {
-  const location = useLocation();
   const sharedStore = useInjection(SharedStore);
   const sharedController = useInjection(SharedController);
   const fileStructureApiService = useInjection(FileStructureApiService);
 
-  const revalidateTreeSelectionStatus = useCallback(
-    () => {
-      if (location.pathname === '/') {
-        return;
-      }
-
-      const { parentId, folderPath } = getFileStructureUrlParams();
-
-      if (!parentId || !folderPath) {
-        return;
-      }
-
-      console.log('revalidateTreeSelectionStatus');
-
-      sharedStore.recusive(sharedStore.activeRootFileStructure, node => {
-        if (node.isFile) {
-          return;
-        }
-
-        if (node.id === parentId && !node.isSelected) {
-          node.setIsSelected(true);
-        }
-
-        // expand all parent only
-        if (
-          folderPath.startsWith(node.path) &&
-          folderPath[node.path.length] === '/' &&
-          !node.isExpanded
-        ) {
-          node.setIsExpanded(true);
-        }
-      });
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  );
-
-  useEffect(
-    () => {
-      revalidateTreeSelectionStatus();
-
-      router.subscribe(params => {
-        console.log('='.repeat(20));
-        console.log(params);
-        revalidateTreeSelectionStatus();
-      });
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  );
-
   const handleNodeClick = useCallback(
     async (node: RootFileStructure) => {
-      console.log('click', toJS(node));
-
       if (node.isFile) {
         //TODO check if is file and if file show popup just like in root page on double click
         console.log('ignoring file click for now');
@@ -90,7 +33,6 @@ export const SidebarTree = observer(({ className }: { className?: string }) => {
         }
       });
 
-      //TODO
       if (node && node.link) {
         const existingLocation = window.location;
 
@@ -106,14 +48,12 @@ export const SidebarTree = observer(({ className }: { className?: string }) => {
           return;
         }
 
-        window.history.pushState(node.link, '', node.link); // do not cause rerender
-        revalidateTreeSelectionStatus();
-
-        const id = new URL(window.location.href).searchParams.get('id');
-
-        if (id) {
-          await sharedController.setAcitveFileInBody(parseInt(id));
-        }
+        // pushState does not cause refresh or fs loader to execute only update path for reload
+        // affect will just set active route params in mobx store
+        // finally checkChildrenAndLoad will just check if children does not exist will load in root fs store
+        window.history.pushState(undefined, '', node.link);
+        const { parentId } = sharedController.affectHistoryPush(node.link);
+        await sharedController.checkChildrenAndLoad(parentId);
       }
     },
 
@@ -162,7 +102,6 @@ export const SidebarTree = observer(({ className }: { className?: string }) => {
 
   const handleContextMenu = useCallback(
     async (e: React.MouseEvent<HTMLDivElement, MouseEvent>, node: RootFileStructure) => {
-      console.log(toJS(node));
       e.preventDefault();
       console.log('Right Click', e.pageX, e.pageY, toJS(node));
     },

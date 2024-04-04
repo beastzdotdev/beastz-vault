@@ -103,6 +103,8 @@ export class RootFileStructure
 
       if (data?.children?.length) {
         newItem.children = data.children.map(e => this.customTransform(e));
+      } else {
+        newItem.children = [];
       }
 
       return newItem;

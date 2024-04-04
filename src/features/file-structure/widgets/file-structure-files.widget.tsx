@@ -1,59 +1,96 @@
 import { Button, Intent, NonIdealState, NonIdealStateIconSize } from '@blueprintjs/core';
-import { observer } from 'mobx-react-lite';
+import { observer, useLocalObservable } from 'mobx-react-lite';
 import { useInjection } from 'inversify-react';
 import { useNavigate } from 'react-router-dom';
-import { SharedStore } from '../../shared/state/shared.store';
 import { FileStuructureFileItem } from './file-structure-item.widget';
+import { SharedController } from '../../shared/state/shared.controller';
+import { SafeRenderArray } from '../../../components/safe-render-array';
+import { getQueryParams } from '../../../shared/helper';
+import { FSQueryParams, selectFileStructure } from '../file-structure.loader';
 
 export const FileStructureFilesWidget = observer((): React.JSX.Element => {
-  const sharedStore = useInjection(SharedStore);
+  const sharedController = useInjection(SharedController);
   const navigate = useNavigate();
+
+  const localSelectedStore = useLocalObservable(() => ({
+    selected: new Set<number>(),
+
+    setSelectedSingle(id: number) {
+      if (this.selected.size === 1 && this.selected.has(id)) {
+        return;
+      }
+
+      this.selected.clear();
+      this.selected.add(id);
+    },
+    setSelectedMultiple(id: number) {
+      if (this.selected.has(id)) {
+        this.selected.delete(id);
+      } else {
+        this.selected.add(id);
+      }
+    },
+    clear() {
+      this.selected.clear();
+    },
+  }));
 
   return (
     <div className="gorilla-file-structure">
-      {sharedStore.activeFileStructureInBody.length ? (
-        sharedStore.activeFileStructureInBody.map(e => {
+      <SafeRenderArray
+        data={sharedController.findFolderNodeForActiveBody()}
+        renderChild={node => {
           return (
             <FileStuructureFileItem
-              {...e}
-              userName="Me"
-              key={e.id}
-              onSelected={id => sharedStore.setIsSelectedInActiveFSPage(id)}
-              onDoubleClick={value => {
-                const { id, isFile, rootParentId } = value;
+              isSelected={localSelectedStore.selected.has(node.id)}
+              key={node.id}
+              node={node}
+              onSelected={node => {
+                localSelectedStore.setSelectedSingle(node.id);
+              }}
+              onDoubleClick={async node => {
+                // pushState does not cause refresh or fs loader to execute only update path for reload
+                // affect will just set active route params in mobx store
+                // finally checkChildrenAndLoad will just check if children does not exist will load in root fs store
+                if (!node.isFile) {
+                  if (!node.link) {
+                    return;
+                  }
 
-                if (isFile) {
-                  //TODO do stuff for file
-                  return;
+                  window.history.pushState(undefined, '', node.link);
+                  const { parentId } = sharedController.affectHistoryPush(node.link);
+                  await sharedController.checkChildrenAndLoad(parentId);
+
+                  console.log(node.link);
+
+                  const url = new URL('http://localhost:5173' + node.link);
+                  const query: FSQueryParams = getQueryParams<FSQueryParams>(url.toString());
+
+                  selectFileStructure(url, query);
+                } else {
+                  //TODO show file
                 }
-
-                const redirectUrlObj = new URL(window.location.href);
-                redirectUrlObj.searchParams.set('id', id.toString());
-                redirectUrlObj.searchParams.set(
-                  'root_parent_id',
-                  rootParentId ? rootParentId.toString() : id.toString()
-                );
-                redirectUrlObj.searchParams.set('path', encodeURIComponent(e.path));
-
-                navigate(redirectUrlObj.pathname + redirectUrlObj.search);
               }}
             />
           );
-        })
-      ) : (
-        <NonIdealState
-          className="mt-16"
-          title="No folder found"
-          icon="search"
-          description="Looks like there were no folder or files found in this directory"
-          action={
-            <Button onClick={() => navigate(-1)} intent={Intent.PRIMARY} minimal outlined>
-              Go back
-            </Button>
-          }
-          iconSize={NonIdealStateIconSize.STANDARD}
-        />
-      )}
+        }}
+        renderError={() => {
+          return (
+            <NonIdealState
+              className="mt-16"
+              title="No folder found"
+              icon="search"
+              description="Looks like there were no folder or files found in this directory"
+              action={
+                <Button onClick={() => navigate(-1)} intent={Intent.PRIMARY} minimal outlined>
+                  Go back
+                </Button>
+              }
+              iconSize={NonIdealStateIconSize.STANDARD}
+            />
+          );
+        }}
+      />
     </div>
   );
 });

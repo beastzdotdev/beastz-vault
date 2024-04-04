@@ -1,33 +1,20 @@
 import { runInAction, toJS } from 'mobx';
 import { SharedStore } from './shared.store';
-import { BasicFileStructureInBodyDto } from './shared.type';
-import { FileStructureApiService } from '../../../shared/api';
 import { Singleton, Inject } from '../../../shared/ioc';
 import { RootFileStructure } from '../../../shared/model';
+import { getFileStructureUrlParams } from '../helper/get-url-params';
+import { FSQueryParams } from '../../file-structure/file-structure.loader';
 
 @Singleton
 export class SharedController {
   @Inject(SharedStore)
   private readonly sharedStore: SharedStore;
 
-  @Inject(FileStructureApiService)
-  private readonly fileStructureApiService: FileStructureApiService;
+  // @Inject(FileStructureApiService)
+  // private readonly fileStructureApiService: FileStructureApiService;
 
   async createFileStructureInState(data: RootFileStructure, isReplaced: boolean) {
     runInAction(() => {
-      //! 1. handle active body state first (check if url and parent id matches)
-      if (
-        (data.parentId === null && this.sharedStore.isRoot) ||
-        data.parentId === this.sharedStore.activeId
-      ) {
-        const forBody = BasicFileStructureInBodyDto.transform(data);
-
-        isReplaced
-          ? this.sharedStore.replaceActiveFileStructureInBody(forBody)
-          : this.sharedStore.pushActiveFileStructureInBody(forBody);
-      }
-
-      //! 2. handle root data then
       if (data.parentId) {
         const node = this.sharedStore.search(
           this.sharedStore.activeRootFileStructure,
@@ -58,26 +45,71 @@ export class SharedController {
     console.log(toJS(this.sharedStore.activeRootFileStructure));
   }
 
-  async setAcitveFileInBody(id: number | 'root', rootData?: RootFileStructure[]): Promise<void> {
-    // 3. if id is root then ignore because it is already set
-    if (id === 'root') {
-      this.sharedStore.setActiveFileStructureInBody(
-        BasicFileStructureInBodyDto.transformMany(rootData ?? [])
-      );
+  findFolderNodeForActiveBody(): RootFileStructure[] {
+    const activeId = this.sharedStore.activeId;
+
+    if (activeId === 'root') {
+      return this.sharedStore.activeRootFileStructure;
+    }
+
+    return (
+      this.sharedStore.search(this.sharedStore.activeRootFileStructure, activeId)?.children ?? []
+    );
+  }
+
+  affectHistoryPush(url: string) {
+    const { parentId, rootParentId } = getFileStructureUrlParams(
+      new URL('http://localhost' + url).href
+    );
+
+    if (!parentId) {
+      throw new Error('Error causing parent folder');
+    }
+
+    // finally set active route params
+    this.sharedStore.setRouterParams(parentId, rootParentId);
+
+    return { parentId, rootParentId };
+  }
+
+  async checkChildrenAndLoad(parentId: number) {
+    // find node based on active
+    const foundNode = this.sharedStore.search(this.sharedStore.activeRootFileStructure, parentId);
+
+    if (!foundNode || foundNode.isFile) {
       return;
     }
 
-    if (!id) {
-      throw new Error('Sorry, something went wrong');
+    if (!foundNode.children.length) {
+      // load files from api and push to state
+    }
+  }
+
+  async selectFolder(query: FSQueryParams) {
+    if (query.id === 'root') {
+      // clear all
+      return;
     }
 
-    // 4. else handle get by id of file structure item (overrides only active file structure)
-    const { data, error } = await this.fileStructureApiService.getContent({ parentId: id });
+    const { id, path } = query;
 
-    if (error || !data) {
-      throw new Error('Sorry, something went wrong');
-    }
+    runInAction(() => {
+      this.sharedStore.recusive(this.sharedStore.activeRootFileStructure, node => {
+        node.setIsSelected(false); // important for others to not be selected
 
-    this.sharedStore.setActiveFileStructureInBody(BasicFileStructureInBodyDto.transformMany(data));
+        if (node.isFile) {
+          return;
+        }
+
+        if (node.id === id && !node.isSelected) {
+          node.setIsSelected(true);
+        }
+
+        // expand all parent only
+        if (path.startsWith(node.path) && path[node.path.length] === '/' && !node.isExpanded) {
+          node.setIsExpanded(true);
+        }
+      });
+    });
   }
 }

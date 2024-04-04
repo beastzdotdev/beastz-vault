@@ -1,5 +1,4 @@
 import { makeAutoObservable } from 'mobx';
-import { BasicFileStructureInBodyDto } from './shared.type';
 import { Singleton } from '../../../shared/ioc';
 import { RootFileStructure } from '../../../shared/model';
 
@@ -9,7 +8,6 @@ export class SharedStore {
   private _activeRootParentId?: number;
 
   private _shouldRender: boolean;
-  private _activeFileStructureInBody: BasicFileStructureInBodyDto[];
   private _activeRootFileStructure: RootFileStructure[];
 
   constructor() {
@@ -22,10 +20,6 @@ export class SharedStore {
 
   get shouldRender(): boolean {
     return this._shouldRender;
-  }
-
-  get activeFileStructureInBody(): BasicFileStructureInBodyDto[] {
-    return this._activeFileStructureInBody;
   }
 
   get activeRootFileStructure(): RootFileStructure[] {
@@ -48,10 +42,6 @@ export class SharedStore {
     this._shouldRender = value;
   }
 
-  setActiveFileStructureInBody(value: BasicFileStructureInBodyDto[]) {
-    this._activeFileStructureInBody = value;
-  }
-
   setActiveRootFileStructure(value: RootFileStructure[]) {
     this._activeRootFileStructure = value;
   }
@@ -65,18 +55,6 @@ export class SharedStore {
     this._activeRootParentId = rootParentId;
   }
 
-  pushActiveFileStructureInBody(value: BasicFileStructureInBodyDto) {
-    this._activeFileStructureInBody.push(value);
-  }
-
-  replaceActiveFileStructureInBody(value: BasicFileStructureInBodyDto) {
-    const index = this._activeFileStructureInBody.findIndex(e => e.path === value.path);
-
-    if (index !== -1) {
-      this._activeFileStructureInBody[index] = value;
-    }
-  }
-
   pushActiveRootFileStructure(value: RootFileStructure) {
     this._activeRootFileStructure.push(value);
   }
@@ -88,12 +66,6 @@ export class SharedStore {
     if (index !== -1) {
       this._activeRootFileStructure[index] = value;
     }
-  }
-
-  setIsSelectedInActiveFSPage(id: number) {
-    this._activeFileStructureInBody.forEach(e => {
-      e.setIsSelected(e.id === id);
-    });
   }
 
   search(node: RootFileStructure[], id: number): RootFileStructure | null {
@@ -123,8 +95,10 @@ export class SharedStore {
   }
 
   toggleAllExpand(value: boolean) {
-    this.recusive(this._activeRootFileStructure, node =>
-      node.isFile ? null : (node.isExpanded = value)
-    );
+    this.recusive(this._activeRootFileStructure, node => (node.isExpanded = value));
+  }
+
+  toggleAllSelected(value: boolean) {
+    this.recusive(this._activeRootFileStructure, node => (node.isSelected = value));
   }
 }

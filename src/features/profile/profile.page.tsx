@@ -8,7 +8,6 @@ import { router } from '../../router';
 export const ProfilePage = observer((): React.JSX.Element => {
   const profile = useInjection(ProfileStore);
 
-  //TODO sign out call
   const WebSignOut = async () => {
     try {
       router.navigate(constants.path.signIn);

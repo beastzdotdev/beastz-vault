@@ -23,8 +23,6 @@ configure({
   reactionRequiresObservable: true,
 });
 
-//TODO remove searchbar and add omnibar
-
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <Provider container={ioc.getContainer()}>
     <OverlaysProvider>

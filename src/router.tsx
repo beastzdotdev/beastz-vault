@@ -21,8 +21,7 @@ import { rootLoader } from './features/root/root-loader';
 import { TestRefreshFlowPage } from './features/experimental/test-refresh-flow.page';
 import { FileStructurePage } from './features/file-structure/file-strucutre.page';
 import { GuidePage } from './features/guide/guide.page';
-import { fileStructureLoader } from './features/file-structure/file-structure.loader';
-import { AppErrorPage } from './features/app-error.page';
+// import { fileStructureLoader } from './features/file-structure/file-structure.loader';
 import { CardListLoaderTestPage } from './features/experimental/card-list-loader-test-page';
 import { constants } from './shared/constants';
 
@@ -35,31 +34,26 @@ export const router = createBrowserRouter([
     loader: appLoader,
     children: [
       {
-        errorElement: <AppErrorPage />,
-        children: [
-          {
-            index: true,
-            element: <Root />,
-          },
-          {
-            path: constants.path.profile,
-            element: <ProfilePage />,
-          },
-          {
-            path: constants.path.fileStructure,
-            element: <FileStructurePage />,
-            loader: fileStructureLoader,
-          },
-          {
-            path: constants.path.guide,
-            element: <GuidePage />,
-          },
-          {
-            path: '/check-error',
-            loader: rootLoader,
-            element: <p>should not show</p>,
-          },
-        ],
+        index: true,
+        element: <Root />,
+      },
+      {
+        path: constants.path.profile,
+        element: <ProfilePage />,
+      },
+      {
+        path: constants.path.fileStructure,
+        element: <FileStructurePage />,
+        // loader: fileStructureLoader,
+      },
+      {
+        path: constants.path.guide,
+        element: <GuidePage />,
+      },
+      {
+        path: '/check-error',
+        loader: rootLoader,
+        element: <p>should not show</p>,
       },
     ],
   },
