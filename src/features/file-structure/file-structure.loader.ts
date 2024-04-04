@@ -41,7 +41,7 @@ export const selectFileStructure = async (url: URL, query: FSQueryParams) => {
  * ! Here _args.request.url will definitely have pathname of /file-structure so no need to check that
  */
 export const fileStructureLoader = async (_args: LoaderFunctionArgs) => {
-  console.log('Loading fs loader');
+  // console.log('Loading fs loader');
 
   const url = new URL(_args.request.url);
 

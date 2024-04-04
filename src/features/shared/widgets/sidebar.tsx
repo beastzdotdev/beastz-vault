@@ -158,7 +158,7 @@ export const Sidebar = () => {
               >
                 <Icon
                   onClick={() => router.navigate(constants.path.fileStructure)}
-                  icon="selection"
+                  icon="home"
                   className="!text-zinc-500 hover:bg-zinc-800 active:bg-zinc-700 p-0.5 ml-1 cursor-pointer"
                   size={13}
                 />

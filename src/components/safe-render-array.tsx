@@ -12,16 +12,12 @@ export const SafeRenderChild = observer(<T,>(props: SafeRenderChildProps<T>): JS
   return <>{props.data.map(e => props.renderChild(e))}</>;
 });
 
-export const SafeRenderArray = <T,>(props: SafeRenderArrayProps<T>): JSX.Element => {
+export const SafeRenderArray = observer(<T,>(props: SafeRenderArrayProps<T>): JSX.Element => {
   const { data, renderChild, renderError } = props;
 
   if (!data?.length) {
     return <>{renderError()}</>;
   }
 
-  return (
-    <>
-      <SafeRenderChild data={data} renderChild={renderChild} />
-    </>
-  );
-};
+  return <>{data.map(e => renderChild(e))}</>;
+});

@@ -41,7 +41,7 @@ export const FileStuructureFileItem = observer(
             <p>{params.node.lastModifiedAt?.toDateString()}</p>
           </div>
 
-          <div className="flex items-center justify-start w-[90px] pr-5">
+          <div className="flex items-center justify-start w-[110px] pr-5">
             <p>{formatFileSize(params.node.sizeInBytes)}</p>
           </div>
         </div>
