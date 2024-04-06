@@ -9,12 +9,13 @@ import {
 } from '@blueprintjs/core';
 import { useState } from 'react';
 import { useFormik } from 'formik';
-import { FormErrorMessage } from '../../components/form-error-message';
 import { useInjection } from 'inversify-react';
+import { Link } from 'react-router-dom';
+import { FormErrorMessage } from '../../components/form-error-message';
 import { AuthController } from './state/auth.controller';
 import { verifyFieldsSchema } from './validation/auth-verify-validation-schema';
-import { Link } from 'react-router-dom';
-import { fields, constants, zodFormikErrorAdapter } from '../../shared';
+import { constants } from '../../shared/constants';
+import { zodFormikErrorAdapter, fields } from '../../shared/helper';
 
 export const AuthVerifyPage = (): React.JSX.Element => {
   const authController = useInjection(AuthController);

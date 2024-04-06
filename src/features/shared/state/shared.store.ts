@@ -1,14 +1,14 @@
 import { makeAutoObservable } from 'mobx';
-import { RootFileStructure, Singleton } from '../../../shared';
-import { BasicFileStructureInBodyDto } from './shared.type';
+import { Singleton } from '../../../shared/ioc';
+import { RootFileStructure } from '../../../shared/model';
 
 @Singleton
 export class SharedStore {
   private _activeId: number | 'root';
   private _activeRootParentId?: number;
+  private _activePath?: string;
 
   private _shouldRender: boolean;
-  private _activeFileStructureInBody: BasicFileStructureInBodyDto[];
   private _activeRootFileStructure: RootFileStructure[];
 
   constructor() {
@@ -18,16 +18,9 @@ export class SharedStore {
   get isRoot(): boolean {
     return this._activeId === 'root';
   }
-  get isNotRoot(): boolean {
-    return !this.isRoot;
-  }
 
   get shouldRender(): boolean {
     return this._shouldRender;
-  }
-
-  get activeFileStructureInBody(): BasicFileStructureInBodyDto[] {
-    return this._activeFileStructureInBody;
   }
 
   get activeRootFileStructure(): RootFileStructure[] {
@@ -37,8 +30,13 @@ export class SharedStore {
   get activeId(): number | 'root' {
     return this._activeId;
   }
+
   get activeRootParentId(): number | undefined {
     return this._activeRootParentId;
+  }
+
+  get activePath(): string | undefined {
+    return this._activePath;
   }
 
   //====================================================
@@ -48,9 +46,7 @@ export class SharedStore {
   setShouldRender(value: boolean) {
     this._shouldRender = value;
   }
-  setActiveFileStructureInBody(value: BasicFileStructureInBodyDto[]) {
-    this._activeFileStructureInBody = value;
-  }
+
   setActiveRootFileStructure(value: RootFileStructure[]) {
     this._activeRootFileStructure = value;
   }
@@ -59,20 +55,10 @@ export class SharedStore {
   // Additional methods
   //====================================================
 
-  setRouterParams(activeId: number | 'root', rootParentId?: number) {
+  setRouterParams(activeId: number | 'root', rootParentId?: number, path?: string) {
     this._activeId = activeId;
     this._activeRootParentId = rootParentId;
-  }
-
-  pushActiveFileStructureInBody(value: BasicFileStructureInBodyDto) {
-    this._activeFileStructureInBody.push(value);
-  }
-  replaceActiveFileStructureInBody(value: BasicFileStructureInBodyDto) {
-    const index = this._activeFileStructureInBody.findIndex(e => e.path === value.path);
-
-    if (index !== -1) {
-      this._activeFileStructureInBody[index] = value;
-    }
+    this._activePath = path;
   }
 
   pushActiveRootFileStructure(value: RootFileStructure) {
@@ -88,75 +74,58 @@ export class SharedStore {
     }
   }
 
-  setIsSelectedInActiveFSPage(id: number) {
-    this._activeFileStructureInBody.forEach(e => {
-      e.setIsSelected(e.id === id);
-    });
-  }
-
-  search(id: number): RootFileStructure | null {
-    for (const child of this._activeRootFileStructure) {
-      if (child.isFile) {
-        continue;
+  searchNode(nodes: RootFileStructure[], id: number): RootFileStructure | null {
+    for (let i = 0; i < nodes?.length; i++) {
+      if (nodes[i].id === id) {
+        return nodes[i];
       }
 
-      const node = this._searchHelper(child, id);
-      if (node) {
-        return node;
+      const found = this.searchNode(nodes[i]?.children ?? [], id);
+
+      if (found) {
+        return found;
       }
     }
 
     return null;
   }
 
-  forEachNode(callback: (node: RootFileStructure) => void): void {
-    for (const child of this._activeRootFileStructure) {
-      if (child.isFile) {
-        continue;
+  searchNodeAndParents(
+    nodes: RootFileStructure[],
+    id: number,
+    parents: RootFileStructure[] = []
+  ): RootFileStructure[] | null {
+    for (let i = 0; i < nodes.length; i++) {
+      const node = nodes[i];
+      const updatedParents = parents.concat(node);
+
+      if (node.id === id) {
+        return updatedParents;
       }
-
-      callback(child);
-
-      this.forEachNodeHelper(child, callback);
-    }
-  }
-
-  //====================================================
-  // Helpers (Private)
-  //====================================================
-
-  private _searchHelper(node: RootFileStructure, id: number): RootFileStructure | null {
-    if (!node) return null;
-    if (node.id === id) return node;
-
-    for (const child of node.children) {
-      if (child.isFile) {
-        continue;
-      }
-
-      const node = this._searchHelper(child, id);
-      if (node) {
-        return node;
+      if (node.children) {
+        const found = this.searchNodeAndParents(node.children, id, updatedParents);
+        if (found) return found;
       }
     }
 
     return null;
   }
 
-  private forEachNodeHelper(
-    node: RootFileStructure,
-    callback: (node: RootFileStructure) => void
-  ): void {
-    if (!node) return;
+  recusive(nodes: RootFileStructure[], cb?: (node: RootFileStructure) => void): void {
+    for (let i = 0; i < nodes?.length; i++) {
+      cb?.(nodes[i]);
 
-    for (const child of node.children) {
-      if (child.isFile) {
-        continue;
+      if (nodes[i].children !== undefined) {
+        this.recusive(nodes[i].children, cb);
       }
-
-      callback(child);
-
-      this.forEachNodeHelper(child, callback);
     }
+  }
+
+  toggleAllExpand(value: boolean) {
+    this.recusive(this._activeRootFileStructure, node => (node.isExpanded = value));
+  }
+
+  toggleAllSelected(value: boolean) {
+    this.recusive(this._activeRootFileStructure, node => (node.isSelected = value));
   }
 }

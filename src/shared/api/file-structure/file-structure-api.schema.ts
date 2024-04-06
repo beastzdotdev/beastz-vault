@@ -17,7 +17,7 @@ export class BasicFileStructureResponseDto {
 
   lastModifiedAt: Date | null;
   createdAt: Date;
-  children: BasicFileStructureResponseDto[];
+  children: BasicFileStructureResponseDto[] | null;
 }
 
 export class DetectDuplicateResponseDto {

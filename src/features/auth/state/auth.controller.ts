@@ -1,13 +1,10 @@
 import { router } from '../../../router';
-import {
-  Singleton,
-  Inject,
-  AuthApiService,
-  ExceptionMessageCode,
-  constants,
-  toast,
-  bus,
-} from '../../../shared';
+import { AuthApiService } from '../../../shared/api';
+import { bus } from '../../../shared/bus';
+import { constants } from '../../../shared/constants';
+import { ExceptionMessageCode } from '../../../shared/enum';
+import { Singleton, Inject } from '../../../shared/ioc';
+import { toast } from '../../../shared/ui';
 
 @Singleton
 export class AuthController {

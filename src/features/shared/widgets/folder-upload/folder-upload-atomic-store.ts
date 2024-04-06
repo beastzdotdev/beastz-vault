@@ -1,6 +1,7 @@
 import { makeAutoObservable } from 'mobx';
-import { DetectDuplicateResponseDto, Singleton } from '../../../../shared';
 import { WBKTreeNode } from '../../../../shared/advanced-helpers/tree-data';
+import { DetectDuplicateResponseDto } from '../../../../shared/api';
+import { Singleton } from '../../../../shared/ioc';
 
 /**
  * This class is only temporary storage for folder upload

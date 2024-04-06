@@ -2,13 +2,12 @@ import { Button } from '@blueprintjs/core';
 import { observer } from 'mobx-react-lite';
 import { useInjection } from 'inversify-react';
 import { ProfileStore } from './state/profile.store';
-import { constants } from '../../shared';
+import { constants } from '../../shared/constants';
 import { router } from '../../router';
 
 export const ProfilePage = observer((): React.JSX.Element => {
   const profile = useInjection(ProfileStore);
 
-  //TODO sign out call
   const WebSignOut = async () => {
     try {
       router.navigate(constants.path.signIn);

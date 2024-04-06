@@ -12,13 +12,14 @@ import { useCallback, useState } from 'react';
 import { useInjection } from 'inversify-react';
 import { useFormik } from 'formik';
 import { FormErrorMessage } from '../../../../components/form-error-message';
-import { FileStructureApiService, zodFormikErrorAdapter } from '../../../../shared';
 import { SharedController } from '../../state/shared.controller';
 import { getFileStructureUrlParams } from '../../helper/get-url-params';
 import {
   createFolderDialogValidation,
   createFolderDialogValidationFields,
 } from './create-folder-dialog-validation';
+import { FileStructureApiService } from '../../../../shared/api';
+import { zodFormikErrorAdapter } from '../../../../shared/helper';
 
 export const CreateFolderDialogWidget = ({
   isOpen,

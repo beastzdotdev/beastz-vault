@@ -1,5 +1,5 @@
-import { passwordSchema } from './password-validation-schema';
 import { z } from 'zod';
+import { passwordSchema } from './password-validation-schema';
 
 export const signInFieldsSchema = z.object({
   email: z

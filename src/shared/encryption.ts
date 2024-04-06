@@ -1,4 +1,4 @@
-import { stringEncode, base64Decode, stringDecode } from '.';
+import { stringEncode, base64Decode, stringDecode } from './helper';
 
 const privateEncryption = Object.freeze({
   pbkdf2: {

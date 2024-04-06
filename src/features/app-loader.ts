@@ -1,9 +1,12 @@
 import { LoaderFunctionArgs, redirect } from 'react-router-dom';
+import { runInAction } from 'mobx';
 import { ProfileController } from './profile/state/profile.controller';
-import { constants, ioc, UserApiService } from '../shared';
 import { ProfileStore } from './profile/state/profile.store';
 import { SharedStore } from './shared/state/shared.store';
-import { runInAction } from 'mobx';
+import { UserApiService } from '../shared/api';
+import { constants } from '../shared/constants';
+import { ioc } from '../shared/ioc';
+import { fileStructureLoader } from './file-structure/file-structure.loader';
 
 export const appLoader = async (_args: LoaderFunctionArgs) => {
   const profileController = ioc.getContainer().get(ProfileController);
@@ -33,5 +36,6 @@ export const appLoader = async (_args: LoaderFunctionArgs) => {
     return redirect(url.toString());
   }
 
-  return 'ok';
+  // for other routes like profile, ...
+  return fileStructureLoader(_args);
 };

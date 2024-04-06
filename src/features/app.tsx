@@ -1,36 +1,20 @@
-import queryString from 'query-string';
-import { Outlet, useLocation } from 'react-router-dom';
-import { Sidebar } from './shared/widgets/sidebar';
+import { Outlet } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import { useInjection } from 'inversify-react';
 import { SharedStore } from './shared/state/shared.store';
-import { useEffect } from 'react';
-import { constants } from '../shared';
+import { Sidebar } from './shared/widgets/sidebar';
 
 export const App = observer((): React.JSX.Element => {
   const sharedStore = useInjection(SharedStore);
-  const location = useLocation();
-
-  useEffect(() => {
-    // track file structure active id and rootParentId
-    if (location.pathname.includes(constants.path.fileStructure)) {
-      const { id, root_parent_id } = queryString.parse(location.search, {
-        parseBooleans: true,
-        parseNumbers: true,
-      }) as { id: 'root' | number; root_parent_id?: number };
-
-      sharedStore.setRouterParams(id, root_parent_id);
-    }
-  }, [location, sharedStore]);
 
   return (
     <>
       {sharedStore.shouldRender && (
         <>
-          <div className="flex">
+          <div className="flex h-full">
             <Sidebar />
 
-            <div className="flex-1">
+            <div className="flex flex-col flex-1">
               <Outlet />
             </div>
           </div>

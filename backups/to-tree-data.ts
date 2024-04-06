@@ -25,7 +25,7 @@ function buildTree(files: { webkitRelativePath: string }[]): TreeNode[] {
 
   for (const file of files) {
     const pathParts = file.webkitRelativePath.split('/');
-    let currentNode = tree.find(node => node.name === pathParts[0]);
+    let currentNode = tree.find(node => node.name === pathParts[0]) as TreeNode;
 
     if (!currentNode) {
       currentNode = {

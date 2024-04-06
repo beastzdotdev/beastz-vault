@@ -1,7 +1,7 @@
-import { Alert, Intent } from '@blueprintjs/core';
 import React, { createContext, useEffect, useState } from 'react';
+import { Alert, Intent } from '@blueprintjs/core';
+import { BusMessageType } from '../../bus/bus.schema';
 import { bus } from '../../bus/bus';
-import { BusMessageType } from '../..';
 
 const GlobalAlert = ({
   isOpen,
@@ -28,8 +28,13 @@ const GlobalAlert = ({
   );
 };
 
+interface GlobalAlertContextType {
+  showAlert: (message: BusMessageType, onClose: (() => void) | null) => void;
+  closeAlert: () => void;
+}
+
 // Create a context for the global alert
-export const GlobalAlertContext = createContext(null);
+export const GlobalAlertContext = createContext<GlobalAlertContextType | null>(null);
 
 export const GlobalAlertProvider = ({ children }: { children: React.JSX.Element }) => {
   const [globalAlert, setGlobalAlert] = useState<{
@@ -68,7 +73,7 @@ export const GlobalAlertProvider = ({ children }: { children: React.JSX.Element 
   }, []);
 
   return (
-    <GlobalAlertContext.Provider value={{ showAlert, closeAlert } as any}>
+    <GlobalAlertContext.Provider value={{ showAlert, closeAlert }}>
       {children}
       <GlobalAlert isOpen={globalAlert.isOpen} message={globalAlert.message} onClose={closeAlert} />
     </GlobalAlertContext.Provider>
