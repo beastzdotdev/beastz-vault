@@ -1,4 +1,5 @@
 import axios, { AxiosError, CreateAxiosDefaults, HttpStatusCode } from 'axios';
+import { createSearchParams } from 'react-router-dom';
 import { constants } from '../constants';
 import { bus } from '../bus/bus';
 import { router } from '../../router';
@@ -6,7 +7,6 @@ import { ExceptionSchema } from '../errors/exception.schema';
 import { ExceptionMessageCode } from '../enum/exception-message-code.enum';
 import { ClientApiError } from '../errors/client-error.schema';
 import { HandleRefreshType } from '../types';
-import { createSearchParams } from 'react-router-dom';
 
 const axiosConfigs: CreateAxiosDefaults = {
   baseURL: constants.path.backend.url,

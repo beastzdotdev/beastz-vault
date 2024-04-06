@@ -1,7 +1,6 @@
 import { Button, Classes, H2, Icon, Intent } from '@blueprintjs/core';
 import { router } from '../../router';
 
-//TODO support page
 export const SupportPage = (): React.JSX.Element => {
   return (
     <div className="w-fit mx-auto mt-20">

@@ -23,8 +23,14 @@ $input-border-color: #ffffff00;
 $main-white-color: rgba(143, 153, 168, 0.4);
 $main-white-color-hover: rgba(143, 153, 168, 0.2);
 
+html,
 body {
   background-color: $dark-gray2;
+  height: 100%;
+}
+
+#root {
+  height: 100%;
 }
 
 * {
@@ -96,12 +102,6 @@ body {
   border: 1px solid rgba(231, 106, 110, 0.5);
 }
 
-//! Dont delete (could be helpfull)
-// This highlight can be added for HELPER feature activation on frontend
-// .bp5-tree-node-caret:hover {
-//   background-color: rgba(95, 107, 124, 0.7);
-// }
-
 .gorilla-sidebar {
   $sidebar-font-size: 13px;
 
@@ -124,20 +124,10 @@ body {
     }
   }
 
-  .gorilla-sidebar-tree-nodes {
-    .bp5-tree-node.bp5-tree-node-selected > .bp5-tree-node-content {
-      background: $main-white-color;
-    }
-
-    .bp5-tree-node-content {
-      border-radius: $global-border-radius;
-      font-size: $sidebar-font-size;
-      margin: 1px 0;
-
-      &:hover {
-        background: rgba(143, 153, 168, 0.15);
-      }
-    }
+  .gorilla-sidebar-tree-node {
+    border-radius: $global-border-radius;
+    font-size: $sidebar-font-size;
+    margin: 1px 0;
   }
 
   .resize-bar {
@@ -205,3 +195,8 @@ body {
     flex: 1;
   }
 }
+
+// .pulexui-mobx-tree-node {
+//   display: flex !important;
+//   flex-direction: column;
+// }

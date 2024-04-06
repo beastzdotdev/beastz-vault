@@ -1,6 +1,6 @@
-import { passwordSchema } from './password-validation-schema';
-import { Gender } from '../../../shared';
 import { z } from 'zod';
+import { passwordSchema } from './password-validation-schema';
+import { Gender } from '../../../shared/enum';
 
 export const signUpFieldsSchema = z
   .object({

@@ -16,7 +16,7 @@ import {
   duplicateNameDialogValidation,
   duplicateNameDialogValidationFields,
 } from './duplicate-name-dialog-validation';
-import { classNames, zodFormikErrorAdapter } from '../../../../shared';
+import { classNames, zodFormikErrorAdapter } from '../../../../shared/helper';
 
 export const DuplicateNameDialogWidget = ({
   isOpen,

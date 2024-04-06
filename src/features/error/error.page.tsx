@@ -17,7 +17,7 @@ export const ErrorPage = (): React.JSX.Element => {
           <Button
             minimal
             outlined
-            text="Go Back"
+            text="Go Home"
             intent={Intent.WARNING}
             onClick={() => router.navigate('/')}
           />
@@ -36,7 +36,7 @@ export const ErrorPage = (): React.JSX.Element => {
         <Button
           minimal
           outlined
-          text="Go Back"
+          text="Go Home"
           intent={Intent.WARNING}
           onClick={() => router.navigate('/')}
         />

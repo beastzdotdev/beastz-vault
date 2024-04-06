@@ -1,14 +1,16 @@
 import { ToastProps, Intent, Spinner, Card, CardList, Icon, Button } from '@blueprintjs/core';
 import { v4 as uuid } from 'uuid';
 import { ChangeEvent, useCallback, useState } from 'react';
-import { cleanFiles, validateFileSize } from '../../helper/validate-file';
-import { FileStructureApiService, fileContentProgressToast, sleep } from '../../../../shared';
 import { useInjection } from 'inversify-react';
+import { observer } from 'mobx-react-lite';
+import { cleanFiles, validateFileSize } from '../../helper/validate-file';
 import { getFileStructureUrlParams } from '../../helper/get-url-params';
 import { DuplicateNameDialogWidget } from '../duplicate-name-dialog/duplicate-name-dialog';
 import { FileUploadAtomicStore } from './file-upload-atomic-store';
-import { observer } from 'mobx-react-lite';
 import { SharedController } from '../../state/shared.controller';
+import { FileStructureApiService } from '../../../../shared/api';
+import { sleep } from '../../../../shared/helper';
+import { fileContentProgressToast } from '../../../../shared/ui';
 
 const progressToastProps: Omit<ToastProps, 'message'> = {
   className: 'only-for-file-upload',

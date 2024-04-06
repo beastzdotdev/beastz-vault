@@ -1,6 +1,6 @@
 import { ProfileStore } from './profile.store';
 import { User } from '../../../entities/user';
-import { Inject, Singleton } from '../../../shared';
+import { Singleton, Inject } from '../../../shared/ioc';
 
 @Singleton
 export class ProfileController {

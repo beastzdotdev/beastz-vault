@@ -1,6 +1,6 @@
 import { Button, Classes, H2, Icon, Intent } from '@blueprintjs/core';
 import { router } from '../../router';
-import { constants } from '../../shared';
+import { constants } from '../../shared/constants';
 
 export const AuthUserNotVerifiedPage = (): React.JSX.Element => {
   return (

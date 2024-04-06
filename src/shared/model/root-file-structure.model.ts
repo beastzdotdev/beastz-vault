@@ -1,15 +1,29 @@
-import { IconName, MaybeElement, TreeNodeInfo } from '@blueprintjs/core';
-import { JSX } from 'react';
-import { FileMimeType } from '../enum/file-mimte-type.enum';
-import { runInAction } from 'mobx';
+import { IconName } from '@blueprintjs/core';
+import { makeAutoObservable, runInAction } from 'mobx';
 import { Type, plainToInstance } from 'class-transformer';
-import { BasicFileStructureResponseDto } from '..';
+import { MobxTreeModel } from '@pulexui/core';
+import { FileMimeType } from '../enum/file-mimte-type.enum';
+import { BasicFileStructureResponseDto } from '../api';
+import { Combine } from '../types';
 
-export type SidebarNodeData = { link?: string };
+export class RootFileStructure
+  implements Combine<BasicFileStructureResponseDto, MobxTreeModel<number>>
+{
+  constructor() {
+    makeAutoObservable(this);
+  }
 
-export class RootFileStructure implements TreeNodeInfo<SidebarNodeData> {
-  //! From BasicFileStructureInRootDto
+  //! inherited
   id: number;
+  name: string;
+  children: RootFileStructure[]; //! Do not use @Type here it will make class serialization slower
+  isSelected: boolean;
+  isExpanded: boolean;
+  isFile: boolean;
+  hasCaret: boolean;
+  isDisabled: boolean;
+
+  //! From BasicFileStructureInRootDto
   path: string;
   title: string;
   depth: number;
@@ -19,22 +33,16 @@ export class RootFileStructure implements TreeNodeInfo<SidebarNodeData> {
   mimeTypeRaw: string | null;
   mimeType: FileMimeType | null;
   isEditable: boolean | null;
-  isFile: boolean;
-
   rootParentId: number | null;
   parentId: number | null;
 
-  //! From original TreeNodeInfo
-  className?: string | undefined;
-  childNodes?: RootFileStructure[] | undefined;
-  disabled?: boolean | undefined;
-  hasCaret?: boolean | undefined;
-  icon?: IconName | MaybeElement;
-  isExpanded?: boolean | undefined;
-  isSelected?: boolean | undefined;
-  label: string | JSX.Element;
-  secondaryLabel?: string | MaybeElement;
-  nodeData?: SidebarNodeData | undefined;
+  //! New
+  link?: string;
+  activeIcon: IconName | 'spinner';
+
+  setActiveIcon(icon: IconName | 'spinner') {
+    this.activeIcon = icon;
+  }
 
   @Type(() => Date)
   lastModifiedAt: Date | null;
@@ -42,12 +50,10 @@ export class RootFileStructure implements TreeNodeInfo<SidebarNodeData> {
   @Type(() => Date)
   createdAt: Date;
 
-  //! Do not use @Type here it will make class serialization slower
-  children: RootFileStructure[];
-
   toggleIsExpanded() {
     this.isExpanded = !this.isExpanded;
   }
+
   setIsExpanded(value: boolean) {
     this.isExpanded = value;
   }
@@ -56,39 +62,56 @@ export class RootFileStructure implements TreeNodeInfo<SidebarNodeData> {
     this.isSelected = value;
   }
 
+  setDisabled(value: boolean) {
+    this.isDisabled = value;
+  }
+
+  setHasCaret(value: boolean) {
+    this.hasCaret = value;
+  }
+
+  recusive(node: RootFileStructure[], callback?: (node: RootFileStructure) => void): void {
+    for (let i = 0; i < node?.length; i++) {
+      callback?.(node[i]);
+
+      if (node[i].children !== undefined) {
+        this.recusive(node[i].children, callback);
+      }
+    }
+  }
+
+  addChildren(data: RootFileStructure[]) {
+    this.children.push(...data);
+  }
+
   static customTransform(data: BasicFileStructureResponseDto): RootFileStructure {
     return runInAction(() => {
       const newItem = plainToInstance(RootFileStructure, data);
 
-      newItem.icon = data.isFile ? 'document' : 'folder-close';
-      newItem.label = data.isFile ? data.title + data.fileExstensionRaw : data.title;
+      newItem.name = data.isFile ? data.title + data.fileExstensionRaw : data.title;
+      newItem.isSelected = false;
       newItem.isExpanded = false;
-      newItem.childNodes = data.isFile ? undefined : [];
+      newItem.isDisabled = false;
+      newItem.activeIcon = data.isFile ? 'document' : 'folder-close';
+      newItem.hasCaret = !data.isFile;
 
-      if (data.isFile) {
-        newItem.nodeData = {};
-      } else {
-        newItem.nodeData = {
-          link: data.rootParentId
-            ? `/file-structure?id=${data.id}&root_parent_id=${
-                data.rootParentId
-              }&path=${encodeURIComponent(data.path)}`
-            : `/file-structure?id=${data.id}&root_parent_id=${data.id}&path=${encodeURIComponent(
-                data.path
-              )}`,
-        };
+      if (!data.isFile) {
+        newItem.link = data.rootParentId
+          ? `/file-structure?id=${data.id}&root_parent_id=${
+              data.rootParentId
+            }&path=${encodeURIComponent(data.path)}`
+          : `/file-structure?id=${data.id}&root_parent_id=${data.id}&path=${encodeURIComponent(
+              data.path
+            )}`;
       }
 
-      // newItem.hasCaret = false;
       if (data?.children?.length) {
         newItem.children = data.children.map(e => this.customTransform(e));
-        newItem.childNodes = newItem.children; // chilod node are only reference
-        // newItem.hasCaret = true;
-
-        return newItem;
       } else {
-        return newItem;
+        newItem.children = [];
       }
+
+      return newItem;
     });
   }
 }

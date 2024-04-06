@@ -6,7 +6,7 @@ import {
   BasicFileStructureResponseDto,
   DetectDuplicateResponseDto,
 } from './file-structure-api.schema';
-import { RootFileStructure } from '../..';
+import { RootFileStructure } from '../../model';
 
 @Singleton
 export class FileStructureApiService {

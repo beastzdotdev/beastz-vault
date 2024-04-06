@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { fields } from '../../../../shared';
+import { fields } from '../../../../shared/helper';
 
 export enum DuplicateNameChoice {
   KEEP_BOTH = 'KEEP_BOTH',

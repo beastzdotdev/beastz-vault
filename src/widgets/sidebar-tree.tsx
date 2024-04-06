@@ -1,70 +1,42 @@
-import { Intent, Spinner, Tree, TreeProps } from '@blueprintjs/core';
 import { useInjection } from 'inversify-react';
-import { SharedStore } from '../features/shared/state/shared.store';
-import { useCallback, useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import { FileStructureApiService, RootFileStructure, sleep } from '../shared';
-import { getFileStructureUrlParams } from '../features/shared/helper/get-url-params';
 import { observer } from 'mobx-react-lite';
-import { router } from '../router';
+import { MobxTree } from '@pulexui/core';
+import { toJS } from 'mobx';
+import { useCallback } from 'react';
+import { Icon, Intent, Spinner } from '@blueprintjs/core';
+import { SharedStore } from '../features/shared/state/shared.store';
+import { FileStructureApiService } from '../shared/api';
+import { RootFileStructure } from '../shared/model';
+import { sleep } from '../shared/helper';
+import { SharedController } from '../features/shared/state/shared.controller';
 
-type NodePath = number[];
-
-export const SidebarTree = observer(() => {
-  const location = useLocation();
-
+export const SidebarTree = observer(({ className }: { className?: string }) => {
   const sharedStore = useInjection(SharedStore);
+  const sharedController = useInjection(SharedController);
   const fileStructureApiService = useInjection(FileStructureApiService);
-  const [, setRender] = useState(true);
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
-
-  const revalidateTreeSelectionStatus = useCallback(() => {
-    if (location.pathname === '/') {
-      return;
-    }
-
-    const { parentId, folderPath } = getFileStructureUrlParams();
-
-    if (!parentId || !folderPath) {
-      return;
-    }
-
-    sharedStore.forEachNode(node => {
-      node.setIsSelected(node.id === parentId);
-
-      // expand all parent only
-      if (folderPath.startsWith(node.path) && folderPath[node.path.length] === '/') {
-        node.setIsExpanded(true);
-      }
-    });
-
-    // Check if it's the initial load
-    if (isInitialLoad) {
-      setIsInitialLoad(() => false);
-      setRender(prevRender => !prevRender);
-      return;
-    }
-  }, [isInitialLoad, location.pathname, sharedStore]);
-
-  useEffect(() => {
-    revalidateTreeSelectionStatus();
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const handleNodeClick = useCallback(
-    (node: RootFileStructure, _nodePath: NodePath, _e: React.MouseEvent<HTMLElement>) => {
+    async (node: RootFileStructure) => {
       if (node.isFile) {
-        console.log('='.repeat(20));
-        console.log('Is file');
         //TODO check if is file and if file show popup just like in root page on double click
+        console.log('ignoring file click for now');
         return;
       }
 
-      if (node && node.nodeData?.link) {
+      // 1. It is better to select node first for animation speed
+      node.setIsSelected(true);
+
+      // 2. And then recusrively deselect others except the selected node
+      node.recusive(sharedStore.activeRootFileStructure, n => {
+        if (n.id !== node.id) {
+          n.setIsSelected(false);
+        }
+      });
+
+      if (node && node.link) {
         const existingLocation = window.location;
 
-        const nodeUrlObj = new URL(existingLocation.origin + node.nodeData.link);
+        const nodeUrlObj = new URL(existingLocation.origin + node.link);
         const existingUrlObj = new URL(existingLocation.href);
 
         // check node data click happens on same page
@@ -76,26 +48,24 @@ export const SidebarTree = observer(() => {
           return;
         }
 
-        router.navigate(node.nodeData.link).then(e => {
-          revalidateTreeSelectionStatus();
-        });
+        // Push to history
+        sharedController.pushToHistory(node.link);
       }
     },
-    [revalidateTreeSelectionStatus]
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
   );
 
-  const toggleNode = useCallback(async (id: number, value: boolean) => {
-    const node = sharedStore.search(id);
-
-    if (value === true) {
-      if (node && !node.childNodes?.length) {
-        node.hasCaret = false;
-        node.disabled = true;
-        node.secondaryLabel = <Spinner size={20} intent={Intent.PRIMARY} />;
-        setRender(prevRender => !prevRender);
+  const handleNodeToggle = useCallback(
+    async (node: RootFileStructure, value: boolean) => {
+      if (value && node && !node.children?.length) {
+        node.setActiveIcon('spinner');
+        node.setHasCaret(false);
+        node.setDisabled(true);
 
         const startTime = new Date(); // Start time
-        const { data, error } = await fileStructureApiService.getContent({ parentId: id });
+        const { data, error } = await fileStructureApiService.getContent({ parentId: node.id });
 
         if (error) {
           throw new Error('Something went wrong');
@@ -105,51 +75,54 @@ export const SidebarTree = observer(() => {
         const endTime = new Date();
 
         if (data) {
-          for (const item of data) {
-            node.children?.push(item);
-            node.childNodes = node.children;
-          }
+          node.children?.push(...data);
         }
 
         // this is necessary because if axios took less than 200ms animation seems weird
         if (endTime.getTime() - startTime.getTime() < 200) {
-          // add another 200 ms waiting
-          await sleep(200);
+          // add another 400 ms waiting
+          await sleep(400);
         }
 
-        node.hasCaret = true;
-        node.secondaryLabel = undefined;
-        node.disabled = false;
+        node.setActiveIcon('folder-close');
+        node.setHasCaret(true);
+        node.setDisabled(false);
       }
 
-      node?.setIsExpanded(true);
-    } else {
-      node?.setIsExpanded(false);
-    }
-
-    setRender(prevRender => !prevRender);
+      node.setIsExpanded(value);
+    },
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const handleNodeCollapse = useCallback(
-    (node: RootFileStructure, _nodePath: NodePath) => toggleNode(node.id, false),
-    [toggleNode]
+    []
   );
 
-  const handleNodeExpand = useCallback(
-    (node: RootFileStructure, _nodePath: NodePath) => toggleNode(node.id, true),
-    [toggleNode]
+  const handleContextMenu = useCallback(
+    async (e: React.MouseEvent<HTMLDivElement, MouseEvent>, node: RootFileStructure) => {
+      e.preventDefault();
+      console.log('Right Click', e.pageX, e.pageY, toJS(node));
+    },
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
   );
 
   return (
     <>
-      <Tree
-        className="gorilla-sidebar-tree-nodes p-1.5"
-        contents={sharedStore.activeRootFileStructure}
-        onNodeClick={handleNodeClick as TreeProps['onNodeClick']}
-        onNodeCollapse={handleNodeCollapse as unknown as TreeProps['onNodeCollapse']}
-        onNodeExpand={handleNodeExpand as unknown as TreeProps['onNodeExpand']}
+      <MobxTree<number, RootFileStructure>
+        compact={false}
+        nodes={sharedStore.activeRootFileStructure}
+        nodeClassName="gorilla-sidebar-tree-node"
+        className={className ?? ''}
+        onToggle={({ node, value }) => handleNodeToggle(node, value)}
+        onClick={({ node }) => handleNodeClick(node)}
+        onContextMenu={({ node, e }) => handleContextMenu(e, node)}
+        renderTypeIcon={node => {
+          if (node.activeIcon === 'spinner') {
+            return <Spinner size={20} intent={Intent.PRIMARY} />;
+          }
+
+          return <Icon icon={node.activeIcon} />;
+        }}
       />
     </>
   );

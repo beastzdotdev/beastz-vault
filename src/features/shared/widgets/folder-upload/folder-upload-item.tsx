@@ -1,19 +1,18 @@
 import { ToastProps, Intent } from '@blueprintjs/core';
 import { ChangeEvent, useCallback, useState } from 'react';
+import { useInjection } from 'inversify-react';
+import { observer } from 'mobx-react-lite';
 import { cleanFiles, validateFileSize } from '../../helper/validate-file';
 import { buildWBKTree, WBKTreeNode } from '../../../../shared/advanced-helpers/tree-data';
-import { useInjection } from 'inversify-react';
-import {
-  FileStructureApiService,
-  RootFileStructure,
-  fileContentProgressToast,
-  sleep,
-} from '../../../../shared';
+
 import { getFileStructureUrlParams } from '../../helper/get-url-params';
 import { DuplicateNameDialogWidget } from '../duplicate-name-dialog/duplicate-name-dialog';
 import { FolderUploadAtomicStore } from './folder-upload-atomic-store';
-import { observer } from 'mobx-react-lite';
 import { SharedController } from '../../state/shared.controller';
+import { FileStructureApiService } from '../../../../shared/api';
+import { sleep } from '../../../../shared/helper';
+import { RootFileStructure } from '../../../../shared/model';
+import { fileContentProgressToast } from '../../../../shared/ui';
 
 const progressToastProps: Omit<ToastProps, 'message'> = {
   isCloseButtonShown: false,

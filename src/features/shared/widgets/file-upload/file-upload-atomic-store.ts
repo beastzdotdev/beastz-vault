@@ -1,5 +1,6 @@
 import { makeAutoObservable } from 'mobx';
-import { DetectDuplicateResponseDto, Singleton } from '../../../../shared';
+import { DetectDuplicateResponseDto } from '../../../../shared/api';
+import { Singleton } from '../../../../shared/ioc';
 
 /**
  * This class is only temporary storage for file(s) upload
