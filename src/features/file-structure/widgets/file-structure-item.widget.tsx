@@ -1,6 +1,16 @@
-import { Button, Icon, Menu, MenuDivider, MenuItem, Popover } from '@blueprintjs/core';
+import {
+  Button,
+  Icon,
+  Menu,
+  MenuDivider,
+  MenuItem,
+  Popover,
+  hideContextMenu,
+  showContextMenu,
+} from '@blueprintjs/core';
 import { observer } from 'mobx-react-lite';
-import { formatFileSize } from '../../../shared/helper';
+import { useCallback } from 'react';
+import { formatSize } from '../../../shared/helper';
 import { RootFileStructure } from '../../../shared/model';
 
 interface FileStuructureFileItemParams {
@@ -10,8 +20,57 @@ interface FileStuructureFileItemParams {
   onDoubleClick: (node: RootFileStructure) => void;
 }
 
+const FileStuructureContextMenu = (params: { node: RootFileStructure }) => {
+  return (
+    <Menu>
+      <MenuItem text="Copy" icon="duplicate">
+        <MenuItem text="Title" />
+        <MenuItem text="Public link" />
+        <MenuItem {...(!params.node.isFile && { disabled: true })} text="Content" />
+      </MenuItem>
+      <MenuItem text="Move" icon="nest" />
+      <MenuDivider />
+      <MenuItem text="Change color" icon="tint" />
+      <MenuItem text="Details" icon="info-sign" />
+      <MenuItem text="Not editable" icon="edit" />
+      <MenuItem text="Lock" icon="lock" />
+      <MenuItem text="Download" icon="cloud-download" />
+
+      <MenuItem text="Encrypt by" icon="shield">
+        <MenuItem text="Text" />
+        <MenuItem text="Pin" />
+      </MenuItem>
+
+      <MenuDivider />
+      <MenuItem text="Coming soon" icon="clean">
+        <MenuItem disabled text="Share" icon="share" />
+        <MenuItem disabled text="Bookmark" icon="bookmark" />
+        <MenuItem disabled text="Add shortcut" icon="folder-new" />
+        <MenuItem disabled text="Activity" icon="list-detail-view" />
+        <MenuItem disabled text="Open in editor" icon="code" />
+      </MenuItem>
+      <MenuItem text="Move to bin" icon="trash" />
+    </Menu>
+  );
+};
+
 export const FileStuructureFileItem = observer(
   (params: FileStuructureFileItemParams): React.JSX.Element => {
+    const handleContextMenu = useCallback(
+      (event: React.MouseEvent<HTMLElement>, node: RootFileStructure) => {
+        event.preventDefault();
+        showContextMenu({
+          content: <FileStuructureContextMenu node={node} />,
+          onClose: hideContextMenu,
+          targetOffset: {
+            left: event.clientX,
+            top: event.clientY,
+          },
+        });
+      },
+      []
+    );
+
     return (
       <div
         className={`gorilla-file-structure-item group/gorilla-item  ${
@@ -19,6 +78,10 @@ export const FileStuructureFileItem = observer(
         }`}
         onClick={() => params.onSelected(params.node)}
         onDoubleClick={() => params.onDoubleClick(params.node)}
+        onContextMenu={e => {
+          params.onSelected(params.node);
+          handleContextMenu(e, params.node);
+        }}
       >
         {/*//! width 100px behaves like min-width:100px */}
         <div className="flex items-center pl-3 pr-5 flex-grow w-[100px]">
@@ -42,25 +105,15 @@ export const FileStuructureFileItem = observer(
           </div>
 
           <div className="flex items-center justify-start w-[110px] pr-5">
-            <p>{formatFileSize(params.node.sizeInBytes)}</p>
+            <p>{formatSize(params.node.sizeInBytes)}</p>
           </div>
         </div>
 
         <div className="items-center justify-end flex-grow-0 w-[210px] xl:flex hidden">
+          {/* Share and bookmark add later */}
+
           <Button
-            icon="share"
-            minimal
-            className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
-            onClick={e => e.stopPropagation()}
-          />
-          <Button
-            icon="bookmark"
-            minimal
-            className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
-            onClick={e => e.stopPropagation()}
-          />
-          <Button
-            icon="download"
+            icon="cloud-download"
             minimal
             className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
             onClick={e => e.stopPropagation()}
@@ -85,37 +138,7 @@ export const FileStuructureFileItem = observer(
           />
         </div>
 
-        <Popover
-          content={
-            <Menu>
-              <MenuItem text="Share" icon="share" />
-              <MenuItem text="Bookmark" icon="bookmark" />
-              <MenuItem text="Copy" icon="duplicate">
-                <MenuItem text="Title" />
-                <MenuItem text="Public link" />
-                <MenuItem text="Content (only file)" />
-              </MenuItem>
-              <MenuItem text="Move" icon="nest" />
-              <MenuDivider />
-              <MenuItem text="Add shortcut" icon="folder-new" />
-              <MenuItem text="Change color" icon="tint" />
-              <MenuItem text="Details" icon="info-sign" />
-              <MenuItem text="Activity" icon="list-detail-view" />
-              <MenuItem text="Not editable" icon="edit" />
-              <MenuItem text="Lock" icon="lock" />
-              <MenuItem text="Download" icon="download" />
-              <MenuItem text="Open in editor (coming soon)" icon="code" />
-              <MenuItem text="Encrypt by" icon="shield">
-                <MenuItem text="Text" />
-                <MenuItem text="Pin" />
-              </MenuItem>
-              <MenuDivider />
-
-              <MenuItem text="Move to bin" icon="trash" />
-            </Menu>
-          }
-          placement="right-start"
-        >
+        <Popover content={<FileStuructureContextMenu node={params.node} />} placement="right-start">
           <Button icon="more" minimal />
         </Popover>
       </div>

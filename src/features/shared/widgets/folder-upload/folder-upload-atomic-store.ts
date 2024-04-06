@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx';
 import { WBKTreeNode } from '../../../../shared/advanced-helpers/tree-data';
-import { DetectDuplicateResponseDto } from '../../../../shared/api';
+import { GetDuplicateStatusResponseDto } from '../../../../shared/api';
 import { Singleton } from '../../../../shared/ioc';
 
 /**
@@ -12,7 +12,7 @@ export class FolderUploadAtomicStore {
   private _totalLength: number = 0;
 
   private _keepBoth: boolean = false;
-  private _duplicates: DetectDuplicateResponseDto[] = [];
+  private _duplicates: GetDuplicateStatusResponseDto[] = [];
 
   constructor() {
     makeAutoObservable(this);
@@ -30,7 +30,7 @@ export class FolderUploadAtomicStore {
     return this._keepBoth;
   }
 
-  get duplicates(): DetectDuplicateResponseDto[] {
+  get duplicates(): GetDuplicateStatusResponseDto[] {
     return this._duplicates;
   }
 
@@ -53,7 +53,7 @@ export class FolderUploadAtomicStore {
     this._keepBoth = keepBoth;
   }
 
-  setDuplicates(duplicates: DetectDuplicateResponseDto[]) {
+  setDuplicates(duplicates: GetDuplicateStatusResponseDto[]) {
     this._duplicates = duplicates;
   }
 }

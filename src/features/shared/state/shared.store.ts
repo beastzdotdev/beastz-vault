@@ -1,6 +1,7 @@
 import { makeAutoObservable } from 'mobx';
 import { Singleton } from '../../../shared/ioc';
 import { RootFileStructure } from '../../../shared/model';
+import { GetGeneralInfoResponseDto } from '../../../shared/api';
 
 @Singleton
 export class SharedStore {
@@ -10,6 +11,7 @@ export class SharedStore {
 
   private _shouldRender: boolean;
   private _activeRootFileStructure: RootFileStructure[];
+  private _generalInfo: GetGeneralInfoResponseDto;
 
   constructor() {
     makeAutoObservable(this);
@@ -39,6 +41,10 @@ export class SharedStore {
     return this._activePath;
   }
 
+  get generalInfo(): GetGeneralInfoResponseDto {
+    return this._generalInfo;
+  }
+
   //====================================================
   // Chose methods for setter instead of set keyword
   //====================================================
@@ -49,6 +55,10 @@ export class SharedStore {
 
   setActiveRootFileStructure(value: RootFileStructure[]) {
     this._activeRootFileStructure = value;
+  }
+
+  setGeneralInfo(value: GetGeneralInfoResponseDto) {
+    this._generalInfo = value;
   }
 
   //====================================================

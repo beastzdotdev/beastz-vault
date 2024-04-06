@@ -19,6 +19,7 @@ import { CreateFolderDialogWidget } from './create-folder-dialog/create-folder-d
 import { SharedStore } from '../state/shared.store';
 import { constants } from '../../../shared/constants';
 import { ProfileIcon } from './profile';
+import { StorageLimitIndicator } from './general/storage-limit-indicator';
 
 export const Sidebar = () => {
   const { sidebarRef, sidebarWidth, startResizing } = useResize();
@@ -180,24 +181,24 @@ export const Sidebar = () => {
               <Popover
                 content={
                   <Menu>
-                    <MenuItem icon="eye-open" text="Activity" />
-                    <MenuItem icon="people" text="Members" />
-                    <MenuItem icon="inherited-group" text="Shared" />
+                    <MenuItem disabled icon="eye-open" text="Activity" />
+                    <MenuItem disabled icon="people" text="Members" />
+                    <MenuItem disabled icon="inherited-group" text="Shared" />
                     <MenuDivider />
-                    <MenuItem icon="ninja" text="AI" />
+                    <MenuItem disabled icon="ninja" text="AI" />
                   </Menu>
                 }
                 placement="right-start"
               >
                 <Button icon="clean" rightIcon="chevron-right" text="Comming soon" />
               </Popover>
-              <Button icon="data-connection" text="23.45 %" />
               <Button
                 icon="manual"
                 text="Guide"
                 onClick={() => router.navigate(constants.path.guide)}
               />
               <Button icon="help" text="Support & Help" />
+              <StorageLimitIndicator />
             </ButtonGroup>
           </div>
         </div>

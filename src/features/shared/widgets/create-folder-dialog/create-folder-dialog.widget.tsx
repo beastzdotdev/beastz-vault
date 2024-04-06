@@ -46,11 +46,13 @@ export const CreateFolderDialogWidget = ({
         return;
       }
 
-      const { data: duplData, error: duplError } = await fileStructureApiService.detectDuplicate({
-        titles: [values.folderName],
-        isFile: false,
-        parentId,
-      });
+      const { data: duplData, error: duplError } = await fileStructureApiService.getDuplicateStatus(
+        {
+          titles: [values.folderName],
+          isFile: false,
+          parentId,
+        }
+      );
 
       if (duplError) {
         throw new Error('Something unexpected happend');

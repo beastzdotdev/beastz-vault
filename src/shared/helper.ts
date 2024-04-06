@@ -2,6 +2,7 @@ import queryString from 'query-string';
 
 import { ZodError, z } from 'zod';
 import { FormikValidationError } from './types';
+import { constants } from './constants';
 
 export const stringEncode = (text: string): Uint8Array => new TextEncoder().encode(text);
 export const stringDecode = (buffer: ArrayBuffer): string => new TextDecoder().decode(buffer);
@@ -75,23 +76,36 @@ export const isUUID = (value: string) => {
   return uuidRegex.test(value);
 };
 
-export const formatFileSize = (size: number | null): string => {
-  if (size === null) {
+export const formatSizeRaw = (sizeInBytes: number | null): number => {
+  if (!sizeInBytes) {
+    return 0;
+  }
+
+  if (sizeInBytes < constants.SIZE) {
+    return sizeInBytes;
+  } else if (sizeInBytes < constants.SIZE ** 2) {
+    return parseFloat((sizeInBytes / constants.SIZE).toFixed(2));
+  } else if (sizeInBytes < constants.SIZE ** 3) {
+    return parseFloat((sizeInBytes / constants.SIZE ** 2).toFixed(2));
+  } else {
+    return parseFloat((sizeInBytes / constants.SIZE ** 3).toFixed(2));
+  }
+};
+
+export const formatSize = (sizeInBytes: number | null): string => {
+  if (!sizeInBytes) {
     return '';
   }
 
-  const units: string[] = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-  const threshold = 1024;
-  let i = 0; // Start from 0 for correct unit selection
-
-  while (size >= threshold && i < units.length - 1) {
-    size /= threshold;
-    ++i;
+  if (sizeInBytes < constants.SIZE) {
+    return sizeInBytes + ' bytes';
+  } else if (sizeInBytes < constants.SIZE ** 2) {
+    return (sizeInBytes / constants.SIZE).toFixed(2) + ' KB';
+  } else if (sizeInBytes < constants.SIZE ** 3) {
+    return (sizeInBytes / constants.SIZE ** 2).toFixed(2) + ' MB';
+  } else {
+    return (sizeInBytes / constants.SIZE ** 3).toFixed(2) + ' GB';
   }
-
-  const formattedSize = Math.max(size, 0.1).toFixed(1);
-
-  return `${formattedSize} ${units[i]}`;
 };
 
 /**

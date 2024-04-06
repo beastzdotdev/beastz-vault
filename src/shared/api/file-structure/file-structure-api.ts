@@ -4,7 +4,8 @@ import { ClientApiError } from '../../errors/client-error.schema';
 import { Singleton } from '../../ioc';
 import {
   BasicFileStructureResponseDto,
-  DetectDuplicateResponseDto,
+  GetDuplicateStatusResponseDto,
+  GetGeneralInfoResponseDto,
 } from './file-structure-api.schema';
 import { RootFileStructure } from '../../model';
 
@@ -26,28 +27,38 @@ export class FileStructureApiService {
     }
   }
 
-  async getById(id: string): Promise<AxiosApiResponse<RootFileStructure>> {
-    try {
-      const result = await api.get<BasicFileStructureResponseDto>(`file-structure/${id}`);
-
-      return { data: RootFileStructure.customTransform(result.data) };
-    } catch (e: unknown) {
-      return { error: e as ClientApiError };
-    }
-  }
-
-  async detectDuplicate(params: {
+  async getDuplicateStatus(params: {
     titles: string[];
     parentId?: number;
     isFile: boolean;
-  }): Promise<AxiosApiResponse<DetectDuplicateResponseDto[]>> {
+  }): Promise<AxiosApiResponse<GetDuplicateStatusResponseDto[]>> {
     try {
-      const result = await api.get<DetectDuplicateResponseDto[]>(
+      const result = await api.get<GetDuplicateStatusResponseDto[]>(
         `file-structure/detect-duplicate`,
         { params }
       );
 
       return { data: result.data };
+    } catch (e: unknown) {
+      return { error: e as ClientApiError };
+    }
+  }
+
+  async getGeneralInfo(): Promise<AxiosApiResponse<GetGeneralInfoResponseDto>> {
+    try {
+      const result = await api.get<GetGeneralInfoResponseDto>(`file-structure/general-info`);
+
+      return { data: result.data };
+    } catch (e: unknown) {
+      return { error: e as ClientApiError };
+    }
+  }
+
+  async getById(id: string): Promise<AxiosApiResponse<RootFileStructure>> {
+    try {
+      const result = await api.get<BasicFileStructureResponseDto>(`file-structure/${id}`);
+
+      return { data: RootFileStructure.customTransform(result.data) };
     } catch (e: unknown) {
       return { error: e as ClientApiError };
     }

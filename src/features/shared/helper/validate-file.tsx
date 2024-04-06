@@ -2,7 +2,7 @@ import filenamify from 'filenamify/browser';
 import { H3, CardList, Card } from '@blueprintjs/core';
 import { bus } from '../../../shared/bus';
 import { constants } from '../../../shared/constants';
-import { formatFileSize } from '../../../shared/helper';
+import { formatSize } from '../../../shared/helper';
 
 export const validateFileSize = (files: FileList | null): files is FileList => {
   if (!files?.length) {
@@ -33,10 +33,10 @@ export const cleanFiles = (files: FileList): File[] => {
         name: file.name,
         reason: 'name',
       });
-    } else if (file.size > constants.MAX_FILE_UPLOAD_SIZE) {
+    } else if (file.size > constants.MAX_FILE_UPLOAD_SIZE_BYTES) {
       ignoredFiles.push({
         name: file.name,
-        size: formatFileSize(file.size),
+        size: formatSize(file.size),
         reason: 'size',
       });
     } else {

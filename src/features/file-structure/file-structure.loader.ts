@@ -26,7 +26,7 @@ const getRootResponse = async (
   return fileStructureApiService.getContent();
 };
 
-export const selectFileStructure = async (url: URL, query: FSQueryParams) => {
+export const selectFileStructure = (url: URL, query: FSQueryParams) => {
   if (url.pathname === constants.path.fileStructure) {
     const sharedController = ioc.getContainer().get(SharedController);
     const sharedStore = ioc.getContainer().get(SharedStore);
@@ -73,16 +73,26 @@ export const fileStructureLoader = async (_args: LoaderFunctionArgs) => {
     throw new Error('Invalid url pleas go back home'); // router will handle this error
   }
 
-  const { data, error } = await getRootResponse(query);
+  const sharedStore = ioc.getContainer().get(SharedStore);
+  const fileStructureApiService = ioc.getContainer().get(FileStructureApiService);
 
-  if (error || !data) {
+  const [rootResponse, generalInfoResponse] = await Promise.all([
+    getRootResponse(query),
+    fileStructureApiService.getGeneralInfo(),
+  ]);
+
+  if (generalInfoResponse.error || !generalInfoResponse.data) {
+    throw new Error('Sorry, something went wrong, general info');
+  }
+
+  sharedStore.setGeneralInfo(generalInfoResponse.data);
+
+  if (rootResponse.error || !rootResponse.data) {
     throw new Error('Sorry, something went wrong');
   }
 
-  const sharedStore = ioc.getContainer().get(SharedStore);
-
   //! Always set root data when initial loading for sidebar
-  sharedStore.setActiveRootFileStructure(data);
+  sharedStore.setActiveRootFileStructure(rootResponse.data);
 
   selectFileStructure(url, query);
 

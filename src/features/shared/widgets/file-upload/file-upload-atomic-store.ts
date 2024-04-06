@@ -1,5 +1,5 @@
 import { makeAutoObservable } from 'mobx';
-import { DetectDuplicateResponseDto } from '../../../../shared/api';
+import { GetDuplicateStatusResponseDto } from '../../../../shared/api';
 import { Singleton } from '../../../../shared/ioc';
 
 /**
@@ -9,7 +9,7 @@ import { Singleton } from '../../../../shared/ioc';
 export class FileUploadAtomicStore {
   private _data: { id: string; file: File }[] = [];
   private _keepBoth: boolean = false;
-  private _duplicates: DetectDuplicateResponseDto[] = [];
+  private _duplicates: GetDuplicateStatusResponseDto[] = [];
 
   constructor() {
     makeAutoObservable(this);
@@ -23,7 +23,7 @@ export class FileUploadAtomicStore {
     return this._keepBoth;
   }
 
-  get duplicates(): DetectDuplicateResponseDto[] {
+  get duplicates(): GetDuplicateStatusResponseDto[] {
     return this._duplicates;
   }
 
@@ -41,7 +41,7 @@ export class FileUploadAtomicStore {
     this._keepBoth = keepBoth;
   }
 
-  setDuplicates(duplicates: DetectDuplicateResponseDto[]) {
+  setDuplicates(duplicates: GetDuplicateStatusResponseDto[]) {
     this._duplicates = duplicates;
   }
 }
