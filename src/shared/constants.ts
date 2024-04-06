@@ -2,7 +2,7 @@
  * @description / beofre every route is needed for redirection
  */
 export const constants = Object.freeze({
-  SIZE: constants.SIZE, // 1kb
+  SIZE: 1024, // 1kb
 
   path: {
     profile: '/profile',
