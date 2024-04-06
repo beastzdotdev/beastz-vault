@@ -6,6 +6,7 @@ import { RootFileStructure } from '../../../shared/model';
 export class SharedStore {
   private _activeId: number | 'root';
   private _activeRootParentId?: number;
+  private _activePath?: string;
 
   private _shouldRender: boolean;
   private _activeRootFileStructure: RootFileStructure[];
@@ -34,6 +35,10 @@ export class SharedStore {
     return this._activeRootParentId;
   }
 
+  get activePath(): string | undefined {
+    return this._activePath;
+  }
+
   //====================================================
   // Chose methods for setter instead of set keyword
   //====================================================
@@ -50,9 +55,10 @@ export class SharedStore {
   // Additional methods
   //====================================================
 
-  setRouterParams(activeId: number | 'root', rootParentId?: number) {
+  setRouterParams(activeId: number | 'root', rootParentId?: number, path?: string) {
     this._activeId = activeId;
     this._activeRootParentId = rootParentId;
+    this._activePath = path;
   }
 
   pushActiveRootFileStructure(value: RootFileStructure) {
@@ -68,13 +74,13 @@ export class SharedStore {
     }
   }
 
-  search(node: RootFileStructure[], id: number): RootFileStructure | null {
-    for (let i = 0; i < node?.length; i++) {
-      if (node[i].id === id) {
-        return node[i];
+  searchNode(nodes: RootFileStructure[], id: number): RootFileStructure | null {
+    for (let i = 0; i < nodes?.length; i++) {
+      if (nodes[i].id === id) {
+        return nodes[i];
       }
 
-      const found = this.search(node[i]?.children ?? [], id);
+      const found = this.searchNode(nodes[i]?.children ?? [], id);
 
       if (found) {
         return found;
@@ -84,12 +90,33 @@ export class SharedStore {
     return null;
   }
 
-  recusive(node: RootFileStructure[], cb?: (node: RootFileStructure) => void): void {
-    for (let i = 0; i < node?.length; i++) {
-      cb?.(node[i]);
+  searchNodeAndParents(
+    nodes: RootFileStructure[],
+    id: number,
+    parents: RootFileStructure[] = []
+  ): RootFileStructure[] | null {
+    for (let i = 0; i < nodes.length; i++) {
+      const node = nodes[i];
+      const updatedParents = parents.concat(node);
 
-      if (node[i].children !== undefined) {
-        this.recusive(node[i].children, cb);
+      if (node.id === id) {
+        return updatedParents;
+      }
+      if (node.children) {
+        const found = this.searchNodeAndParents(node.children, id, updatedParents);
+        if (found) return found;
+      }
+    }
+
+    return null;
+  }
+
+  recusive(nodes: RootFileStructure[], cb?: (node: RootFileStructure) => void): void {
+    for (let i = 0; i < nodes?.length; i++) {
+      cb?.(nodes[i]);
+
+      if (nodes[i].children !== undefined) {
+        this.recusive(nodes[i].children, cb);
       }
     }
   }

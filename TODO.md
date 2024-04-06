@@ -72,6 +72,8 @@ TODO right now folder and files upload works only on at a time if you want to up
 
 TODO checkout this https://etherpad.org/#/#download
 TODO checkout this https://million.dev/lint
+TODO checkout this https://www.google.com/search?q=blocknote&oq=blocknote&gs_lcrp=EgZjaHJvbWUqDggAEEUYJxg7GIAEGIoFMg4IABBFGCcYOxiABBiKBTIGCAEQRRhAMgcIAhAAGIAEMgcIAxAAGIAEMgcIBBAAGIAEMgYIBRBFGDwyBggGEEUYPDIGCAcQRRg80gEIMTQ2OWowajmoAgCwAgE&sourceid=chrome&ie=UTF-8
+
 
 
 

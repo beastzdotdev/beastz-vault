@@ -11,10 +11,10 @@ export const App = observer((): React.JSX.Element => {
     <>
       {sharedStore.shouldRender && (
         <>
-          <div className="flex">
+          <div className="flex h-full">
             <Sidebar />
 
-            <div className="flex-1">
+            <div className="flex flex-col flex-1">
               <Outlet />
             </div>
           </div>

@@ -4,19 +4,20 @@ import { Singleton, Inject } from '../../../shared/ioc';
 import { RootFileStructure } from '../../../shared/model';
 import { getFileStructureUrlParams } from '../helper/get-url-params';
 import { FSQueryParams } from '../../file-structure/file-structure.loader';
+import { FileStructureApiService } from '../../../shared/api';
 
 @Singleton
 export class SharedController {
   @Inject(SharedStore)
   private readonly sharedStore: SharedStore;
 
-  // @Inject(FileStructureApiService)
-  // private readonly fileStructureApiService: FileStructureApiService;
+  @Inject(FileStructureApiService)
+  private readonly fileStructureApiService: FileStructureApiService;
 
   async createFileStructureInState(data: RootFileStructure, isReplaced: boolean) {
     runInAction(() => {
       if (data.parentId) {
-        const node = this.sharedStore.search(
+        const node = this.sharedStore.searchNode(
           this.sharedStore.activeRootFileStructure,
           data.parentId
         );
@@ -53,12 +54,13 @@ export class SharedController {
     }
 
     return (
-      this.sharedStore.search(this.sharedStore.activeRootFileStructure, activeId)?.children ?? []
+      this.sharedStore.searchNode(this.sharedStore.activeRootFileStructure, activeId)?.children ??
+      []
     );
   }
 
   affectHistoryPush(url: string) {
-    const { parentId, rootParentId } = getFileStructureUrlParams(
+    const { parentId, rootParentId, folderPath } = getFileStructureUrlParams(
       new URL('http://localhost' + url).href
     );
 
@@ -67,21 +69,34 @@ export class SharedController {
     }
 
     // finally set active route params
-    this.sharedStore.setRouterParams(parentId, rootParentId);
+    this.sharedStore.setRouterParams(parentId, rootParentId, folderPath);
 
     return { parentId, rootParentId };
   }
 
   async checkChildrenAndLoad(parentId: number) {
     // find node based on active
-    const foundNode = this.sharedStore.search(this.sharedStore.activeRootFileStructure, parentId);
+    const foundNode = this.sharedStore.searchNode(
+      this.sharedStore.activeRootFileStructure,
+      parentId
+    );
 
     if (!foundNode || foundNode.isFile) {
       return;
     }
 
     if (!foundNode.children.length) {
-      // load files from api and push to state
+      const { data, error } = await this.fileStructureApiService.getContent({
+        parentId: foundNode.id,
+      });
+
+      if (error) {
+        throw new Error('Something went wrong');
+      }
+
+      if (data) {
+        foundNode.addChildren(data);
+      }
     }
   }
 
@@ -111,5 +126,19 @@ export class SharedController {
         }
       });
     });
+  }
+
+  async pushToHistory(nodeLink: string | undefined) {
+    if (!nodeLink) {
+      throw new Error('Node link not found');
+    }
+
+    // pushState does not cause refresh or fs loader to execute only update path for reload
+    // affect will just set active route params in mobx store
+    // finally checkChildrenAndLoad will just check if children does not exist will load in root fs store
+
+    window.history.pushState(undefined, '', nodeLink);
+    const { parentId } = this.affectHistoryPush(nodeLink);
+    await this.checkChildrenAndLoad(parentId);
   }
 }

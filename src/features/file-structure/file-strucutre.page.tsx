@@ -1,10 +1,15 @@
 import { v4 as uuid } from 'uuid';
-import { useState } from 'react';
-import { Breadcrumbs } from '@blueprintjs/core';
+import { useCallback, useState } from 'react';
+import { BreadcrumbProps, Breadcrumbs } from '@blueprintjs/core';
+import { observer } from 'mobx-react-lite';
+import { useInjection } from 'inversify-react';
 import { FileStructureTopBar } from './widgets/file-structure-topbar';
 import { AdvancedSelect, AdvancedSelectItem } from '../../components/advanced-select';
 import { useDebounceHook } from '../../hooks/use-debounce.hook';
 import { FileStructureFilesWidget } from './widgets/file-structure-files.widget';
+import { SharedStore } from '../shared/state/shared.store';
+import { SharedController } from '../shared/state/shared.controller';
+import { constants } from '../../shared/constants';
 
 const typeItems: AdvancedSelectItem[] = [
   { key: uuid(), text: 'Images' },
@@ -35,7 +40,64 @@ const peopleItems: AdvancedSelectItem[] = [
   { key: uuid(), text: 'besidesamong' },
 ];
 
-export const FileStructurePage = (): React.JSX.Element => {
+const RenderBreadcrumb = observer((): React.JSX.Element => {
+  const sharedStore = useInjection(SharedStore);
+  const sharedController = useInjection(SharedController);
+
+  const onBreadCrumbClick = useCallback(
+    (e: React.MouseEvent, link: string) => {
+      console.log(e);
+      console.log(link);
+
+      e.preventDefault(); // do not refresh
+
+      // Push to history
+      sharedController.pushToHistory(link);
+    },
+
+    [sharedController]
+  );
+
+  if (sharedStore.activeId === 'root') {
+    // do not add href because no need to redirect on root if already on root
+    return <Breadcrumbs className="max-w-sm" items={[{ icon: 'cloud', text: 'cloud' }]} />;
+  }
+
+  return (
+    <Breadcrumbs
+      className="max-w-sm select-none"
+      items={sharedStore
+        .searchNodeAndParents(sharedStore.activeRootFileStructure, sharedStore.activeId)
+        ?.filter(Boolean)
+        .reduce<BreadcrumbProps[]>((acc, node, i, arr) => {
+          console.log(node);
+
+          const isLast = i === arr.length - 1;
+
+          if (i === 0) {
+            // This here represents root and here href is needed
+            acc.push({
+              icon: 'cloud',
+              text: 'cloud',
+              href: constants.path.fileStructure,
+            });
+          }
+
+          // This here represents each node parent and node iteslf
+          acc.push({
+            onClick: e => onBreadCrumbClick(e, node.link!),
+            icon: 'folder-close',
+            text: node.name,
+            ...(!isLast && { href: node.link }), // add href except for last (e.g. itself)
+          });
+
+          return acc;
+        }, [])}
+    />
+  );
+});
+
+export const FileStructurePage = observer((): React.JSX.Element => {
   const [selectedType, setSelectedType] = useState<AdvancedSelectItem | null>(null);
   const [modifiedType, setModifiedType] = useState<AdvancedSelectItem | null>(null);
   const [person, setPerson] = useState<AdvancedSelectItem | null>(null);
@@ -56,56 +118,46 @@ export const FileStructurePage = (): React.JSX.Element => {
     <>
       <FileStructureTopBar />
 
-      <div className="p-3 overflow-hidden">
-        <div className="w-full">
-          <Breadcrumbs
-            className="max-w-sm"
-            items={[
-              { href: '#', icon: 'folder-close', text: 'All files' },
-              { href: '#', icon: 'folder-close', text: 'Users' },
-              { href: '#', icon: 'folder-close', text: 'Janet' },
-              { href: '#', icon: 'folder-close', text: 'Photos' },
-              { href: '#', icon: 'folder-close', text: 'Wednesday' },
-              { icon: 'folder-close', text: 'Stuff' },
-            ]}
-          />
-        </div>
+      <div className="overflow-y-auto">
+        <div className="p-3">
+          <RenderBreadcrumb />
 
-        <div className="w-full flex pt-3">
-          <AdvancedSelect
-            className="min-w-[90px]"
-            items={typeItems}
-            value={selectedType}
-            placeholder="Type"
-            handleSelect={value => setSelectedType(value)}
-          />
+          <div className="w-full flex pt-3">
+            <AdvancedSelect
+              className="min-w-[90px]"
+              items={typeItems}
+              value={selectedType}
+              placeholder="Type"
+              handleSelect={value => setSelectedType(value)}
+            />
 
-          <AdvancedSelect
-            className="ml-3 min-w-[120px]"
-            items={modifiedItems}
-            value={modifiedType}
-            placeholder="Modified"
-            handleSelect={value => setModifiedType(value)}
-          />
+            <AdvancedSelect
+              className="ml-3 min-w-[120px]"
+              items={modifiedItems}
+              value={modifiedType}
+              placeholder="Modified"
+              handleSelect={value => setModifiedType(value)}
+            />
 
-          <AdvancedSelect
-            className="ml-3 min-w-[100px]"
-            items={peopleItems}
-            value={person}
-            placeholder="Person"
-            onFilter={value => setPersonTerm(value)}
-            handleSelect={value => setPerson(value)}
-            onSearch={_value => {
-              console.log('='.repeat(20));
-              console.log('Searched value');
-            }}
-          />
-        </div>
+            <AdvancedSelect
+              className="ml-3 min-w-[100px]"
+              items={peopleItems}
+              value={person}
+              placeholder="Person"
+              onFilter={value => setPersonTerm(value)}
+              handleSelect={value => setPerson(value)}
+              onSearch={_value => {
+                console.log('='.repeat(20));
+                console.log('Searched value');
+              }}
+            />
+          </div>
 
-        <div className="pt-3">
-          <FileStructureFilesWidget />
+          <div className="pt-3">
+            <FileStructureFilesWidget />
+          </div>
         </div>
       </div>
     </>
   );
-};
+});

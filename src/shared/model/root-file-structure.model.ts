@@ -80,6 +80,10 @@ export class RootFileStructure
     }
   }
 
+  addChildren(data: RootFileStructure[]) {
+    this.children.push(...data);
+  }
+
   static customTransform(data: BasicFileStructureResponseDto): RootFileStructure {
     return runInAction(() => {
       const newItem = plainToInstance(RootFileStructure, data);

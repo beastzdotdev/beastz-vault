@@ -48,12 +48,8 @@ export const SidebarTree = observer(({ className }: { className?: string }) => {
           return;
         }
 
-        // pushState does not cause refresh or fs loader to execute only update path for reload
-        // affect will just set active route params in mobx store
-        // finally checkChildrenAndLoad will just check if children does not exist will load in root fs store
-        window.history.pushState(undefined, '', node.link);
-        const { parentId } = sharedController.affectHistoryPush(node.link);
-        await sharedController.checkChildrenAndLoad(parentId);
+        // Push to history
+        sharedController.pushToHistory(node.link);
       }
     },
 

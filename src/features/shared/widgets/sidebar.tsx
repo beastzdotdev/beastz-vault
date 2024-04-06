@@ -30,7 +30,7 @@ export const Sidebar = () => {
 
   return (
     <div
-      className="gorilla-sidebar bg-zinc-900 h-screen relative max-w-[600px] min-w-[250px] select-none"
+      className="gorilla-sidebar bg-zinc-900 h-screen max-w-[600px] min-w-[250px] select-none sticky top-0"
       ref={sidebarRef}
       style={{ width: sidebarWidth }}
     >
@@ -93,18 +93,29 @@ export const Sidebar = () => {
               >
                 <Button icon="plus" rightIcon="chevron-right" text="New" />
               </Popover>
-              <Button icon="eye-open" text="Activity" />
+
               <Button icon="updated" text="Recent" />
-              <Button icon="people" text="Members" />
-              <Button icon="inherited-group" text="Shared" />
               <Button icon="cog" text="Settings" />
+
+              <Popover
+                content={
+                  <Menu>
+                    <MenuItem icon="eye-open" text="Activity" />
+                    <MenuItem icon="people" text="Members" />
+                    <MenuItem icon="inherited-group" text="Shared" />
+                  </Menu>
+                }
+                placement="right-start"
+              >
+                <Button icon="clean" rightIcon="chevron-right" text="Comming soon" />
+              </Popover>
             </ButtonGroup>
           </div>
 
           <div className="my-4"></div>
         </div>
 
-        <div className="flex-1 overflow-y-auto z-10">
+        <div className="flex-1 overflow-y-hidden hover:overflow-y-auto z-10">
           <div className="my-2"></div>
 
           <div className="p-1.5">

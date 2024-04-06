@@ -31,7 +31,11 @@ export const selectFileStructure = async (url: URL, query: FSQueryParams) => {
     const sharedController = ioc.getContainer().get(SharedController);
     const sharedStore = ioc.getContainer().get(SharedStore);
 
-    sharedStore.setRouterParams(query.id, query.id === 'root' ? undefined : query.root_parent_id);
+    sharedStore.setRouterParams(
+      query.id,
+      query.id === 'root' ? undefined : query.root_parent_id,
+      query.id === 'root' ? undefined : query.path
+    );
     sharedController.selectFolder(query);
   }
 };

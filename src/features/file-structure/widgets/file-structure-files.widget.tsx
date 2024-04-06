@@ -37,8 +37,6 @@ export const FileStructureFilesWidget = observer((): React.JSX.Element => {
 
   return (
     <div className="gorilla-file-structure">
-      {/* {JSON.stringify(sharedController.findFolderNodeForActiveBody())} */}
-
       <SafeRenderArray
         data={sharedController.findFolderNodeForActiveBody()}
         renderChild={node => {
@@ -56,12 +54,8 @@ export const FileStructureFilesWidget = observer((): React.JSX.Element => {
                     return;
                   }
 
-                  // pushState does not cause refresh or fs loader to execute only update path for reload
-                  // affect will just set active route params in mobx store
-                  // finally checkChildrenAndLoad will just check if children does not exist will load in root fs store
-                  window.history.pushState(undefined, '', node.link);
-                  const { parentId } = sharedController.affectHistoryPush(node.link);
-                  await sharedController.checkChildrenAndLoad(parentId);
+                  // Push to history
+                  sharedController.pushToHistory(node.link);
 
                   // Select corresponding file in file structure item
                   const url = new URL('http://localhost:5173' + node.link);
