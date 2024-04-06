@@ -1,15 +1,10 @@
 import { v4 as uuid } from 'uuid';
-import { useCallback, useState } from 'react';
-import { BreadcrumbProps, Breadcrumbs } from '@blueprintjs/core';
-import { observer } from 'mobx-react-lite';
-import { useInjection } from 'inversify-react';
+import { useState } from 'react';
 import { FileStructureTopBar } from './widgets/file-structure-topbar';
 import { AdvancedSelect, AdvancedSelectItem } from '../../components/advanced-select';
 import { useDebounceHook } from '../../hooks/use-debounce.hook';
 import { FileStructureFilesWidget } from './widgets/file-structure-files.widget';
-import { SharedStore } from '../shared/state/shared.store';
-import { SharedController } from '../shared/state/shared.controller';
-import { constants } from '../../shared/constants';
+import { FileStructureBreadcrumb } from './widgets/file-structure-breadcrumb';
 
 const typeItems: AdvancedSelectItem[] = [
   { key: uuid(), text: 'Images' },
@@ -40,64 +35,7 @@ const peopleItems: AdvancedSelectItem[] = [
   { key: uuid(), text: 'besidesamong' },
 ];
 
-const RenderBreadcrumb = observer((): React.JSX.Element => {
-  const sharedStore = useInjection(SharedStore);
-  const sharedController = useInjection(SharedController);
-
-  const onBreadCrumbClick = useCallback(
-    (e: React.MouseEvent, link: string) => {
-      console.log(e);
-      console.log(link);
-
-      e.preventDefault(); // do not refresh
-
-      // Push to history
-      sharedController.pushToHistory(link);
-    },
-
-    [sharedController]
-  );
-
-  if (sharedStore.activeId === 'root') {
-    // do not add href because no need to redirect on root if already on root
-    return <Breadcrumbs className="max-w-sm" items={[{ icon: 'cloud', text: 'cloud' }]} />;
-  }
-
-  return (
-    <Breadcrumbs
-      className="max-w-sm select-none"
-      items={sharedStore
-        .searchNodeAndParents(sharedStore.activeRootFileStructure, sharedStore.activeId)
-        ?.filter(Boolean)
-        .reduce<BreadcrumbProps[]>((acc, node, i, arr) => {
-          console.log(node);
-
-          const isLast = i === arr.length - 1;
-
-          if (i === 0) {
-            // This here represents root and here href is needed
-            acc.push({
-              icon: 'cloud',
-              text: 'cloud',
-              href: constants.path.fileStructure,
-            });
-          }
-
-          // This here represents each node parent and node iteslf
-          acc.push({
-            onClick: e => onBreadCrumbClick(e, node.link!),
-            icon: 'folder-close',
-            text: node.name,
-            ...(!isLast && { href: node.link }), // add href except for last (e.g. itself)
-          });
-
-          return acc;
-        }, [])}
-    />
-  );
-});
-
-export const FileStructurePage = observer((): React.JSX.Element => {
+export const FileStructurePage = (): React.JSX.Element => {
   const [selectedType, setSelectedType] = useState<AdvancedSelectItem | null>(null);
   const [modifiedType, setModifiedType] = useState<AdvancedSelectItem | null>(null);
   const [person, setPerson] = useState<AdvancedSelectItem | null>(null);
@@ -120,7 +58,7 @@ export const FileStructurePage = observer((): React.JSX.Element => {
 
       <div className="overflow-y-auto">
         <div className="p-3">
-          <RenderBreadcrumb />
+          <FileStructureBreadcrumb />
 
           <div className="w-full flex pt-3">
             <AdvancedSelect
@@ -160,4 +98,4 @@ export const FileStructurePage = observer((): React.JSX.Element => {
       </div>
     </>
   );
-});
+};

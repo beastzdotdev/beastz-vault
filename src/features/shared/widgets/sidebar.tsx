@@ -96,19 +96,6 @@ export const Sidebar = () => {
 
               <Button icon="updated" text="Recent" />
               <Button icon="cog" text="Settings" />
-
-              <Popover
-                content={
-                  <Menu>
-                    <MenuItem icon="eye-open" text="Activity" />
-                    <MenuItem icon="people" text="Members" />
-                    <MenuItem icon="inherited-group" text="Shared" />
-                  </Menu>
-                }
-                placement="right-start"
-              >
-                <Button icon="clean" rightIcon="chevron-right" text="Comming soon" />
-              </Popover>
             </ButtonGroup>
           </div>
 
@@ -190,7 +177,20 @@ export const Sidebar = () => {
               className="px-1.5 pb-1.5 gorilla-sidebar-buttons"
             >
               <Button icon="trash" text="Trash" />
-              <Button icon="ninja" text="AI (coming soon)" />
+              <Popover
+                content={
+                  <Menu>
+                    <MenuItem icon="eye-open" text="Activity" />
+                    <MenuItem icon="people" text="Members" />
+                    <MenuItem icon="inherited-group" text="Shared" />
+                    <MenuDivider />
+                    <MenuItem icon="ninja" text="AI" />
+                  </Menu>
+                }
+                placement="right-start"
+              >
+                <Button icon="clean" rightIcon="chevron-right" text="Comming soon" />
+              </Popover>
               <Button icon="data-connection" text="23.45 %" />
               <Button
                 icon="manual"
