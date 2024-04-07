@@ -126,13 +126,11 @@ export const StoragePage = observer((): React.JSX.Element => {
       </div>
 
       <div className="w-full mt-5">
-        <Button outlined intent="primary">
+        <Button outlined intent="success">
           Get more storage
         </Button>
 
-        <Button className="ml-3" intent="warning">
-          Clean up space
-        </Button>
+        <Button className="ml-3">Clean up space</Button>
       </div>
 
       <div className="mt-10">
