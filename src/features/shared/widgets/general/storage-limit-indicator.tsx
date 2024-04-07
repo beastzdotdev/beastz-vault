@@ -5,9 +5,9 @@ import { observer } from 'mobx-react-lite';
 import { constants } from '../../../../shared/constants';
 import { formatSizeRaw, formatSize } from '../../../../shared/helper';
 import { SharedStore } from '../../state/shared.store';
+import { router } from '../../../../router';
 
 export const StorageLimitIndicator = observer(() => {
-  console.log('rerender');
   const sharedStore = useInjection(SharedStore);
   const progressBarValue = computed(() => {
     return formatSizeRaw(sharedStore.generalInfo.totalSize) / constants.MAX_ALLOWED_FILE_SIZE_BYTES;
@@ -15,7 +15,7 @@ export const StorageLimitIndicator = observer(() => {
 
   return (
     <>
-      <Button icon="cloud" text="Storage" className="pointer-events-none" />
+      <Button icon="cloud" text="Storage" onClick={() => router.navigate(constants.path.storage)} />
 
       {progressBarValue.get() >= 0.05 && (
         <ProgressBar

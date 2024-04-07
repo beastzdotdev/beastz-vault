@@ -21,9 +21,9 @@ import { rootLoader } from './features/root/root-loader';
 import { TestRefreshFlowPage } from './features/experimental/test-refresh-flow.page';
 import { FileStructurePage } from './features/file-structure/file-strucutre.page';
 import { GuidePage } from './features/guide/guide.page';
-// import { fileStructureLoader } from './features/file-structure/file-structure.loader';
 import { CardListLoaderTestPage } from './features/experimental/card-list-loader-test-page';
 import { constants } from './shared/constants';
+import { StoragePage } from './features/storage/storage.page';
 
 export const router = createBrowserRouter([
   // under / every page is under auth protection
@@ -44,11 +44,10 @@ export const router = createBrowserRouter([
       {
         path: constants.path.fileStructure,
         element: <FileStructurePage />,
-        // loader: fileStructureLoader,
       },
       {
-        path: constants.path.guide,
-        element: <GuidePage />,
+        path: constants.path.storage,
+        element: <StoragePage />,
       },
       {
         path: '/check-error',
@@ -88,6 +87,10 @@ export const router = createBrowserRouter([
   {
     path: constants.path.support,
     element: <SupportPage />,
+  },
+  {
+    path: constants.path.guide,
+    element: <GuidePage />,
   },
   {
     path: constants.path.oops,

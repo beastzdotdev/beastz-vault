@@ -7,7 +7,7 @@ export const constants = Object.freeze({
   path: {
     profile: '/profile',
     fileStructure: '/file-structure',
-    guide: '/guide',
+    storage: '/storage',
 
     signIn: '/auth/sign-in',
     signUp: '/auth/sign-up',
@@ -16,6 +16,7 @@ export const constants = Object.freeze({
     authUserLocked: '/auth/user-locked',
     authUserNotVerified: '/auth/user-not-verified',
     authRecoverPassword: '/auth/user-recover-password',
+    guide: '/guide',
     support: '/support',
     oops: '/oops',
 

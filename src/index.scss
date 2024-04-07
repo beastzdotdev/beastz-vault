@@ -58,7 +58,7 @@ body {
   outline: none;
 }
 
-.bp5-input {
+input {
   box-shadow: none !important;
   border: 1px solid rgba($input-border-color, 0.2);
 
@@ -196,7 +196,13 @@ body {
   }
 }
 
-// .pulexui-mobx-tree-node {
-//   display: flex !important;
-//   flex-direction: column;
-// }
+.gorilla-popover-override {
+  .bp5-popover-content {
+    background-color: $dark-gray4 !important;
+    color: $light-gray3 !important;
+  }
+
+  .bp5-popover-arrow path {
+    fill: $dark-gray4 !important;
+  }
+}

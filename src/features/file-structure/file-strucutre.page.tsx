@@ -2,7 +2,6 @@ import { v4 as uuid } from 'uuid';
 import { useState } from 'react';
 import { FileStructureTopBar } from './widgets/file-structure-topbar';
 import { AdvancedSelect, AdvancedSelectItem } from '../../components/advanced-select';
-import { useDebounceHook } from '../../hooks/use-debounce.hook';
 import { FileStructureFilesWidget } from './widgets/file-structure-files.widget';
 import { FileStructureBreadcrumb } from './widgets/file-structure-breadcrumb';
 
@@ -26,31 +25,9 @@ const modifiedItems: AdvancedSelectItem[] = [
   { key: uuid(), text: 'Custom' },
 ];
 
-const peopleItems: AdvancedSelectItem[] = [
-  { key: uuid(), text: 'pish' },
-  { key: uuid(), text: 'breakthroughstallion' },
-  { key: uuid(), text: 'mysteriously' },
-  { key: uuid(), text: 'architecture' },
-  { key: uuid(), text: 'pishaquarium' },
-  { key: uuid(), text: 'besidesamong' },
-];
-
 export const FileStructurePage = (): React.JSX.Element => {
   const [selectedType, setSelectedType] = useState<AdvancedSelectItem | null>(null);
   const [modifiedType, setModifiedType] = useState<AdvancedSelectItem | null>(null);
-  const [person, setPerson] = useState<AdvancedSelectItem | null>(null);
-
-  const [_, setPersonTerm] = useDebounceHook({
-    debounceTime: 500,
-    onClear: () => {
-      console.log('='.repeat(20));
-      console.log('Cleared');
-    },
-    onDebounceSetValue: debouncedValue => {
-      console.log('='.repeat(20));
-      console.log(`Searching for: ${debouncedValue} (snapshot debounced value person term)`);
-    },
-  });
 
   return (
     <>
@@ -77,7 +54,7 @@ export const FileStructurePage = (): React.JSX.Element => {
               handleSelect={value => setModifiedType(value)}
             />
 
-            <AdvancedSelect
+            {/* <AdvancedSelect
               className="ml-3 min-w-[100px]"
               items={peopleItems}
               value={person}
@@ -88,7 +65,7 @@ export const FileStructurePage = (): React.JSX.Element => {
                 console.log('='.repeat(20));
                 console.log('Searched value');
               }}
-            />
+            /> */}
           </div>
 
           <div className="pt-3">

@@ -9,6 +9,8 @@ import { FileStructureApiService } from '../shared/api';
 import { RootFileStructure } from '../shared/model';
 import { sleep } from '../shared/helper';
 import { SharedController } from '../features/shared/state/shared.controller';
+import { constants } from '../shared/constants';
+import { router } from '../router';
 
 export const SidebarTree = observer(({ className }: { className?: string }) => {
   const sharedStore = useInjection(SharedStore);
@@ -48,8 +50,13 @@ export const SidebarTree = observer(({ className }: { className?: string }) => {
           return;
         }
 
-        // Push to history
-        sharedController.pushToHistory(node.link);
+        // if click happens from other pages redirect and activate loader
+        if (existingLocation.pathname !== constants.path.fileStructure) {
+          router.navigate(node.link);
+        } else {
+          // Push to history
+          sharedController.pushToHistory(node.link);
+        }
       }
     },
 
