@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import { H2, Popover, ProgressBar, Tooltip } from '@blueprintjs/core';
+import { Button, H2, Popover, ProgressBar, Tooltip } from '@blueprintjs/core';
 import { useInjection } from 'inversify-react';
 import { computed } from 'mobx';
 import { observer } from 'mobx-react-lite';
@@ -123,6 +123,16 @@ export const StoragePage = observer((): React.JSX.Element => {
             <p className="ml-1.5 text-xs opacity-80 font-light">Gorilla doc (coming soon)</p>
           </div>
         </Tooltip>
+      </div>
+
+      <div className="w-full mt-5">
+        <Button outlined intent="primary">
+          Get more storage
+        </Button>
+
+        <Button className="ml-3" intent="warning">
+          Clean up space
+        </Button>
       </div>
 
       <div className="mt-10">
