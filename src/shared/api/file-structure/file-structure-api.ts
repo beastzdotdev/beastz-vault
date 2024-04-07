@@ -34,7 +34,7 @@ export class FileStructureApiService {
   }): Promise<AxiosApiResponse<GetDuplicateStatusResponseDto[]>> {
     try {
       const result = await api.get<GetDuplicateStatusResponseDto[]>(
-        `file-structure/detect-duplicate`,
+        `file-structure/duplicate-status`,
         { params }
       );
 
