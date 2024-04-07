@@ -24,6 +24,8 @@ import { GuidePage } from './features/guide/guide.page';
 import { CardListLoaderTestPage } from './features/experimental/card-list-loader-test-page';
 import { constants } from './shared/constants';
 import { StoragePage } from './features/storage/storage.page';
+import { BinPage } from './features/bin/bin.page';
+import { binLoader } from './features/bin/bin-loader';
 
 export const router = createBrowserRouter([
   // under / every page is under auth protection
@@ -48,6 +50,11 @@ export const router = createBrowserRouter([
       {
         path: constants.path.storage,
         element: <StoragePage />,
+      },
+      {
+        path: constants.path.bin,
+        element: <BinPage />,
+        loader: binLoader,
       },
       {
         path: '/check-error',

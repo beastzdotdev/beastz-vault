@@ -177,7 +177,6 @@ export const Sidebar = () => {
               alignText="left"
               className="px-1.5 pb-1.5 gorilla-sidebar-buttons"
             >
-              <Button icon="trash" text="Trash" />
               <Popover
                 content={
                   <Menu>
@@ -192,6 +191,7 @@ export const Sidebar = () => {
               >
                 <Button icon="clean" rightIcon="chevron-right" text="Comming soon" />
               </Popover>
+              <Button icon="trash" text="Bin" onClick={() => router.navigate(constants.path.bin)} />
               <Button
                 icon="manual"
                 text="Guide"

@@ -8,6 +8,7 @@ export const constants = Object.freeze({
     profile: '/profile',
     fileStructure: '/file-structure',
     storage: '/storage',
+    bin: '/bin',
 
     signIn: '/auth/sign-in',
     signUp: '/auth/sign-up',

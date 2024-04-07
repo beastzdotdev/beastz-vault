@@ -9,6 +9,11 @@ export type AxiosApiResponse<T> = {
   error?: ClientApiError;
 };
 
+export type Pagination<T> = {
+  data: T[];
+  total: number;
+};
+
 export type BasicMessageResponse<T = string> = {
   message: T;
 };

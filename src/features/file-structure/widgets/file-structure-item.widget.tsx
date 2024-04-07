@@ -1,7 +1,11 @@
 import { Button, ContextMenu, Icon, Menu, MenuDivider, MenuItem, Popover } from '@blueprintjs/core';
 import { observer } from 'mobx-react-lite';
+import { useInjection } from 'inversify-react';
+import { useLocation } from 'react-router-dom';
 import { formatSize } from '../../../shared/helper';
 import { RootFileStructure } from '../../../shared/model';
+import { FileStructureApiService } from '../../../shared/api';
+import { router } from '../../../router';
 
 interface FileStuructureFileItemParams {
   node: RootFileStructure;
@@ -11,6 +15,15 @@ interface FileStuructureFileItemParams {
 }
 
 const FileStuructureContextMenu = (params: { node: RootFileStructure }) => {
+  const fileStructureApiService = useInjection(FileStructureApiService);
+  const location = useLocation();
+  console.log('rerende');
+
+  const moveToBin = async () => {
+    await fileStructureApiService.updateById(params.node.id, { isInBin: true });
+    router.navigate(location.pathname + location.search);
+  };
+
   return (
     <Menu>
       <MenuItem text="Copy" icon="duplicate">
@@ -39,7 +52,7 @@ const FileStuructureContextMenu = (params: { node: RootFileStructure }) => {
         <MenuItem disabled text="Activity" icon="list-detail-view" />
         <MenuItem disabled text="Open in editor" icon="code" />
       </MenuItem>
-      <MenuItem text="Move to bin" icon="trash" />
+      <MenuItem text="Move to bin" icon="trash" onClick={moveToBin} />
     </Menu>
   );
 };
