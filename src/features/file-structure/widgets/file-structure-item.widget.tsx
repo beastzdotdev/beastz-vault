@@ -1,15 +1,5 @@
-import {
-  Button,
-  Icon,
-  Menu,
-  MenuDivider,
-  MenuItem,
-  Popover,
-  hideContextMenu,
-  showContextMenu,
-} from '@blueprintjs/core';
+import { Button, ContextMenu, Icon, Menu, MenuDivider, MenuItem, Popover } from '@blueprintjs/core';
 import { observer } from 'mobx-react-lite';
-import { useCallback } from 'react';
 import { formatSize } from '../../../shared/helper';
 import { RootFileStructure } from '../../../shared/model';
 
@@ -56,92 +46,79 @@ const FileStuructureContextMenu = (params: { node: RootFileStructure }) => {
 
 export const FileStuructureFileItem = observer(
   (params: FileStuructureFileItemParams): React.JSX.Element => {
-    const handleContextMenu = useCallback(
-      (event: React.MouseEvent<HTMLElement>, node: RootFileStructure) => {
-        event.preventDefault();
-        showContextMenu({
-          content: <FileStuructureContextMenu node={node} />,
-          onClose: hideContextMenu,
-          targetOffset: {
-            left: event.clientX,
-            top: event.clientY,
-          },
-        });
-      },
-      []
-    );
-
     return (
-      <div
-        className={`gorilla-file-structure-item group/gorilla-item  ${
-          params.isSelected ? 'gorilla-file-structure-item-selected' : ''
-        }`}
-        onClick={() => params.onSelected(params.node)}
-        onDoubleClick={() => params.onDoubleClick(params.node)}
-        onContextMenu={e => {
-          params.onSelected(params.node);
-          handleContextMenu(e, params.node);
-        }}
-      >
-        {/*//! width 100px behaves like min-width:100px */}
-        <div className="flex items-center pl-3 pr-5 flex-grow w-[100px]">
-          <Icon icon={params.node.isFile ? 'document' : 'folder-close'} />
-          <p className="pl-2 truncate">
-            {params.node.isFile
-              ? params.node.title + params.node.fileExstensionRaw
-              : params.node.title}
-          </p>
-        </div>
-
-        <div className="flex flex-grow-0 py-1">
-          <div className="flex items-center justify-start w-[200px] pr-5">
-            <Icon icon="user" />
-
-            <p className="truncate max-w-[170px] block pl-2">{'TODO'}</p>
+      <ContextMenu content={<FileStuructureContextMenu node={params.node} />}>
+        <div
+          className={`gorilla-file-structure-item group/gorilla-item  ${
+            params.isSelected ? 'gorilla-file-structure-item-selected' : ''
+          }`}
+          onClick={() => params.onSelected(params.node)}
+          onDoubleClick={() => params.onDoubleClick(params.node)}
+          onContextMenu={() => params.onSelected(params.node)}
+        >
+          {/*//! width 100px behaves like min-width:100px */}
+          <div className="flex items-center pl-3 pr-5 flex-grow w-[100px]">
+            <Icon icon={params.node.isFile ? 'document' : 'folder-close'} />
+            <p className="pl-2 truncate">
+              {params.node.isFile
+                ? params.node.title + params.node.fileExstensionRaw
+                : params.node.title}
+            </p>
           </div>
 
-          <div className="flex items-center justify-start w-[200px] pr-5">
-            <p>{params.node.lastModifiedAt?.toDateString()}</p>
+          <div className="flex flex-grow-0 py-1">
+            <div className="flex items-center justify-start w-[200px] pr-5">
+              <Icon icon="user" />
+
+              <p className="truncate max-w-[170px] block pl-2">{'TODO'}</p>
+            </div>
+
+            <div className="flex items-center justify-start w-[200px] pr-5">
+              <p>{params.node.lastModifiedAt?.toDateString()}</p>
+            </div>
+
+            <div className="flex items-center justify-start w-[110px] pr-5">
+              <p>{formatSize(params.node.sizeInBytes)}</p>
+            </div>
           </div>
 
-          <div className="flex items-center justify-start w-[110px] pr-5">
-            <p>{formatSize(params.node.sizeInBytes)}</p>
+          <div className="items-center justify-end flex-grow-0 w-[210px] xl:flex hidden">
+            {/* Share and bookmark add later */}
+
+            <Button
+              icon="cloud-download"
+              minimal
+              className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
+              onClick={e => e.stopPropagation()}
+            />
+            <Button
+              icon="edit"
+              minimal
+              className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
+              onClick={e => e.stopPropagation()}
+            />
+            <Button
+              icon="lock"
+              minimal
+              className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
+              onClick={e => e.stopPropagation()}
+            />
+            <Button
+              icon="shield"
+              minimal
+              className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
+              onClick={e => e.stopPropagation()}
+            />
           </div>
+
+          <Popover
+            content={<FileStuructureContextMenu node={params.node} />}
+            placement="right-start"
+          >
+            <Button icon="more" minimal />
+          </Popover>
         </div>
-
-        <div className="items-center justify-end flex-grow-0 w-[210px] xl:flex hidden">
-          {/* Share and bookmark add later */}
-
-          <Button
-            icon="cloud-download"
-            minimal
-            className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
-            onClick={e => e.stopPropagation()}
-          />
-          <Button
-            icon="edit"
-            minimal
-            className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
-            onClick={e => e.stopPropagation()}
-          />
-          <Button
-            icon="lock"
-            minimal
-            className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
-            onClick={e => e.stopPropagation()}
-          />
-          <Button
-            icon="shield"
-            minimal
-            className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
-            onClick={e => e.stopPropagation()}
-          />
-        </div>
-
-        <Popover content={<FileStuructureContextMenu node={params.node} />} placement="right-start">
-          <Button icon="more" minimal />
-        </Popover>
-      </div>
+      </ContextMenu>
     );
   }
 );
