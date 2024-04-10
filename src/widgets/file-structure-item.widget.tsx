@@ -2,12 +2,13 @@ import { Button, ContextMenu, Icon, Menu, MenuDivider, MenuItem, Popover } from 
 import { observer } from 'mobx-react-lite';
 import { useInjection } from 'inversify-react';
 import { useLocation } from 'react-router-dom';
-import { formatSize } from '../../../shared/helper';
-import { RootFileStructure } from '../../../shared/model';
-import { FileStructureApiService } from '../../../shared/api';
-import { router } from '../../../router';
+import { formatSize } from '../shared/helper';
+import { RootFileStructure } from '../shared/model';
+import { FileStructureApiService } from '../shared/api';
+import { router } from '../router';
 
 interface FileStuructureFileItemParams {
+  isFromBin?: boolean;
   node: RootFileStructure;
   isSelected: boolean;
   onSelected: (node: RootFileStructure) => void;
@@ -17,10 +18,9 @@ interface FileStuructureFileItemParams {
 const FileStuructureContextMenu = (params: { node: RootFileStructure }) => {
   const fileStructureApiService = useInjection(FileStructureApiService);
   const location = useLocation();
-  console.log('rerende');
 
   const moveToBin = async () => {
-    await fileStructureApiService.updateById(params.node.id, { isInBin: true });
+    await fileStructureApiService.moveToBin(params.node.id, { isInBin: true });
     router.navigate(location.pathname + location.search);
   };
 
@@ -57,10 +57,33 @@ const FileStuructureContextMenu = (params: { node: RootFileStructure }) => {
   );
 };
 
+const FileStuructureFromBinContextMenu = (params: { node: RootFileStructure }) => {
+  return (
+    <Menu>
+      <MenuItem text="Copy" icon="duplicate">
+        <MenuItem text="Title" />
+        <MenuItem text="Public link" />
+        <MenuItem {...(!params.node.isFile && { disabled: true })} text="Content" />
+      </MenuItem>
+
+      <MenuDivider />
+      <MenuItem text="Restore" icon="history" />
+      <MenuItem text="Delete forever" intent="danger" icon="trash" />
+    </Menu>
+  );
+};
+
 export const FileStuructureFileItem = observer(
   (params: FileStuructureFileItemParams): React.JSX.Element => {
+    //
+    const contextMenu = params.isFromBin ? (
+      <FileStuructureFromBinContextMenu node={params.node} />
+    ) : (
+      <FileStuructureContextMenu node={params.node} />
+    );
+
     return (
-      <ContextMenu content={<FileStuructureContextMenu node={params.node} />}>
+      <ContextMenu content={contextMenu}>
         <div
           className={`gorilla-file-structure-item group/gorilla-item  ${
             params.isSelected ? 'gorilla-file-structure-item-selected' : ''
@@ -95,39 +118,38 @@ export const FileStuructureFileItem = observer(
             </div>
           </div>
 
-          <div className="items-center justify-end flex-grow-0 w-[210px] xl:flex hidden">
-            {/* Share and bookmark add later */}
+          {!params.isFromBin && (
+            <div className="items-center justify-end flex-grow-0 w-[210px] xl:flex hidden">
+              {/* Share and bookmark add later */}
 
-            <Button
-              icon="cloud-download"
-              minimal
-              className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
-              onClick={e => e.stopPropagation()}
-            />
-            <Button
-              icon="edit"
-              minimal
-              className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
-              onClick={e => e.stopPropagation()}
-            />
-            <Button
-              icon="lock"
-              minimal
-              className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
-              onClick={e => e.stopPropagation()}
-            />
-            <Button
-              icon="shield"
-              minimal
-              className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
-              onClick={e => e.stopPropagation()}
-            />
-          </div>
+              <Button
+                icon="cloud-download"
+                minimal
+                className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
+                onClick={e => e.stopPropagation()}
+              />
+              <Button
+                icon="edit"
+                minimal
+                className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
+                onClick={e => e.stopPropagation()}
+              />
+              <Button
+                icon="lock"
+                minimal
+                className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
+                onClick={e => e.stopPropagation()}
+              />
+              <Button
+                icon="shield"
+                minimal
+                className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
+                onClick={e => e.stopPropagation()}
+              />
+            </div>
+          )}
 
-          <Popover
-            content={<FileStuructureContextMenu node={params.node} />}
-            placement="right-start"
-          >
+          <Popover content={contextMenu} placement="right-start">
             <Button icon="more" minimal />
           </Popover>
         </div>

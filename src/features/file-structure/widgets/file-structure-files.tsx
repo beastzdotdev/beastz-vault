@@ -2,13 +2,13 @@ import { Button, Intent, NonIdealState, NonIdealStateIconSize } from '@blueprint
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { useInjection } from 'inversify-react';
 import { useNavigate } from 'react-router-dom';
-import { FileStuructureFileItem } from './file-structure-item.widget';
+import { FileStuructureFileItem } from '../../../widgets/file-structure-item.widget';
 import { SharedController } from '../../shared/state/shared.controller';
 import { SafeRenderArray } from '../../../components/safe-render-array';
 import { getQueryParams } from '../../../shared/helper';
 import { FSQueryParams, selectFileStructure } from '../file-structure.loader';
 
-export const FileStructureFilesWidget = observer((): React.JSX.Element => {
+export const FileStructureFiles = observer((): React.JSX.Element => {
   const sharedController = useInjection(SharedController);
   const navigate = useNavigate();
 

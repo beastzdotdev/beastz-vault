@@ -15,7 +15,7 @@ import { router } from '../../../router';
 import { useResize } from '../../../hooks/use-resize.hook';
 import { FileUploadItem } from './file-upload/file-upload-item';
 import { FolderUploadItem } from './folder-upload/folder-upload-item';
-import { CreateFolderDialogWidget } from './create-folder-dialog/create-folder-dialog.widget';
+import { CreateFolderDialog } from './create-folder-dialog/create-folder-dialog';
 import { SharedStore } from '../state/shared.store';
 import { constants } from '../../../shared/constants';
 import { ProfileIcon } from './profile';
@@ -35,7 +35,7 @@ export const Sidebar = () => {
       ref={sidebarRef}
       style={{ width: sidebarWidth }}
     >
-      <CreateFolderDialogWidget isOpen={isFolderCreateOpen} setIsOpen={setIsFolderCreateOpen} />
+      <CreateFolderDialog isOpen={isFolderCreateOpen} setIsOpen={setIsFolderCreateOpen} />
 
       <div className="resize-bar" onMouseDown={startResizing}>
         <div className="resize-line"></div>

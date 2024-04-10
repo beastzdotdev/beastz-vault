@@ -6,6 +6,7 @@ import {
   BasicFileStructureResponseDto,
   GetDuplicateStatusResponseDto,
   GetGeneralInfoResponseDto,
+  MoveToBin,
 } from './file-structure-api.schema';
 import { RootFileStructure } from '../../model';
 
@@ -31,19 +32,19 @@ export class FileStructureApiService {
     page: number;
     pageSize: number;
     parentId?: number;
-  }): Promise<AxiosApiResponse<Pagination<RootFileStructure>>> {
+  }): Promise<AxiosApiResponse<Pagination<MoveToBin>>> {
     try {
-      const result = await api.get<Pagination<BasicFileStructureResponseDto>>(
-        `file-structure/from-bin`,
-        { params }
-      );
+      const result = await api.get<Pagination<MoveToBin>>(`file-structure-bin`, { params });
 
-      return {
-        data: {
-          data: result.data.data.map(e => RootFileStructure.customTransform(e)),
-          total: result.data.total,
-        },
-      };
+      //TODO
+      return { ...result };
+
+      // return {
+      //   data: {
+      //     data: result.data.data.map(e => RootFileStructure.customTransform(e)),
+      //     total: result.data.total,
+      //   },
+      // };
     } catch (e: unknown) {
       return { error: e as ClientApiError };
     }
@@ -143,7 +144,7 @@ export class FileStructureApiService {
     }
   }
 
-  async updateById(
+  async moveToBin(
     id: number,
     params?: {
       isInBin?: boolean;
@@ -151,7 +152,7 @@ export class FileStructureApiService {
   ): Promise<AxiosApiResponse<RootFileStructure>> {
     try {
       const result = await api.patch<BasicFileStructureResponseDto>(
-        `file-structure/update/${id}`,
+        `file-structure/move-to-bin/${id}`,
         params
       );
 

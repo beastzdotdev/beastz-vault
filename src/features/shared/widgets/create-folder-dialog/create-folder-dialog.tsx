@@ -21,7 +21,7 @@ import {
 import { FileStructureApiService } from '../../../../shared/api';
 import { zodFormikErrorAdapter } from '../../../../shared/helper';
 
-export const CreateFolderDialogWidget = ({
+export const CreateFolderDialog = ({
   isOpen,
   setIsOpen,
 }: {

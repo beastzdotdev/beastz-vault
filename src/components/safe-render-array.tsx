@@ -6,12 +6,6 @@ type SafeRenderArrayProps<T> = {
   renderError: () => JSX.Element;
 };
 
-type SafeRenderChildProps<T> = Omit<SafeRenderArrayProps<T>, 'renderError'>;
-
-export const SafeRenderChild = observer(<T,>(props: SafeRenderChildProps<T>): JSX.Element => {
-  return <>{props.data.map(e => props.renderChild(e))}</>;
-});
-
 export const SafeRenderArray = observer(<T,>(props: SafeRenderArrayProps<T>): JSX.Element => {
   const { data, renderChild, renderError } = props;
 

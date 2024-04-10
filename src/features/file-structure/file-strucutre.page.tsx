@@ -2,7 +2,7 @@ import { v4 as uuid } from 'uuid';
 import { useState } from 'react';
 import { FileStructureTopBar } from './widgets/file-structure-topbar';
 import { AdvancedSelect, AdvancedSelectItem } from '../../components/advanced-select';
-import { FileStructureFilesWidget } from './widgets/file-structure-files.widget';
+import { FileStructureFiles } from './widgets/file-structure-files';
 import { FileStructureBreadcrumb } from './widgets/file-structure-breadcrumb';
 
 const typeItems: AdvancedSelectItem[] = [
@@ -69,7 +69,7 @@ export const FileStructurePage = (): React.JSX.Element => {
           </div>
 
           <div className="pt-3">
-            <FileStructureFilesWidget />
+            <FileStructureFiles />
           </div>
         </div>
       </div>

@@ -65,6 +65,8 @@ TODO calculate upload time (approximate) https://www.google.com/search?q=how+doe
 
 TODO create intro website and could use this lib: https://ui.aceternity.com/components
 
+TODO I think it would be best to move all router.navigate() -> const navigate = useNavigate() and navigate('/...')
+
 
 TODO right now folder and files upload works only on at a time if you want to upload another folder or files while others are uploading than u need to implement like drive does just run another start function and add toasts to main toast (reset must be adjusted) 
 

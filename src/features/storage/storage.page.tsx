@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import { Button, H2, Popover, ProgressBar, Tooltip } from '@blueprintjs/core';
+import { Button, H2, ProgressBar, Tooltip } from '@blueprintjs/core';
 import { useInjection } from 'inversify-react';
 import { computed } from 'mobx';
 import { observer } from 'mobx-react-lite';
