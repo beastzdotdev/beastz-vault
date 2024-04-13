@@ -13,6 +13,7 @@ interface FileStuructureFileItemParams {
   isSelected: boolean;
   onSelected: (node: RootFileStructure) => void;
   onDoubleClick: (node: RootFileStructure) => void;
+  onRestore?: (node: RootFileStructure) => void;
 }
 
 const FileStuructureContextMenu = (params: { node: RootFileStructure }) => {
@@ -57,7 +58,10 @@ const FileStuructureContextMenu = (params: { node: RootFileStructure }) => {
   );
 };
 
-const FileStuructureFromBinContextMenu = (params: { node: RootFileStructure }) => {
+const FileStuructureFromBinContextMenu = (params: {
+  node: RootFileStructure;
+  onRestore?: (node: RootFileStructure) => void;
+}) => {
   return (
     <Menu>
       <MenuItem text="Copy" icon="duplicate">
@@ -67,7 +71,7 @@ const FileStuructureFromBinContextMenu = (params: { node: RootFileStructure }) =
       </MenuItem>
 
       <MenuDivider />
-      <MenuItem text="Restore" icon="history" />
+      <MenuItem text="Restore" icon="history" onClick={() => params.onRestore?.(params.node)} />
       <MenuItem text="Delete forever" intent="danger" icon="trash" />
     </Menu>
   );
@@ -77,7 +81,7 @@ export const FileStuructureFileItem = observer(
   (params: FileStuructureFileItemParams): React.JSX.Element => {
     //
     const contextMenu = params.isFromBin ? (
-      <FileStuructureFromBinContextMenu node={params.node} />
+      <FileStuructureFromBinContextMenu node={params.node} onRestore={params.onRestore} />
     ) : (
       <FileStuructureContextMenu node={params.node} />
     );

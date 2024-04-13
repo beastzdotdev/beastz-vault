@@ -29,7 +29,7 @@ export const SidebarTree = observer(({ className }: { className?: string }) => {
       node.setIsSelected(true);
 
       // 2. And then recusrively deselect others except the selected node
-      node.recusive(sharedStore.activeRootFileStructure, n => {
+      sharedStore.recusive(sharedStore.activeRootFileStructure, n => {
         if (n.id !== node.id) {
           n.setIsSelected(false);
         }

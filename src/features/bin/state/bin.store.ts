@@ -1,17 +1,17 @@
 import { makeAutoObservable } from 'mobx';
 import { Singleton } from '../../../shared/ioc';
-import { MoveToBin } from '../../../shared/api';
+import { FileStructureBin } from '../../../shared/model/file-structure-bin.model';
 
 @Singleton
 export class BinStore {
-  private _data: MoveToBin[] = [];
+  private _data: FileStructureBin[] = [];
   private _total: number = 0;
 
   constructor() {
     makeAutoObservable(this);
   }
 
-  get data(): MoveToBin[] {
+  get data(): FileStructureBin[] {
     return this._data;
   }
 
@@ -22,7 +22,7 @@ export class BinStore {
   //====================================================
   // Chose methods for setter instead of set keyword
   //====================================================
-  setData(value: MoveToBin[]) {
+  setData(value: FileStructureBin[]) {
     this._data = value;
   }
 

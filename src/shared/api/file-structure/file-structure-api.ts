@@ -6,9 +6,10 @@ import {
   BasicFileStructureResponseDto,
   GetDuplicateStatusResponseDto,
   GetGeneralInfoResponseDto,
-  MoveToBin,
+  FileStructureBinDto,
 } from './file-structure-api.schema';
 import { RootFileStructure } from '../../model';
+import { FileStructureBin } from '../../model/file-structure-bin.model';
 
 @Singleton
 export class FileStructureApiService {
@@ -23,28 +24,6 @@ export class FileStructureApiService {
       });
 
       return { data: result.data.map(e => RootFileStructure.customTransform(e)) };
-    } catch (e: unknown) {
-      return { error: e as ClientApiError };
-    }
-  }
-
-  async getFromBin(params: {
-    page: number;
-    pageSize: number;
-    parentId?: number;
-  }): Promise<AxiosApiResponse<Pagination<MoveToBin>>> {
-    try {
-      const result = await api.get<Pagination<MoveToBin>>(`file-structure-bin`, { params });
-
-      //TODO
-      return { ...result };
-
-      // return {
-      //   data: {
-      //     data: result.data.data.map(e => RootFileStructure.customTransform(e)),
-      //     total: result.data.total,
-      //   },
-      // };
     } catch (e: unknown) {
       return { error: e as ClientApiError };
     }
@@ -144,6 +123,27 @@ export class FileStructureApiService {
     }
   }
 
+  async getFromBin(params: {
+    page: number;
+    pageSize: number;
+    parentId?: number;
+  }): Promise<AxiosApiResponse<Pagination<FileStructureBin>>> {
+    try {
+      const result = await api.get<Pagination<FileStructureBinDto>>(`file-structure-bin`, {
+        params,
+      });
+
+      return {
+        data: {
+          data: result.data.data.map(e => FileStructureBin.customTransform(e)),
+          total: result.data.total,
+        },
+      };
+    } catch (e: unknown) {
+      return { error: e as ClientApiError };
+    }
+  }
+
   async moveToBin(
     id: number,
     params?: {
@@ -157,6 +157,19 @@ export class FileStructureApiService {
       );
 
       return { data: RootFileStructure.customTransform(result.data) };
+    } catch (e: unknown) {
+      return { error: e as ClientApiError };
+    }
+  }
+  async restoreFromBin(
+    id: number,
+    params?: {
+      newParentId: number | null;
+    }
+  ): Promise<AxiosApiResponse<void>> {
+    try {
+      await api.patch<void>(`file-structure/restore-from-bin/${id}`, params);
+      return {};
     } catch (e: unknown) {
       return { error: e as ClientApiError };
     }

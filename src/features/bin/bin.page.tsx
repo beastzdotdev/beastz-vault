@@ -1,10 +1,11 @@
 import { v4 as uuid } from 'uuid';
 import {
   Button,
+  Dialog,
+  DialogBody,
+  DialogFooter,
   H1,
   H2,
-  H3,
-  H4,
   Icon,
   Intent,
   NonIdealState,
@@ -18,7 +19,7 @@ import { AdvancedSelectItem, AdvancedSelect } from '../../components/advanced-se
 import { BinStore } from './state/bin.store';
 import { SafeRenderArray } from '../../components/safe-render-array';
 import { FileStuructureFileItem } from '../../widgets/file-structure-item.widget';
-import { router } from '../../router';
+import { SimpleFileStructureTree } from '../../widgets/simple-file-structure-tree';
 
 const typeItems: AdvancedSelectItem[] = [
   { key: uuid(), text: 'Images' },
@@ -45,6 +46,7 @@ export const BinPage = observer((): React.JSX.Element => {
   const [modifiedType, setModifiedType] = useState<AdvancedSelectItem | null>(null);
   const binStore = useInjection(BinStore);
   const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(false);
 
   const localSelectedStore = useLocalObservable(() => ({
     selected: new Set<number>(),
@@ -68,6 +70,10 @@ export const BinPage = observer((): React.JSX.Element => {
       this.selected.clear();
     },
   }));
+
+  const onClickinngSaveButton = () => {
+    setIsOpen(!isOpen);
+  };
 
   console.log('rerender');
 
@@ -100,42 +106,31 @@ export const BinPage = observer((): React.JSX.Element => {
         />
       </div>
 
-      <div className="mt-5">
-        {binStore.data.map(e => {
-          return (
-            <div className="flex">
-              title: <H3 className="ml-5">{e.fileStructure.title}</H3>
-              <p className="ml-5">{e.fileStructure.path}</p>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* <div className="gorilla-file-structure mt-5">
+      <div className="gorilla-file-structure mt-5">
         <SafeRenderArray
           data={binStore.data}
-          renderChild={node => {
+          renderChild={binNode => {
             return (
               <FileStuructureFileItem
-                isSelected={false}
+                isSelected={localSelectedStore.selected.has(binNode.fileStructure.id)}
                 isFromBin
-                key={node.id}
-                node={node.fileStructure}
+                key={binNode.id}
+                node={binNode.fileStructure}
                 onSelected={node => {
                   localSelectedStore.setSelectedSingle(node.id);
                 }}
                 onDoubleClick={async node => {
-                  console.log(node);
-
-                  if (!node.isFile) {
-                    const url = new URL(window.location.href);
-                    url.searchParams.set('id', node.id.toString());
-                    console.log(url);
-
-                    router.navigate(url.pathname + url.search);
-                  } else {
+                  if (node.isFile) {
                     //TODO show file
+                    console.log(node);
                   }
+                }}
+                onRestore={node => {
+                  console.log('Restore', node);
+
+                  setIsOpen(true);
+
+                  // binStore.restore(node);
                 }}
               />
             );
@@ -157,7 +152,44 @@ export const BinPage = observer((): React.JSX.Element => {
             );
           }}
         />
-      </div> */}
+      </div>
+
+      <Dialog
+        isOpen={isOpen}
+        title="Create folder"
+        onClose={() => setIsOpen(!isOpen)}
+        isCloseButtonShown
+        canOutsideClickClose
+        canEscapeKeyClose
+        shouldReturnFocusOnClose
+      >
+        <div
+          tabIndex={0}
+          onKeyDown={e => {
+            if (e.key === 'Enter') {
+              onClickinngSaveButton();
+            }
+          }}
+        >
+          <DialogBody>
+            <h1>hello</h1>
+
+            <SimpleFileStructureTree />
+          </DialogBody>
+
+          <DialogFooter
+            minimal
+            actions={
+              <>
+                <Button onClick={() => setIsOpen(false)}>Close</Button>
+                <Button intent={Intent.PRIMARY} onClick={() => onClickinngSaveButton()}>
+                  Save
+                </Button>
+              </>
+            }
+          />
+        </div>
+      </Dialog>
     </div>
   );
 });

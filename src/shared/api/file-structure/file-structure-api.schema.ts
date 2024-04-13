@@ -29,14 +29,12 @@ export class GetGeneralInfoResponseDto {
   totalSize: number;
 }
 
-//TODO this needs auto observer and transform from api call
-
-export class MoveToBin {
+export class FileStructureBinDto {
   id: number;
-  createdAt: Date;
   nameUUID: string;
   path: string;
   userId: number;
   fileStructureId: number;
+  createdAt: Date;
   fileStructure: BasicFileStructureResponseDto;
 }

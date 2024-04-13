@@ -70,16 +70,6 @@ export class RootFileStructure
     this.hasCaret = value;
   }
 
-  recusive(node: RootFileStructure[], callback?: (node: RootFileStructure) => void): void {
-    for (let i = 0; i < node?.length; i++) {
-      callback?.(node[i]);
-
-      if (node[i].children !== undefined) {
-        this.recusive(node[i].children, callback);
-      }
-    }
-  }
-
   addChildren(data: RootFileStructure[]) {
     this.children.push(...data);
   }
