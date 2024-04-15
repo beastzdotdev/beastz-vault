@@ -34,11 +34,17 @@ const modifiedItems: AdvancedSelectItem[] = [
 export const StoragePage = observer((): React.JSX.Element => {
   const [selectedType, setSelectedType] = useState<AdvancedSelectItem | null>(null);
   const [modifiedType, setModifiedType] = useState<AdvancedSelectItem | null>(null);
-  console.log('rerender');
 
   const sharedStore = useInjection(SharedStore);
   const progressBarValue = computed(() => {
-    return formatSizeRaw(sharedStore.generalInfo.totalSize) / constants.MAX_ALLOWED_FILE_SIZE_BYTES;
+    const value =
+      formatSizeRaw(sharedStore.generalInfo.totalSize) / constants.MAX_ALLOWED_FILE_SIZE_BYTES;
+
+    if (value < 0.05 && value > 0) {
+      return 0.025;
+    }
+
+    return value;
   });
 
   return (
@@ -79,7 +85,7 @@ export const StoragePage = observer((): React.JSX.Element => {
 
       <div className="w-full mt-2">
         <ProgressBar
-          value={progressBarValue.get() < 0.05 ? 0.025 : progressBarValue.get()}
+          value={progressBarValue.get()}
           animate={false}
           stripes={false}
           intent={'warning'}

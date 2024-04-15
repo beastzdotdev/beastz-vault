@@ -10,8 +10,8 @@ import {
 } from '@blueprintjs/core';
 import { useRef, useState } from 'react';
 import { useInjection } from 'inversify-react';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { SidebarTree } from '../../../widgets/sidebar-tree';
-import { router } from '../../../router';
 import { useResize } from '../../../hooks/use-resize.hook';
 import { FileUploadItem } from './file-upload/file-upload-item';
 import { FolderUploadItem } from './folder-upload/folder-upload-item';
@@ -28,6 +28,7 @@ export const Sidebar = () => {
   const folderUploadRef = useRef<HTMLInputElement>(null);
   const sharedStore = useInjection(SharedStore);
   const [isFolderCreateOpen, setIsFolderCreateOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <div
@@ -45,7 +46,7 @@ export const Sidebar = () => {
         <div className="pt-2">
           <div
             className="gorilla-profile flex items-center justify-between py-2 mx-1.5 mb-1 cursor-pointer"
-            onClick={() => router.navigate(constants.path.fileStructure)}
+            onClick={() => navigate(constants.path.fileStructure + '?id=root')}
           >
             <ProfileIcon />
           </div>
@@ -156,7 +157,7 @@ export const Sidebar = () => {
                 hoverOpenDelay={500}
               >
                 <Icon
-                  onClick={() => router.navigate(constants.path.fileStructure)}
+                  onClick={() => navigate(constants.path.fileStructure + '?id=root')}
                   icon="home"
                   className="!text-zinc-500 hover:bg-zinc-800 active:bg-zinc-700 p-0.5 ml-1 cursor-pointer"
                   size={13}
@@ -191,13 +192,19 @@ export const Sidebar = () => {
               >
                 <Button icon="clean" rightIcon="chevron-right" text="Comming soon" />
               </Popover>
-              <Button icon="trash" text="Bin" onClick={() => router.navigate(constants.path.bin)} />
-              <Button
-                icon="manual"
-                text="Guide"
-                onClick={() => router.navigate(constants.path.guide)}
-              />
-              <Button icon="help" text="Support & Help" />
+
+              <NavLink to={constants.path.bin}>
+                {params => <Button icon="trash" text="Bin" active={params.isActive} />}
+              </NavLink>
+
+              <NavLink to={constants.path.guide}>
+                {params => <Button icon="manual" text="Guide" active={params.isActive} />}
+              </NavLink>
+
+              <NavLink to={constants.path.support}>
+                {params => <Button icon="help" text="Support & Help" active={params.isActive} />}
+              </NavLink>
+
               <StorageLimitIndicator />
             </ButtonGroup>
           </div>

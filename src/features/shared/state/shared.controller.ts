@@ -85,7 +85,7 @@ export class SharedController {
       return;
     }
 
-    if (!foundNode.children.length) {
+    if (!foundNode.children?.length) {
       const { data, error } = await this.fileStructureApiService.getContent({
         parentId: foundNode.id,
       });

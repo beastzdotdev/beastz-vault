@@ -1,7 +1,9 @@
 import { Button, Classes, H2, Icon, Intent } from '@blueprintjs/core';
-import { router } from '../../router';
+import { useNavigate } from 'react-router-dom';
 
 export const SupportPage = (): React.JSX.Element => {
+  const navigate = useNavigate();
+
   return (
     <div className="w-fit mx-auto mt-20">
       <div className="flex items-center">
@@ -16,7 +18,7 @@ export const SupportPage = (): React.JSX.Element => {
             icon="link"
             text="Redirect"
             intent={Intent.PRIMARY}
-            onClick={() => router.navigate('/')}
+            onClick={() => navigate('/')}
           />
         </div>
       </div>

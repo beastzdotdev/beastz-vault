@@ -1,9 +1,9 @@
 import { Button, Classes, H2, Icon, Intent } from '@blueprintjs/core';
-import { useRouteError } from 'react-router-dom';
-import { router } from '../router';
+import { useNavigate, useRouteError } from 'react-router-dom';
 
 export const AppErrorPage = (): React.JSX.Element => {
   const error = useRouteError();
+  const navigate = useNavigate();
 
   return (
     <>
@@ -20,12 +20,7 @@ export const AppErrorPage = (): React.JSX.Element => {
 
       <div className="flex justify-center mt-8">
         <div className={Classes.FOCUS_STYLE_MANAGER_IGNORE}>
-          <Button
-            icon="link"
-            text="Go Home"
-            intent={Intent.NONE}
-            onClick={() => router.navigate('/')}
-          />
+          <Button icon="link" text="Go Home" intent={Intent.NONE} onClick={() => navigate('/')} />
         </div>
       </div>
     </>

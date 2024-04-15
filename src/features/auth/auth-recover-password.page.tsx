@@ -1,8 +1,10 @@
 import { Button, Classes, H2, Icon, Intent } from '@blueprintjs/core';
-import { router } from '../../router';
+import { useNavigate } from 'react-router-dom';
 import { constants } from '../../shared/constants';
 
 export const AuthRecoverPasswordPage = (): React.JSX.Element => {
+  const navigate = useNavigate();
+
   return (
     <div className="w-fit mx-auto mt-20">
       <div className="flex items-center">
@@ -17,7 +19,7 @@ export const AuthRecoverPasswordPage = (): React.JSX.Element => {
             icon="link"
             text="Redirect"
             intent={Intent.PRIMARY}
-            onClick={() => router.navigate(constants.path.signIn)}
+            onClick={() => navigate(constants.path.signIn)}
           />
         </div>
       </div>

@@ -30,33 +30,41 @@ export const FileStructureBreadcrumb = observer((): React.JSX.Element => {
   }
 
   return (
-    <Breadcrumbs
-      className="max-w-sm select-none"
-      items={sharedStore
-        .searchNodeAndParents(sharedStore.activeRootFileStructure, sharedStore.activeId)
-        ?.filter(Boolean)
-        .reduce<BreadcrumbProps[]>((acc, node, i, arr) => {
-          const isLast = i === arr.length - 1;
+    <>
+      <Breadcrumbs
+        className="max-w-sm select-none text-nowrap"
+        items={(
+          sharedStore.searchNodeAndParents(
+            sharedStore.activeRootFileStructure,
+            sharedStore.activeId
+          ) ?? []
+        )
+          ?.filter(Boolean)
+          ?.reduce<BreadcrumbProps[]>((acc, node, i, arr) => {
+            console.log(arr);
 
-          if (i === 0) {
-            // This here represents root and here href is needed
+            const isLast = i === arr?.length - 1;
+
+            if (i === 0) {
+              // This here represents root and here href is needed
+              acc.push({
+                icon: 'cloud',
+                text: 'cloud',
+                href: constants.path.fileStructure,
+              });
+            }
+
+            // This here represents each node parent and node iteslf
             acc.push({
-              icon: 'cloud',
-              text: 'cloud',
-              href: constants.path.fileStructure,
+              onClick: e => onBreadCrumbClick(e, node.link!),
+              icon: 'folder-close',
+              text: node.name,
+              ...(!isLast && { href: node.link }), // add href except for last (e.g. itself)
             });
-          }
 
-          // This here represents each node parent and node iteslf
-          acc.push({
-            onClick: e => onBreadCrumbClick(e, node.link!),
-            icon: 'folder-close',
-            text: node.name,
-            ...(!isLast && { href: node.link }), // add href except for last (e.g. itself)
-          });
-
-          return acc;
-        }, [])}
-    />
+            return acc;
+          }, [])}
+      />
+    </>
   );
 });

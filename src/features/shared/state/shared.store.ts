@@ -1,4 +1,4 @@
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable, toJS } from 'mobx';
 import { Singleton } from '../../../shared/ioc';
 import { RootFileStructure } from '../../../shared/model';
 import { GetGeneralInfoResponseDto } from '../../../shared/api';
@@ -105,7 +105,7 @@ export class SharedStore {
     id: number,
     parents: RootFileStructure[] = []
   ): RootFileStructure[] | null {
-    for (let i = 0; i < nodes.length; i++) {
+    for (let i = 0; i < nodes?.length; i++) {
       const node = nodes[i];
       const updatedParents = parents.concat(node);
 

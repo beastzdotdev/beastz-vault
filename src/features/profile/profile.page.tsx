@@ -1,16 +1,17 @@
 import { Button } from '@blueprintjs/core';
 import { observer } from 'mobx-react-lite';
 import { useInjection } from 'inversify-react';
+import { useNavigate } from 'react-router-dom';
 import { ProfileStore } from './state/profile.store';
 import { constants } from '../../shared/constants';
-import { router } from '../../router';
 
 export const ProfilePage = observer((): React.JSX.Element => {
+  const navigate = useNavigate();
   const profile = useInjection(ProfileStore);
 
   const WebSignOut = async () => {
     try {
-      router.navigate(constants.path.signIn);
+      navigate(constants.path.signIn);
     } catch (e: unknown) {
       // showErrorMessage(handleFirebaseError(e));
     }

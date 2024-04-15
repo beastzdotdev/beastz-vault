@@ -7,9 +7,11 @@ import { SharedController } from '../../shared/state/shared.controller';
 import { SafeRenderArray } from '../../../components/safe-render-array';
 import { getQueryParams } from '../../../shared/helper';
 import { FSQueryParams, selectFileStructure } from '../file-structure.loader';
+import { SharedStore } from '../../shared/state/shared.store';
 
 export const FileStructureFiles = observer((): React.JSX.Element => {
   const sharedController = useInjection(SharedController);
+  const sharedStore = useInjection(SharedStore);
   const navigate = useNavigate();
 
   const localSelectedStore = useLocalObservable(() => ({
@@ -69,6 +71,19 @@ export const FileStructureFiles = observer((): React.JSX.Element => {
           );
         }}
         renderError={() => {
+          if (sharedStore.activeRootFileStructure.length === 0) {
+            return (
+              <NonIdealState
+                className="mt-16"
+                title="Come on do something"
+                icon="projects"
+                iconMuted={false}
+                description="Click on sidebar item new and choose action"
+                iconSize={NonIdealStateIconSize.STANDARD}
+              />
+            );
+          }
+
           return (
             <NonIdealState
               className="mt-16"
@@ -88,3 +103,10 @@ export const FileStructureFiles = observer((): React.JSX.Element => {
     </div>
   );
 });
+
+{
+  /* <>
+<p>Upload something bruh</p>
+<img src="https://media.tenor.com/rec5dlPBK2cAAAAM/mr-bean-waiting.gif" alt="" />
+</> */
+}

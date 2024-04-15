@@ -2,10 +2,10 @@ import { Button, ProgressBar } from '@blueprintjs/core';
 import { useInjection } from 'inversify-react';
 import { computed } from 'mobx';
 import { observer } from 'mobx-react-lite';
+import { NavLink } from 'react-router-dom';
 import { constants } from '../../../../shared/constants';
 import { formatSizeRaw, formatSize } from '../../../../shared/helper';
 import { SharedStore } from '../../state/shared.store';
-import { router } from '../../../../router';
 
 export const StorageLimitIndicator = observer(() => {
   const sharedStore = useInjection(SharedStore);
@@ -15,7 +15,9 @@ export const StorageLimitIndicator = observer(() => {
 
   return (
     <>
-      <Button icon="cloud" text="Storage" onClick={() => router.navigate(constants.path.storage)} />
+      <NavLink to={constants.path.storage}>
+        {params => <Button icon="cloud" text="Storage" active={params.isActive} />}
+      </NavLink>
 
       {progressBarValue.get() >= 0.05 && (
         <ProgressBar
@@ -29,8 +31,8 @@ export const StorageLimitIndicator = observer(() => {
       )}
 
       <p className="text-xs text-amber-400 text-muted mx-2.5 mt-1.5">
-        {formatSize(sharedStore.generalInfo.totalSize)} of {constants.MAX_ALLOWED_TOTAL_SIZE_IN_GB}{' '}
-        Gb
+        {formatSize(sharedStore.generalInfo.totalSize) || 0} of{' '}
+        {constants.MAX_ALLOWED_TOTAL_SIZE_IN_GB} Gb
       </p>
     </>
   );

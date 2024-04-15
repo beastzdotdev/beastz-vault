@@ -40,7 +40,7 @@ async function handleAxiosResponseError(error: unknown) {
       const responseBody = error.response?.data;
       const exceptionBody = await ExceptionSchema.passthrough().safeParseAsync(responseBody);
 
-      // this should not happen, navigate to oops
+      // this should not happen, router.navigate to oops
       if (!originalConfig) {
         router.navigate(constants.path.oops);
         return Promise.reject(
@@ -94,7 +94,7 @@ async function handleAxiosResponseError(error: unknown) {
       }
     }
 
-    // unknown error, navigate to oops
+    // unknown error, router.navigate to oops
     router.navigate({ pathname: constants.path.oops });
     return Promise.reject(generalClientError);
   } catch (error) {

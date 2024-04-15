@@ -15,7 +15,7 @@ TODO ProfilePage:
   sign out not implemented
 
 TODO Sidebar:
-  router.navigate(constants.path.fileStructure) <- is temporary
+  navigate(constants.path.fileStructure) <- is temporary
 
 
 //TODO on every unauthenticated routes like auth/ needs to be checks user identity status
@@ -65,7 +65,7 @@ TODO calculate upload time (approximate) https://www.google.com/search?q=how+doe
 
 TODO create intro website and could use this lib: https://ui.aceternity.com/components
 
-TODO I think it would be best to move all router.navigate() -> const navigate = useNavigate() and navigate('/...')
+TODO I think it would be best to move all navigate() -> const navigate = useNavigate() and navigate('/...')
 
 
 TODO right now folder and files upload works only on at a time if you want to upload another folder or files while others are uploading than u need to implement like drive does just run another start function and add toasts to main toast (reset must be adjusted) 

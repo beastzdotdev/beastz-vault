@@ -17,6 +17,7 @@ export class FileStructureApiService {
     parentId?: number;
     rootParentId?: number;
     focusParentId?: number;
+    isFile?: boolean;
   }): Promise<AxiosApiResponse<RootFileStructure[]>> {
     try {
       const result = await api.get<BasicFileStructureResponseDto[]>(`file-structure/content`, {

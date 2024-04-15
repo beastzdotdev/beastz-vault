@@ -4,18 +4,19 @@ import { MobxTree } from '@pulexui/core';
 import { toJS } from 'mobx';
 import { useCallback } from 'react';
 import { Icon, Intent, Spinner } from '@blueprintjs/core';
+import { useNavigate } from 'react-router-dom';
 import { SharedStore } from '../features/shared/state/shared.store';
 import { FileStructureApiService } from '../shared/api';
 import { RootFileStructure } from '../shared/model';
 import { sleep } from '../shared/helper';
 import { SharedController } from '../features/shared/state/shared.controller';
 import { constants } from '../shared/constants';
-import { router } from '../router';
 
 export const SidebarTree = observer(({ className }: { className?: string }) => {
   const sharedStore = useInjection(SharedStore);
   const sharedController = useInjection(SharedController);
   const fileStructureApiService = useInjection(FileStructureApiService);
+  const navigate = useNavigate();
 
   const handleNodeClick = useCallback(
     async (node: RootFileStructure) => {
@@ -52,7 +53,7 @@ export const SidebarTree = observer(({ className }: { className?: string }) => {
 
         // if click happens from other pages redirect and activate loader
         if (existingLocation.pathname !== constants.path.fileStructure) {
-          router.navigate(node.link);
+          navigate(node.link);
         } else {
           // Push to history
           sharedController.pushToHistory(node.link);

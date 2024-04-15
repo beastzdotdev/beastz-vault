@@ -17,7 +17,7 @@ import './declares/declares.d.tsx';
 FocusStyleManager.onlyShowFocusOnTabs();
 
 configure({
-  enforceActions: 'always',
+  enforceActions: 'observed',
   useProxies: 'always',
   computedRequiresReaction: true,
   reactionRequiresObservable: true,

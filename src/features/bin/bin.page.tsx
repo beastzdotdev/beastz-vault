@@ -14,12 +14,13 @@ import {
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { useState } from 'react';
 import { useInjection } from 'inversify-react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { AdvancedSelectItem, AdvancedSelect } from '../../components/advanced-select';
 import { BinStore } from './state/bin.store';
 import { SafeRenderArray } from '../../components/safe-render-array';
 import { FileStuructureFileItem } from '../../widgets/file-structure-item.widget';
 import { SimpleFileStructureTree } from '../../widgets/simple-file-structure-tree';
+import { FileStructureApiService } from '../../shared/api';
 
 const typeItems: AdvancedSelectItem[] = [
   { key: uuid(), text: 'Images' },
@@ -46,7 +47,9 @@ export const BinPage = observer((): React.JSX.Element => {
   const [modifiedType, setModifiedType] = useState<AdvancedSelectItem | null>(null);
   const binStore = useInjection(BinStore);
   const navigate = useNavigate();
+  const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+  const fileStructureApiService = useInjection(FileStructureApiService);
 
   const localSelectedStore = useLocalObservable(() => ({
     selected: new Set<number>(),
@@ -71,8 +74,46 @@ export const BinPage = observer((): React.JSX.Element => {
     },
   }));
 
-  const onClickinngSaveButton = () => {
-    setIsOpen(!isOpen);
+  const localSelectedLocation = useLocalObservable(() => ({
+    selectedId: null as number | null,
+
+    setSelectedSingle(id: number | null) {
+      this.selectedId = id;
+    },
+
+    clear() {
+      this.selectedId = null;
+    },
+  }));
+
+  const toggleIsOpen = (value?: boolean) => {
+    const finalValue = value ?? !isOpen;
+
+    if (!finalValue) {
+      // is closing
+      localSelectedStore.clear();
+      localSelectedLocation.clear();
+    } else {
+      // is opening
+      localSelectedLocation.clear();
+    }
+
+    setIsOpen(finalValue);
+  };
+
+  const onClickinngSaveButton = async () => {
+    const selectedFsId = [...localSelectedStore.selected][0];
+
+    // call api
+    console.log('id', selectedFsId);
+    console.log('location', localSelectedLocation.selectedId);
+
+    await fileStructureApiService.restoreFromBin(selectedFsId, {
+      newParentId: localSelectedLocation.selectedId,
+    });
+
+    toggleIsOpen(false);
+    navigate(location.pathname + location.search);
   };
 
   console.log('rerender');
@@ -82,6 +123,7 @@ export const BinPage = observer((): React.JSX.Element => {
       <H1 className="font-extralight">
         Bin page under construction <Icon intent="warning" size={40} icon="build"></Icon>
       </H1>
+
       <hr />
 
       <H2 className="font-extralight">Bin</H2>
@@ -126,11 +168,8 @@ export const BinPage = observer((): React.JSX.Element => {
                   }
                 }}
                 onRestore={node => {
-                  console.log('Restore', node);
-
-                  setIsOpen(true);
-
-                  // binStore.restore(node);
+                  localSelectedStore.setSelectedSingle(node.id);
+                  toggleIsOpen(true);
                 }}
               />
             );
@@ -154,10 +193,14 @@ export const BinPage = observer((): React.JSX.Element => {
         />
       </div>
 
+      <Button onClick={() => navigate('/file-structure')} intent={Intent.PRIMARY} minimal outlined>
+        Test
+      </Button>
+
       <Dialog
         isOpen={isOpen}
-        title="Create folder"
-        onClose={() => setIsOpen(!isOpen)}
+        title="Choose Location"
+        onClose={() => toggleIsOpen()}
         isCloseButtonShown
         canOutsideClickClose
         canEscapeKeyClose
@@ -172,16 +215,18 @@ export const BinPage = observer((): React.JSX.Element => {
           }}
         >
           <DialogBody>
-            <h1>hello</h1>
-
-            <SimpleFileStructureTree />
+            <div style={{ maxHeight: 400 }}>
+              <SimpleFileStructureTree
+                onSelect={node => localSelectedLocation.setSelectedSingle(node?.id ?? null)}
+              />
+            </div>
           </DialogBody>
 
           <DialogFooter
             minimal
             actions={
               <>
-                <Button onClick={() => setIsOpen(false)}>Close</Button>
+                <Button onClick={() => toggleIsOpen(false)}>Close</Button>
                 <Button intent={Intent.PRIMARY} onClick={() => onClickinngSaveButton()}>
                   Save
                 </Button>
