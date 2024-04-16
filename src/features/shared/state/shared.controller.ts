@@ -42,8 +42,8 @@ export class SharedController {
       }
     });
 
-    console.log('='.repeat(20));
-    console.log(toJS(this.sharedStore.activeRootFileStructure));
+    // console.log('='.repeat(20));
+    // console.log(toJS(this.sharedStore.activeRootFileStructure));
   }
 
   findFolderNodeForActiveBody(): RootFileStructure[] {
