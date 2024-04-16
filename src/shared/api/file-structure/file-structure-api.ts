@@ -15,8 +15,7 @@ import { FileStructureBin } from '../../model/file-structure-bin.model';
 export class FileStructureApiService {
   async getContent(params?: {
     parentId?: number;
-    rootParentId?: number;
-    focusParentId?: number;
+    focusRootParentId?: number;
     isFile?: boolean;
   }): Promise<AxiosApiResponse<RootFileStructure[]>> {
     try {

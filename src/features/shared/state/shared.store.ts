@@ -1,4 +1,4 @@
-import { makeAutoObservable, toJS } from 'mobx';
+import { makeAutoObservable } from 'mobx';
 import { Singleton } from '../../../shared/ioc';
 import { RootFileStructure } from '../../../shared/model';
 import { GetGeneralInfoResponseDto } from '../../../shared/api';

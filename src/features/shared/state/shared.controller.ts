@@ -1,4 +1,4 @@
-import { runInAction, toJS } from 'mobx';
+import { runInAction } from 'mobx';
 import { SharedStore } from './shared.store';
 import { Singleton, Inject } from '../../../shared/ioc';
 import { RootFileStructure } from '../../../shared/model';

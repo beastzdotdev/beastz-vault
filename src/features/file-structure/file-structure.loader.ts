@@ -17,10 +17,7 @@ const getRootResponse = async (
 
   // root content must always be set like if user is in deeply nested folder and user resets page
   if (typeof query.id === 'number' && query.id !== query.root_parent_id) {
-    return fileStructureApiService.getContent({
-      rootParentId: query.root_parent_id,
-      focusParentId: query.id,
-    });
+    return fileStructureApiService.getContent({ focusRootParentId: query.root_parent_id });
   }
 
   return fileStructureApiService.getContent();
