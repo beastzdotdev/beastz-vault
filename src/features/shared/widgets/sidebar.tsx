@@ -44,12 +44,7 @@ export const Sidebar = () => {
 
       <div className="flex flex-col h-full">
         <div className="pt-2">
-          <div
-            className="gorilla-profile flex items-center justify-between py-2 mx-1.5 mb-1 cursor-pointer"
-            onClick={() => navigate(constants.path.fileStructure + '?id=root')}
-          >
-            <ProfileIcon />
-          </div>
+          <ProfileIcon />
 
           <div>
             <FileUploadItem inputRef={fileUploadRef} />

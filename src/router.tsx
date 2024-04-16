@@ -52,6 +52,10 @@ export const router = createBrowserRouter([
         element: <StoragePage />,
       },
       {
+        path: constants.path.guide,
+        element: <GuidePage />,
+      },
+      {
         path: constants.path.bin,
         element: <BinPage />,
         loader: binLoader,
@@ -95,10 +99,7 @@ export const router = createBrowserRouter([
     path: constants.path.support,
     element: <SupportPage />,
   },
-  {
-    path: constants.path.guide,
-    element: <GuidePage />,
-  },
+
   {
     path: constants.path.oops,
     element: <OopsPage />,
