@@ -1,7 +1,7 @@
 import { Button, ContextMenu, Icon, Menu, MenuDivider, MenuItem, Popover } from '@blueprintjs/core';
 import { observer } from 'mobx-react-lite';
 import { useInjection } from 'inversify-react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { formatSize } from '../shared/helper';
 import { RootFileStructure } from '../shared/model';
 import { FileStructureApiService } from '../shared/api';
@@ -17,12 +17,11 @@ interface FileStuructureFileItemParams {
 
 const FileStuructureContextMenu = (params: { node: RootFileStructure }) => {
   const fileStructureApiService = useInjection(FileStructureApiService);
-  const location = useLocation();
   const navigate = useNavigate();
 
   const moveToBin = async () => {
     await fileStructureApiService.moveToBin(params.node.id, { isInBin: true });
-    navigate(location.pathname + location.search);
+    navigate(window.location.pathname + window.location.search);
   };
 
   return (

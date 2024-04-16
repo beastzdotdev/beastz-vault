@@ -34,6 +34,8 @@ export const router = createBrowserRouter([
     element: <App />,
     errorElement: <ErrorPage />,
     loader: appLoader,
+    //TODO some calls inside loader must only be called once like settings use (do some calculations for all other especially for file structure calls)
+    //TODO shouldRevalidate: () => false, <- this causes not to call loader
     children: [
       {
         index: true,

@@ -1,5 +1,5 @@
 import { H2, Icon, Intent } from '@blueprintjs/core';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useCallback, useEffect, useState } from 'react';
 import { AxiosError } from 'axios';
 import { constants } from '../../shared/constants';
@@ -7,7 +7,6 @@ import { api } from '../../shared/api';
 import { ClientApiError } from '../../shared/errors';
 
 export const OopsPage = (): React.JSX.Element => {
-  const location = useLocation();
   const [text, setText] = useState<string | null>(null);
 
   const healthCheck = useCallback(async () => {
@@ -41,7 +40,7 @@ export const OopsPage = (): React.JSX.Element => {
 
     // do health check so if user refreshes and network is up again redriect back to root page
     healthCheck();
-  }, [healthCheck, location.search]);
+  }, [healthCheck]);
 
   return (
     <div className="w-fit mx-auto pt-20">

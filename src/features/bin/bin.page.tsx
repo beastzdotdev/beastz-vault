@@ -14,7 +14,7 @@ import {
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { useState } from 'react';
 import { useInjection } from 'inversify-react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { AdvancedSelectItem, AdvancedSelect } from '../../components/advanced-select';
 import { BinStore } from './state/bin.store';
 import { SafeRenderArray } from '../../components/safe-render-array';
@@ -47,7 +47,6 @@ export const BinPage = observer((): React.JSX.Element => {
   const [modifiedType, setModifiedType] = useState<AdvancedSelectItem | null>(null);
   const binStore = useInjection(BinStore);
   const navigate = useNavigate();
-  const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const fileStructureApiService = useInjection(FileStructureApiService);
 
@@ -113,7 +112,7 @@ export const BinPage = observer((): React.JSX.Element => {
     });
 
     toggleIsOpen(false);
-    navigate(location.pathname + location.search);
+    navigate(window.location.pathname + window.location.search);
   };
 
   console.log('rerender');
