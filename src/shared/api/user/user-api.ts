@@ -10,8 +10,6 @@ export class UserApiService {
   async getCurrentUser(): Promise<AxiosApiResponse<UserResponseDto>> {
     try {
       const result: AxiosResponse = await api.get('user/current');
-      console.log(result);
-
       return { data: result.data };
     } catch (e: unknown) {
       return { error: e as ClientApiError };

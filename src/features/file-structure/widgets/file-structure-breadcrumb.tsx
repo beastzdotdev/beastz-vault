@@ -41,8 +41,6 @@ export const FileStructureBreadcrumb = observer((): React.JSX.Element => {
         )
           ?.filter(Boolean)
           ?.reduce<BreadcrumbProps[]>((acc, node, i, arr) => {
-            console.log(arr);
-
             const isLast = i === arr?.length - 1;
 
             if (i === 0) {
