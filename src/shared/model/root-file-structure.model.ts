@@ -38,7 +38,7 @@ export class RootFileStructure
   parentId: number | null;
 
   //! New
-  link?: string;
+  link: string;
   activeIcon: IconName | 'spinner';
 
   setActiveIcon(icon: IconName | 'spinner') {
@@ -98,6 +98,8 @@ export class RootFileStructure
           : `/file-structure?id=${data.id}&root_parent_id=${data.id}&path=${encodeURIComponent(
               data.path
             )}`;
+      } else {
+        newItem.link = '';
       }
 
       if (data?.children?.length) {

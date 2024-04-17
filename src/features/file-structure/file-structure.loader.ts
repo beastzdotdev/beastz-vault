@@ -26,7 +26,6 @@ export const fileStructureLoader = async (query: FSQueryParams) => {
     // select nothing on sidebar and fetch nothing for fs
     // just deselect all, collapse all and select root data in body
 
-    sharedStore.toggleAllExpand(false);
     sharedStore.toggleAllSelected(false);
 
     runInAction(() => {

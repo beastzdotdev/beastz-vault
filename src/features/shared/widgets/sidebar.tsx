@@ -152,7 +152,11 @@ export const Sidebar = () => {
                 hoverOpenDelay={500}
               >
                 <Icon
-                  onClick={() => navigate(constants.path.fileStructure + '?id=root')}
+                  onClick={() => {
+                    sharedStore.toggleAllSelected(false);
+                    sharedStore.toggleAllExpand(false);
+                    navigate(constants.path.fileStructure + '?id=root');
+                  }}
                   icon="home"
                   className="!text-zinc-500 hover:bg-zinc-800 active:bg-zinc-700 p-0.5 ml-1 cursor-pointer"
                   size={13}

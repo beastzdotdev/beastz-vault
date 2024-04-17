@@ -145,16 +145,10 @@ export class FileStructureApiService {
     }
   }
 
-  async moveToBin(
-    id: number,
-    params?: {
-      isInBin?: boolean;
-    }
-  ): Promise<AxiosApiResponse<RootFileStructure>> {
+  async moveToBin(id: number): Promise<AxiosApiResponse<RootFileStructure>> {
     try {
       const result = await api.patch<BasicFileStructureResponseDto>(
-        `file-structure/move-to-bin/${id}`,
-        params
+        `file-structure/move-to-bin/${id}`
       );
 
       return { data: RootFileStructure.customTransform(result.data) };
@@ -167,12 +161,26 @@ export class FileStructureApiService {
     params?: {
       newParentId: number | null;
     }
-  ): Promise<AxiosApiResponse<void>> {
+  ): Promise<AxiosApiResponse<RootFileStructure>> {
     try {
-      await api.patch<void>(`file-structure/restore-from-bin/${id}`, params);
-      return {};
+      const result = await api.patch<BasicFileStructureResponseDto>(
+        `file-structure/restore-from-bin/${id}`,
+        params
+      );
+
+      return { data: RootFileStructure.customTransform(result.data) };
     } catch (e: unknown) {
       return { error: e as ClientApiError };
     }
   }
 }
+
+// async getById(id: string): Promise<AxiosApiResponse<RootFileStructure>> {
+//   try {
+//     const result = await api.get<BasicFileStructureResponseDto>(`file-structure/${id}`);
+
+//     return { data: RootFileStructure.customTransform(result.data) };
+//   } catch (e: unknown) {
+//     return { error: e as ClientApiError };
+//   }
+// }

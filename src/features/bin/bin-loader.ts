@@ -17,7 +17,7 @@ export const binLoader = async (_args: LoaderFunctionArgs) => {
     parentId,
   });
 
-  console.log(data?.data);
+  // console.log(data?.data);
 
   if (error || !data) {
     throw new Error('Sorry, something went wrong loading bin data');

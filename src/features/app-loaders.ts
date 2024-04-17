@@ -51,8 +51,6 @@ export const appOneTimeLoader = async (_args: LoaderFunctionArgs) => {
     return;
   }
 
-  console.log('calling root');
-
   const profileController = ioc.getContainer().get(ProfileController);
   const profileStore = ioc.getContainer().get(ProfileStore);
   const sharedStore = ioc.getContainer().get(SharedStore);

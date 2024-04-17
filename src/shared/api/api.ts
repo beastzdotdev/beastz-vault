@@ -42,7 +42,7 @@ async function handleAxiosResponseError(error: unknown) {
 
       // this should not happen, router.navigate to oops
       if (!originalConfig) {
-        router.navigate(constants.path.oops);
+        window.location.href = constants.path.oops;
         return Promise.reject(
           new ClientApiError(
             HttpStatusCode.InternalServerError,
@@ -86,16 +86,14 @@ async function handleAxiosResponseError(error: unknown) {
       }
 
       if (error.code === AxiosError.ERR_NETWORK) {
-        router.navigate({
-          pathname: constants.path.oops,
-          search: createSearchParams({ text: 'Network error' }).toString(),
-        });
+        window.location.href =
+          constants.path.oops + createSearchParams({ text: 'Network error' }).toString();
         return Promise.reject(generalClientError);
       }
     }
 
     // unknown error, router.navigate to oops
-    router.navigate({ pathname: constants.path.oops });
+    window.location.href = constants.path.oops;
     return Promise.reject(generalClientError);
   } catch (error) {
     console.log(error);

@@ -1,35 +1,27 @@
 import { Button, ContextMenu, Icon, Menu, MenuDivider, MenuItem, Popover } from '@blueprintjs/core';
 import { observer } from 'mobx-react-lite';
-import { useInjection } from 'inversify-react';
 import { formatSize } from '../shared/helper';
 import { RootFileStructure } from '../shared/model';
-import { FileStructureApiService } from '../shared/api';
 
 interface FileStuructureFileItemParams {
   isFromBin?: boolean;
   node: RootFileStructure;
   isSelected: boolean;
   onSelected: (node: RootFileStructure) => void;
+  onMoveToBin?: (node: RootFileStructure) => void;
   onDoubleClick: (node: RootFileStructure) => void;
   onRestore?: (node: RootFileStructure) => void;
+  onDeleteForever?: (node: RootFileStructure) => void;
 }
 
-const FileStuructureContextMenu = (params: { node: RootFileStructure }) => {
-  const fileStructureApiService = useInjection(FileStructureApiService);
-
-  const moveToBin = async () => {
-    await fileStructureApiService.moveToBin(params.node.id, { isInBin: true });
-
-    window.location.reload(); //TODO no need for refresh just refresh state not browser page
-  };
-
+const FileStuructureContextMenu = (params: {
+  node: RootFileStructure;
+  onMoveToBin?: (node: RootFileStructure) => void;
+}) => {
   return (
     <Menu>
-      <MenuItem text="Copy" icon="duplicate">
-        <MenuItem text="Title" />
-        <MenuItem text="Public link" />
-        <MenuItem {...(!params.node.isFile && { disabled: true })} text="Content" />
-      </MenuItem>
+      <MenuItem text="Copy tittle" icon="duplicate" />
+      <MenuItem text="Public link" icon="link" />
       <MenuItem text="Move" icon="nest" />
       <MenuDivider />
       <MenuItem text="Change color" icon="tint" />
@@ -51,7 +43,7 @@ const FileStuructureContextMenu = (params: { node: RootFileStructure }) => {
         <MenuItem disabled text="Activity" icon="list-detail-view" />
         <MenuItem disabled text="Open in editor" icon="code" />
       </MenuItem>
-      <MenuItem text="Move to bin" icon="trash" onClick={moveToBin} />
+      <MenuItem text="Move to bin" icon="trash" onClick={() => params.onMoveToBin?.(params.node)} />
     </Menu>
   );
 };
@@ -59,18 +51,20 @@ const FileStuructureContextMenu = (params: { node: RootFileStructure }) => {
 const FileStuructureFromBinContextMenu = (params: {
   node: RootFileStructure;
   onRestore?: (node: RootFileStructure) => void;
+  onDeleteForever?: (node: RootFileStructure) => void;
 }) => {
   return (
     <Menu>
-      <MenuItem text="Copy" icon="duplicate">
-        <MenuItem text="Title" />
-        <MenuItem text="Public link" />
-        <MenuItem {...(!params.node.isFile && { disabled: true })} text="Content" />
-      </MenuItem>
-
+      <MenuItem text="Copy tittle" icon="duplicate" />
+      <MenuItem text="Public link" icon="link" />
       <MenuDivider />
       <MenuItem text="Restore" icon="history" onClick={() => params.onRestore?.(params.node)} />
-      <MenuItem text="Delete forever" intent="danger" icon="trash" />
+      <MenuItem
+        text="Delete forever"
+        intent="danger"
+        icon="trash"
+        onClick={() => params.onDeleteForever?.(params.node)}
+      />
     </Menu>
   );
 };
@@ -79,9 +73,13 @@ export const FileStuructureFileItem = observer(
   (params: FileStuructureFileItemParams): React.JSX.Element => {
     //
     const contextMenu = params.isFromBin ? (
-      <FileStuructureFromBinContextMenu node={params.node} onRestore={params.onRestore} />
+      <FileStuructureFromBinContextMenu
+        node={params.node}
+        onRestore={params.onRestore}
+        onDeleteForever={params.onDeleteForever}
+      />
     ) : (
-      <FileStuructureContextMenu node={params.node} />
+      <FileStuructureContextMenu node={params.node} onMoveToBin={params.onMoveToBin} />
     );
 
     return (
