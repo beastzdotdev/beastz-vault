@@ -5,9 +5,7 @@ import {
   Dialog,
   DialogBody,
   DialogFooter,
-  H1,
   H2,
-  Icon,
   Intent,
   NonIdealState,
   NonIdealStateIconSize,
@@ -153,12 +151,6 @@ export const BinPage = observer((): React.JSX.Element => {
 
   return (
     <div className="mx-2.5 mt-3 cursor-default">
-      <H1 className="font-extralight">
-        Bin page under construction <Icon intent="warning" size={40} icon="build"></Icon>
-      </H1>
-
-      <hr />
-
       <H2 className="font-extralight">Bin</H2>
 
       <div className="w-full flex mt-5">
