@@ -2,7 +2,6 @@ import { createBrowserRouter } from 'react-router-dom';
 import { App } from './features/app';
 import { Root } from './features/root/root.page';
 import { ErrorPage } from './features/error/error.page';
-import { appLoader } from './features/app-loader';
 import { TableTestPage } from './features/experimental/table-test.page';
 import { AuthSignUpPage } from './features/auth/auth-sign-up.page';
 import { ProfilePage } from './features/profile/profile.page';
@@ -26,6 +25,7 @@ import { constants } from './shared/constants';
 import { StoragePage } from './features/storage/storage.page';
 import { BinPage } from './features/bin/bin.page';
 import { binLoader } from './features/bin/bin-loader';
+import { appLoader } from './features/app-loaders';
 
 export const router = createBrowserRouter([
   // under / every page is under auth protection
@@ -34,8 +34,6 @@ export const router = createBrowserRouter([
     element: <App />,
     errorElement: <ErrorPage />,
     loader: appLoader,
-    //TODO some calls inside loader must only be called once like settings use (do some calculations for all other especially for file structure calls)
-    //TODO shouldRevalidate: () => false, <- this causes not to call loader
     children: [
       {
         index: true,

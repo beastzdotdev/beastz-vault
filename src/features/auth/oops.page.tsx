@@ -39,7 +39,7 @@ export const OopsPage = (): React.JSX.Element => {
     setText(optionalText ?? null);
 
     // do health check so if user refreshes and network is up again redriect back to root page
-    healthCheck();
+    // healthCheck();
   }, [healthCheck]);
 
   return (

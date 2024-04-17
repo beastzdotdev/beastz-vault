@@ -101,7 +101,7 @@ export const SimpleFileStructureTree = observer(({ className, onSelect }: Props)
         const endTime = new Date();
 
         if (data) {
-          node.children?.push(...data);
+          node.addChildren(data);
         }
 
         // this is necessary because if axios took less than 200ms animation seems weird

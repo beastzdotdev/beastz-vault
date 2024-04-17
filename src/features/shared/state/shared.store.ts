@@ -5,20 +5,13 @@ import { GetGeneralInfoResponseDto } from '../../../shared/api';
 
 @Singleton
 export class SharedStore {
-  private _activeId: number | 'root';
-  private _activeRootParentId?: number;
-  private _activePath?: string;
-
   private _shouldRender: boolean;
   private _activeRootFileStructure: RootFileStructure[];
+  private _activeBodyFileStructure: RootFileStructure[];
   private _generalInfo: GetGeneralInfoResponseDto;
 
   constructor() {
     makeAutoObservable(this);
-  }
-
-  get isRoot(): boolean {
-    return this._activeId === 'root';
   }
 
   get shouldRender(): boolean {
@@ -29,16 +22,8 @@ export class SharedStore {
     return this._activeRootFileStructure;
   }
 
-  get activeId(): number | 'root' {
-    return this._activeId;
-  }
-
-  get activeRootParentId(): number | undefined {
-    return this._activeRootParentId;
-  }
-
-  get activePath(): string | undefined {
-    return this._activePath;
+  get activeBodyFileStructure(): RootFileStructure[] {
+    return this._activeBodyFileStructure;
   }
 
   get generalInfo(): GetGeneralInfoResponseDto {
@@ -61,15 +46,13 @@ export class SharedStore {
     this._generalInfo = value;
   }
 
+  setActiveBodyFileStructure(value: RootFileStructure[]) {
+    this._activeBodyFileStructure = value;
+  }
+
   //====================================================
   // Additional methods
   //====================================================
-
-  setRouterParams(activeId: number | 'root', rootParentId?: number, path?: string) {
-    this._activeId = activeId;
-    this._activeRootParentId = rootParentId;
-    this._activePath = path;
-  }
 
   pushActiveRootFileStructure(value: RootFileStructure) {
     this._activeRootFileStructure.push(value);

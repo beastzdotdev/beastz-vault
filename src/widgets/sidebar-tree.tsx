@@ -9,20 +9,16 @@ import { SharedStore } from '../features/shared/state/shared.store';
 import { FileStructureApiService } from '../shared/api';
 import { RootFileStructure } from '../shared/model';
 import { sleep } from '../shared/helper';
-import { SharedController } from '../features/shared/state/shared.controller';
-import { constants } from '../shared/constants';
 
 export const SidebarTree = observer(({ className }: { className?: string }) => {
   const sharedStore = useInjection(SharedStore);
-  const sharedController = useInjection(SharedController);
   const fileStructureApiService = useInjection(FileStructureApiService);
   const navigate = useNavigate();
 
   const handleNodeClick = useCallback(
     async (node: RootFileStructure) => {
       if (node.isFile) {
-        //TODO check if is file and if file show popup just like in root page on double click
-        console.log('ignoring file click for now');
+        //TODO file
         return;
       }
 
@@ -51,13 +47,7 @@ export const SidebarTree = observer(({ className }: { className?: string }) => {
           return;
         }
 
-        // if click happens from other pages redirect and activate loader
-        if (existingLocation.pathname !== constants.path.fileStructure) {
-          navigate(node.link);
-        } else {
-          // Push to history
-          sharedController.pushToHistory(node.link);
-        }
+        navigate(node.link);
       }
     },
 
@@ -75,7 +65,7 @@ export const SidebarTree = observer(({ className }: { className?: string }) => {
         const startTime = new Date(); // Start time
         const { data, error } = await fileStructureApiService.getContent({ parentId: node.id });
 
-        if (error) {
+        if (error || !data) {
           throw new Error('Something went wrong');
         }
 
@@ -83,7 +73,7 @@ export const SidebarTree = observer(({ className }: { className?: string }) => {
         const endTime = new Date();
 
         if (data) {
-          node.children?.push(...data);
+          node.addChildren(data);
         }
 
         // this is necessary because if axios took less than 200ms animation seems weird

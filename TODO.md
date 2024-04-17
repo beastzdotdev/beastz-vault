@@ -1,3 +1,5 @@
+TODO set title of page to node.title or nav link not just Gorilla vault
+
 TODO Global
   remove searchbar and add omnibar bnut save searchbar as backup will be needed in future like settings search
 

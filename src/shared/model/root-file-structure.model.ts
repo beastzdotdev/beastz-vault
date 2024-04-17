@@ -5,6 +5,7 @@ import { MobxTreeModel } from '@pulexui/core';
 import { FileMimeType } from '../enum/file-mimte-type.enum';
 import { BasicFileStructureResponseDto } from '../api';
 import { Combine } from '../types';
+import { fields } from '../helper';
 
 export class RootFileStructure
   implements Combine<BasicFileStructureResponseDto, MobxTreeModel<number>>
@@ -70,6 +71,10 @@ export class RootFileStructure
     this.hasCaret = value;
   }
 
+  addChild(data: RootFileStructure) {
+    this.children.push(data);
+  }
+
   addChildren(data: RootFileStructure[]) {
     this.children.push(...data);
   }
@@ -104,4 +109,23 @@ export class RootFileStructure
       return newItem;
     });
   }
+
+  copyIgnoreChildren() {
+    const keys = Object.keys(this);
+    keys.splice(keys.indexOf(RootFsFields.children), 1); // remove children key
+
+    const newFs = new RootFileStructure();
+
+    keys.forEach(k => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-expect-error
+      newFs[k] = this[k];
+    });
+
+    newFs.children = []; // set as empty
+
+    return newFs;
+  }
 }
+
+const RootFsFields = fields<RootFileStructure>();

@@ -3,14 +3,10 @@ import { observer, useLocalObservable } from 'mobx-react-lite';
 import { useInjection } from 'inversify-react';
 import { useNavigate } from 'react-router-dom';
 import { FileStuructureFileItem } from '../../../widgets/file-structure-item.widget';
-import { SharedController } from '../../shared/state/shared.controller';
 import { SafeRenderArray } from '../../../components/safe-render-array';
-import { getQueryParams } from '../../../shared/helper';
-import { FSQueryParams, selectFileStructure } from '../file-structure.loader';
 import { SharedStore } from '../../shared/state/shared.store';
 
 export const FileStructureFiles = observer((): React.JSX.Element => {
-  const sharedController = useInjection(SharedController);
   const sharedStore = useInjection(SharedStore);
   const navigate = useNavigate();
 
@@ -40,7 +36,7 @@ export const FileStructureFiles = observer((): React.JSX.Element => {
   return (
     <div className="gorilla-file-structure">
       <SafeRenderArray
-        data={sharedController.findFolderNodeForActiveBody()}
+        data={sharedStore.activeBodyFileStructure}
         renderChild={node => {
           return (
             <FileStuructureFileItem
@@ -51,21 +47,12 @@ export const FileStructureFiles = observer((): React.JSX.Element => {
                 localSelectedStore.setSelectedSingle(node.id);
               }}
               onDoubleClick={async node => {
-                if (!node.isFile) {
-                  if (!node.link) {
-                    return;
-                  }
-
-                  // Push to history
-                  sharedController.pushToHistory(node.link);
-
-                  // Select corresponding file in file structure item
-                  const url = new URL('http://localhost:5173' + node.link);
-                  const query: FSQueryParams = getQueryParams<FSQueryParams>(url.toString());
-                  selectFileStructure(url, query);
-                } else {
+                if (node.isFile) {
                   //TODO show file
+                  return;
                 }
+
+                navigate(node.link!);
               }}
             />
           );
@@ -103,10 +90,3 @@ export const FileStructureFiles = observer((): React.JSX.Element => {
     </div>
   );
 });
-
-{
-  /* <>
-<p>Upload something bruh</p>
-<img src="https://media.tenor.com/rec5dlPBK2cAAAAM/mr-bean-waiting.gif" alt="" />
-</> */
-}
