@@ -1,3 +1,5 @@
+TODO get inspirations from here https://en.eagle.cool/
+
 TODO set title of page to node.title or nav link not just Gorilla vault
 
 TODO Global

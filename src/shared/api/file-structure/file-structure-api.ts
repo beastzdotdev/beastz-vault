@@ -173,14 +173,16 @@ export class FileStructureApiService {
       return { error: e as ClientApiError };
     }
   }
+
+  async deleteForeverFromBin(id: number): Promise<AxiosApiResponse<RootFileStructure>> {
+    try {
+      const result = await api.patch<BasicFileStructureResponseDto>(
+        `file-structure/delete-forever-bin/${id}`
+      );
+
+      return { data: RootFileStructure.customTransform(result.data) };
+    } catch (e: unknown) {
+      return { error: e as ClientApiError };
+    }
+  }
 }
-
-// async getById(id: string): Promise<AxiosApiResponse<RootFileStructure>> {
-//   try {
-//     const result = await api.get<BasicFileStructureResponseDto>(`file-structure/${id}`);
-
-//     return { data: RootFileStructure.customTransform(result.data) };
-//   } catch (e: unknown) {
-//     return { error: e as ClientApiError };
-//   }
-// }

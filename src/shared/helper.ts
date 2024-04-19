@@ -141,3 +141,21 @@ export const classNames = (
 };
 
 export const sleep = (ms: number = 1000) => new Promise(f => setTimeout(f, ms));
+
+export const cleanURL = (
+  pathName: string,
+  params?: Record<string, string | number | boolean>
+): URL => {
+  const url = new URL(window.location.href);
+  url.pathname = pathName;
+
+  const urlSearchParams = new URLSearchParams();
+
+  for (const key in params) {
+    urlSearchParams.set(key, params[key].toString());
+  }
+
+  url.search = urlSearchParams.toString();
+
+  return url;
+};

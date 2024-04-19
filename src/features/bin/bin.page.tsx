@@ -1,28 +1,15 @@
 import { v4 as uuid } from 'uuid';
-import {
-  Alert,
-  Button,
-  Dialog,
-  DialogBody,
-  DialogFooter,
-  H2,
-  Intent,
-  NonIdealState,
-  NonIdealStateIconSize,
-} from '@blueprintjs/core';
+import { Button, H2, Intent, NonIdealState, NonIdealStateIconSize } from '@blueprintjs/core';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { useState } from 'react';
 import { useInjection } from 'inversify-react';
 import { useNavigate } from 'react-router-dom';
-import { toJS } from 'mobx';
 import { AdvancedSelectItem, AdvancedSelect } from '../../components/advanced-select';
 import { BinStore } from './state/bin.store';
 import { SafeRenderArray } from '../../components/safe-render-array';
 import { FileStuructureFileItem } from '../../widgets/file-structure-item.widget';
-import { SimpleFileStructureTree } from '../../widgets/simple-file-structure-tree';
-import { FileStructureApiService } from '../../shared/api';
-import { ExceptionMessageCode } from '../../shared/enum';
-import { toast } from '../../shared/ui';
+import { RestoreFromBin } from './widgets/restore-from-bin';
+import { DeleteForeverBin } from './widgets/delete-forever-bin';
 
 const typeItems: AdvancedSelectItem[] = [
   { key: uuid(), text: 'Images' },
@@ -45,16 +32,12 @@ const modifiedItems: AdvancedSelectItem[] = [
 ];
 
 export const BinPage = observer((): React.JSX.Element => {
+  const navigate = useNavigate();
+  const binStore = useInjection(BinStore);
   const [selectedType, setSelectedType] = useState<AdvancedSelectItem | null>(null);
   const [modifiedType, setModifiedType] = useState<AdvancedSelectItem | null>(null);
-  const binStore = useInjection(BinStore);
-  const navigate = useNavigate();
-  const [isOpen, setIsOpen] = useState(false);
-  const fileStructureApiService = useInjection(FileStructureApiService);
-
-  //TODO remove and also move delete forever into separate component
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
-
+  const [isRestoreOpen, setRestoreOpen] = useState(false);
+  const [isDeleteForeverOpen, setDeleteForeverOpen] = useState(false);
   const localSelectedStore = useLocalObservable(() => ({
     selected: new Set<number>(),
 
@@ -66,87 +49,27 @@ export const BinPage = observer((): React.JSX.Element => {
       this.selected.clear();
       this.selected.add(id);
     },
-    setSelectedMultiple(id: number) {
-      if (this.selected.has(id)) {
-        this.selected.delete(id);
-      } else {
-        this.selected.add(id);
-      }
-    },
+
     clear() {
       this.selected.clear();
     },
   }));
 
-  //TODO move restore location and all of it in separate compoent
-  const localSelectedLocation = useLocalObservable(() => ({
-    selectedId: null as number | null,
+  const toggleRestoreOpen = (value: boolean, type: 'restore' | 'delete-forever') => {
+    const finalValue = value;
 
-    setSelectedSingle(id: number | null) {
-      this.selectedId = id;
-    },
-
-    clear() {
-      this.selectedId = null;
-    },
-  }));
-
-  //TODO delete forever
-  const localForeverDelStore = useLocalObservable(() => ({
-    isOpen: false,
-    isLoading: false,
-
-    setIsOpen(value: boolean) {
-      this.isOpen = value;
-    },
-
-    setLoading(value: boolean) {
-      this.isLoading = value;
-    },
-
-    clear() {
-      this.isOpen = false;
-      this.isLoading = false;
-    },
-  }));
-
-  const toggleIsOpen = (value?: boolean) => {
-    const finalValue = value ?? !isOpen;
-
+    // is closing
     if (!finalValue) {
-      // is closing
       localSelectedStore.clear();
-      localSelectedLocation.clear();
-    } else {
-      // is opening
-      localSelectedLocation.clear();
     }
 
-    setIsOpen(finalValue);
-  };
-
-  const onClickingRestoreSaveButton = async () => {
-    const selectedFsId = [...localSelectedStore.selected][0];
-
-    const { data, error } = await fileStructureApiService.restoreFromBin(selectedFsId, {
-      newParentId: localSelectedLocation.selectedId,
-    });
-
-    if (error?.message === ExceptionMessageCode.FS_SAME_NAME) {
-      toast.error('File/Folder with same name exists already');
-      toggleIsOpen(false); // will cause rerender for bin
-      return;
+    switch (type) {
+      case 'restore':
+        setRestoreOpen(finalValue);
+        break;
+      case 'delete-forever':
+        setDeleteForeverOpen(finalValue);
     }
-
-    if (error || !data) {
-      throw new Error('Sorry, something went wrong');
-    }
-
-    window.location.reload(); //TODO here we should not refresh, we should refresh state
-  };
-
-  const onClickingForeverDeleteButton = async () => {
-    //TODO delete forever
   };
 
   return (
@@ -183,18 +106,9 @@ export const BinPage = observer((): React.JSX.Element => {
                 isFromBin
                 key={binNode.id}
                 node={binNode.fileStructure}
-                onSelected={node => {
-                  localSelectedStore.setSelectedSingle(node.id);
-                }}
-                onRestore={node => {
-                  localSelectedStore.setSelectedSingle(node.id);
-                  toggleIsOpen(true);
-                }}
-                onDeleteForever={node => {
-                  console.log(toJS(node));
-
-                  setIsAlertOpen(true);
-                }}
+                onSelected={node => localSelectedStore.setSelectedSingle(node.id)}
+                onRestore={() => setRestoreOpen(true)}
+                onDeleteForever={() => setDeleteForeverOpen(true)}
                 onDoubleClick={async node => {
                   if (node.isFile) {
                     //TODO show file
@@ -223,56 +137,17 @@ export const BinPage = observer((): React.JSX.Element => {
         />
       </div>
 
-      <Dialog
-        isOpen={isOpen}
-        title="Choose Location"
-        onClose={() => toggleIsOpen()}
-        isCloseButtonShown
-        canOutsideClickClose
-        canEscapeKeyClose
-        shouldReturnFocusOnClose
-      >
-        <div
-          tabIndex={0}
-          onKeyDown={e => {
-            if (e.key === 'Enter') {
-              onClickingRestoreSaveButton();
-            }
-          }}
-        >
-          <DialogBody>
-            <div style={{ maxHeight: 400 }}>
-              <SimpleFileStructureTree
-                onSelect={node => localSelectedLocation.setSelectedSingle(node?.id ?? null)}
-              />
-            </div>
-          </DialogBody>
+      <RestoreFromBin
+        isOpen={isRestoreOpen}
+        selectedIds={[...localSelectedStore.selected]}
+        toggleIsOpen={value => toggleRestoreOpen(value, 'restore')}
+      />
 
-          <DialogFooter
-            minimal
-            actions={
-              <>
-                <Button onClick={() => toggleIsOpen(false)}>Close</Button>
-                <Button intent={Intent.PRIMARY} onClick={() => onClickingRestoreSaveButton()}>
-                  Save
-                </Button>
-              </>
-            }
-          />
-        </div>
-      </Dialog>
-
-      <Alert
-        cancelButtonText="Cancel"
-        confirmButtonText="Confirm"
-        icon="trash"
-        intent={Intent.DANGER}
-        isOpen={isAlertOpen}
-        loading={false}
-        onCancel={() => setIsAlertOpen(false)}
-      >
-        <p>Are you sure you want to forever delete ? You won't be able to restore it</p>
-      </Alert>
+      <DeleteForeverBin
+        isOpen={isDeleteForeverOpen}
+        selectedIds={[...localSelectedStore.selected]}
+        toggleIsOpen={value => toggleRestoreOpen(value, 'delete-forever')}
+      />
     </div>
   );
 });

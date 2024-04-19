@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom';
 import { useCallback, useEffect, useState } from 'react';
 import { AxiosError } from 'axios';
 import { constants } from '../../shared/constants';
-import { api } from '../../shared/api';
-import { ClientApiError } from '../../shared/errors';
+import { apiPure } from '../../shared/api';
+
+export const errNetworkText = 'Network Error';
 
 export const OopsPage = (): React.JSX.Element => {
   const [text, setText] = useState<string | null>(null);
@@ -13,16 +14,16 @@ export const OopsPage = (): React.JSX.Element => {
     let redirect = true;
 
     try {
-      await api.get('health');
+      await apiPure.get('health');
     } catch (error) {
-      const e = error as ClientApiError<AxiosError>;
+      const e = error as AxiosError;
 
       const isNetworkError = [
         AxiosError.ERR_NETWORK,
         AxiosError.ERR_CANCELED,
         AxiosError.ECONNABORTED,
         AxiosError.ETIMEDOUT,
-      ].includes(e?.error?.code ?? '');
+      ].includes(e?.code ?? '');
 
       redirect = !isNetworkError;
     }
@@ -32,15 +33,21 @@ export const OopsPage = (): React.JSX.Element => {
     }
   }, []);
 
-  useEffect(() => {
-    const queryParams = new URLSearchParams(location.search);
-    const optionalText = queryParams.get('text');
+  useEffect(
+    () => {
+      const queryParams = new URLSearchParams(location.search);
+      const optionalText = queryParams.get('text');
 
-    setText(optionalText ?? null);
+      setText(optionalText ?? null);
 
-    // do health check so if user refreshes and network is up again redriect back to root page
-    // healthCheck();
-  }, [healthCheck]);
+      if (optionalText?.toLowerCase() === errNetworkText.toLowerCase()) {
+        // do health check so if user refreshes and network is up again redriect back to root page
+        healthCheck();
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
   return (
     <div className="w-fit mx-auto pt-20">

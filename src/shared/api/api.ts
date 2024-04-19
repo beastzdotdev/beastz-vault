@@ -1,5 +1,4 @@
 import axios, { AxiosError, CreateAxiosDefaults, HttpStatusCode } from 'axios';
-import { createSearchParams } from 'react-router-dom';
 import { constants } from '../constants';
 import { bus } from '../bus/bus';
 import { router } from '../../router';
@@ -7,6 +6,8 @@ import { ExceptionSchema } from '../errors/exception.schema';
 import { ExceptionMessageCode } from '../enum/exception-message-code.enum';
 import { ClientApiError } from '../errors/client-error.schema';
 import { HandleRefreshType } from '../types';
+import { cleanURL } from '../helper';
+import { errNetworkText } from '../../features/auth/oops.page';
 
 const axiosConfigs: CreateAxiosDefaults = {
   baseURL: constants.path.backend.url,
@@ -42,7 +43,8 @@ async function handleAxiosResponseError(error: unknown) {
 
       // this should not happen, router.navigate to oops
       if (!originalConfig) {
-        window.location.href = constants.path.oops;
+        window.location.href = cleanURL(constants.path.oops).toString();
+
         return Promise.reject(
           new ClientApiError(
             HttpStatusCode.InternalServerError,
@@ -86,14 +88,13 @@ async function handleAxiosResponseError(error: unknown) {
       }
 
       if (error.code === AxiosError.ERR_NETWORK) {
-        window.location.href =
-          constants.path.oops + createSearchParams({ text: 'Network error' }).toString();
+        window.location.href = cleanURL(constants.path.oops, { text: errNetworkText }).toString();
         return Promise.reject(generalClientError);
       }
     }
 
     // unknown error, router.navigate to oops
-    window.location.href = constants.path.oops;
+    window.location.href = cleanURL(constants.path.oops).toString();
     return Promise.reject(generalClientError);
   } catch (error) {
     console.log(error);
