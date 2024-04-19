@@ -45,7 +45,7 @@ export const DeleteForeverBin = observer(({ selectedIds, isOpen, toggleIsOpen }:
     store.setIsLoading(true);
 
     const startTime = new Date(); // Start time
-    const { data, error } = await fileStructureApiService.deleteForeverFromBin(selectedFsId);
+    const { error } = await fileStructureApiService.deleteForeverFromBin(selectedFsId);
     const endTime = new Date(); // Calculate time taken
 
     // this is necessary because if axios took less than 200ms animation seems weird
@@ -54,7 +54,7 @@ export const DeleteForeverBin = observer(({ selectedIds, isOpen, toggleIsOpen }:
       await sleep(400);
     }
 
-    if (error || !data) {
+    if (error) {
       onError(error);
       return;
     }

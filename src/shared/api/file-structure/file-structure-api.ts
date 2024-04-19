@@ -174,13 +174,11 @@ export class FileStructureApiService {
     }
   }
 
-  async deleteForeverFromBin(id: number): Promise<AxiosApiResponse<RootFileStructure>> {
+  async deleteForeverFromBin(id: number): Promise<AxiosApiResponse<void>> {
     try {
-      const result = await api.patch<BasicFileStructureResponseDto>(
-        `file-structure/delete-forever-from-bin/${id}`
-      );
+      await api.patch<void>(`file-structure/delete-forever-from-bin/${id}`);
 
-      return { data: RootFileStructure.customTransform(result.data) };
+      return {};
     } catch (e: unknown) {
       return { error: e as ClientApiError };
     }
