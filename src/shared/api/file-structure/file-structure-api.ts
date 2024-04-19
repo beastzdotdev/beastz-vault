@@ -177,7 +177,7 @@ export class FileStructureApiService {
   async deleteForeverFromBin(id: number): Promise<AxiosApiResponse<RootFileStructure>> {
     try {
       const result = await api.patch<BasicFileStructureResponseDto>(
-        `file-structure/delete-forever-bin/${id}`
+        `file-structure/delete-forever-from-bin/${id}`
       );
 
       return { data: RootFileStructure.customTransform(result.data) };
