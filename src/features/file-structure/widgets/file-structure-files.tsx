@@ -9,7 +9,6 @@ import { SharedStore } from '../../shared/state/shared.store';
 import { FileStructureApiService } from '../../../shared/api';
 import { toast } from '../../../shared/ui';
 import { ChangeColor } from './change-color';
-import { RootFileStructure } from '../../../shared/model';
 
 export const FileStructureFiles = observer((): React.JSX.Element => {
   const fileStructureApiService = useInjection(FileStructureApiService);
@@ -127,6 +126,10 @@ export const FileStructureFiles = observer((): React.JSX.Element => {
         isOpen={isChangeColorOpen}
         toggleIsOpen={() => toggleOpen(!isChangeColorOpen, 'change-color')}
       />
+
+      {/* TODO next is details */}
+      {/* TODO https://blueprintjs.com/docs/#core/components/drawer */}
+      {/* TODO https://github.com/palantir/blueprint/blob/develop/packages/docs-app/src/examples/core-examples/drawerExample.tsx */}
     </div>
   );
 });
