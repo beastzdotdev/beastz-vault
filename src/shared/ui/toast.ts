@@ -55,4 +55,13 @@ export const toast = Object.freeze({
       },
     });
   },
+
+  showMessage(message: string) {
+    globalTopRightToast.show({
+      message,
+      intent: 'none',
+      icon: 'info-sign',
+      timeout: 2000,
+    });
+  },
 });

@@ -6,6 +6,7 @@ import { FileStuructureFileItem } from '../../../widgets/file-structure-item.wid
 import { SafeRenderArray } from '../../../components/safe-render-array';
 import { SharedStore } from '../../shared/state/shared.store';
 import { FileStructureApiService } from '../../../shared/api';
+import { toast } from '../../../shared/ui';
 
 export const FileStructureFiles = observer((): React.JSX.Element => {
   const fileStructureApiService = useInjection(FileStructureApiService);
@@ -59,6 +60,10 @@ export const FileStructureFiles = observer((): React.JSX.Element => {
               onMoveToBin={async node => {
                 await fileStructureApiService.moveToBin(node.id);
                 window.location.reload(); //TODO no need for refresh just refresh state not browser page
+              }}
+              onCopy={node => {
+                navigator.clipboard.writeText(node.title);
+                toast.showMessage('Copied to clipboard');
               }}
             />
           );

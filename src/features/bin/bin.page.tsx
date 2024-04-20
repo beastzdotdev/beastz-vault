@@ -10,6 +10,7 @@ import { SafeRenderArray } from '../../components/safe-render-array';
 import { FileStuructureFileItem } from '../../widgets/file-structure-item.widget';
 import { RestoreFromBin } from './widgets/restore-from-bin';
 import { DeleteForeverBin } from './widgets/delete-forever-bin';
+import { toast } from '../../shared/ui';
 
 const typeItems: AdvancedSelectItem[] = [
   { key: uuid(), text: 'Images' },
@@ -114,6 +115,10 @@ export const BinPage = observer((): React.JSX.Element => {
                     //TODO show file
                     console.log(node);
                   }
+                }}
+                onCopy={node => {
+                  navigator.clipboard.writeText(node.title);
+                  toast.showMessage('Copied to clipboard');
                 }}
               />
             );

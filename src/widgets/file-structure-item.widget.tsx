@@ -12,15 +12,17 @@ interface FileStuructureFileItemParams {
   onDoubleClick: (node: RootFileStructure) => void;
   onRestore?: (node: RootFileStructure) => void;
   onDeleteForever?: (node: RootFileStructure) => void;
+  onCopy?: (node: RootFileStructure) => void;
 }
 
 const FileStuructureContextMenu = (params: {
   node: RootFileStructure;
   onMoveToBin?: (node: RootFileStructure) => void;
+  onCopy?: (node: RootFileStructure) => void;
 }) => {
   return (
     <Menu>
-      <MenuItem text="Copy tittle" icon="duplicate" />
+      <MenuItem text="Copy tittle" icon="duplicate" onClick={() => params.onCopy?.(params.node)} />
       <MenuItem text="Public link" icon="link" />
       <MenuItem text="Move" icon="nest" />
       <MenuDivider />
@@ -52,10 +54,11 @@ const FileStuructureFromBinContextMenu = (params: {
   node: RootFileStructure;
   onRestore?: (node: RootFileStructure) => void;
   onDeleteForever?: (node: RootFileStructure) => void;
+  onCopy?: (node: RootFileStructure) => void;
 }) => {
   return (
     <Menu>
-      <MenuItem text="Copy tittle" icon="duplicate" />
+      <MenuItem text="Copy tittle" icon="duplicate" onClick={() => params.onCopy?.(params.node)} />
       <MenuItem text="Public link" icon="link" />
       <MenuDivider />
       <MenuItem text="Restore" icon="history" onClick={() => params.onRestore?.(params.node)} />
@@ -77,9 +80,14 @@ export const FileStuructureFileItem = observer(
         node={params.node}
         onRestore={params.onRestore}
         onDeleteForever={params.onDeleteForever}
+        onCopy={params.onCopy}
       />
     ) : (
-      <FileStuructureContextMenu node={params.node} onMoveToBin={params.onMoveToBin} />
+      <FileStuructureContextMenu
+        node={params.node}
+        onMoveToBin={params.onMoveToBin}
+        onCopy={params.onCopy}
+      />
     );
 
     return (
