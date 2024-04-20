@@ -206,3 +206,7 @@ input {
     fill: $dark-gray4 !important;
   }
 }
+
+.active-color {
+  @apply border-white border-solid scale-125;
+}

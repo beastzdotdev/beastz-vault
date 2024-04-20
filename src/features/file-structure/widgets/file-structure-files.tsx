@@ -2,16 +2,21 @@ import { Button, Intent, NonIdealState, NonIdealStateIconSize } from '@blueprint
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { useInjection } from 'inversify-react';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import { FileStuructureFileItem } from '../../../widgets/file-structure-item.widget';
 import { SafeRenderArray } from '../../../components/safe-render-array';
 import { SharedStore } from '../../shared/state/shared.store';
 import { FileStructureApiService } from '../../../shared/api';
 import { toast } from '../../../shared/ui';
+import { ChangeColor } from './change-color';
+import { RootFileStructure } from '../../../shared/model';
 
 export const FileStructureFiles = observer((): React.JSX.Element => {
   const fileStructureApiService = useInjection(FileStructureApiService);
   const sharedStore = useInjection(SharedStore);
   const navigate = useNavigate();
+
+  const [isChangeColorOpen, setChangeColorOpen] = useState(false);
 
   const localSelectedStore = useLocalObservable(() => ({
     selected: new Set<number>(),
@@ -35,6 +40,21 @@ export const FileStructureFiles = observer((): React.JSX.Element => {
       this.selected.clear();
     },
   }));
+
+  const toggleOpen = (value: boolean, type: 'change-color') => {
+    const finalValue = value;
+
+    // is closing
+    if (!finalValue) {
+      localSelectedStore.clear();
+    }
+
+    switch (type) {
+      case 'change-color':
+        setChangeColorOpen(finalValue);
+        break;
+    }
+  };
 
   return (
     <div className="gorilla-file-structure">
@@ -64,6 +84,9 @@ export const FileStructureFiles = observer((): React.JSX.Element => {
               onCopy={node => {
                 navigator.clipboard.writeText(node.title);
                 toast.showMessage('Copied to clipboard');
+              }}
+              onColorChange={() => {
+                toggleOpen(true, 'change-color');
               }}
             />
           );
@@ -97,6 +120,12 @@ export const FileStructureFiles = observer((): React.JSX.Element => {
             />
           );
         }}
+      />
+
+      <ChangeColor
+        selectedIds={[...localSelectedStore.selected]}
+        isOpen={isChangeColorOpen}
+        toggleIsOpen={() => toggleOpen(!isChangeColorOpen, 'change-color')}
       />
     </div>
   );

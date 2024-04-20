@@ -124,6 +124,21 @@ export class FileStructureApiService {
     }
   }
 
+  async updateById(
+    id: number,
+    params: {
+      color?: string;
+    }
+  ): Promise<AxiosApiResponse<RootFileStructure>> {
+    try {
+      const result = await api.patch<BasicFileStructureResponseDto>(`file-structure/${id}`, params);
+
+      return { data: RootFileStructure.customTransform(result.data) };
+    } catch (e: unknown) {
+      return { error: e as ClientApiError };
+    }
+  }
+
   async getFromBin(params: {
     page: number;
     pageSize: number;

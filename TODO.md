@@ -1,5 +1,7 @@
 TODO get inspirations from here https://en.eagle.cool/
 
+TODO update pulex/core sidebar tree needs color addition
+
 TODO set title of page to node.title or nav link not just Gorilla vault
 
 TODO Global

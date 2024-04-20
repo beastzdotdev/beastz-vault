@@ -56,7 +56,7 @@ export const BinPage = observer((): React.JSX.Element => {
     },
   }));
 
-  const toggleRestoreOpen = (value: boolean, type: 'restore' | 'delete-forever') => {
+  const toggleOpen = (value: boolean, type: 'restore' | 'delete-forever') => {
     const finalValue = value;
 
     // is closing
@@ -145,13 +145,13 @@ export const BinPage = observer((): React.JSX.Element => {
       <RestoreFromBin
         isOpen={isRestoreOpen}
         selectedIds={[...localSelectedStore.selected]}
-        toggleIsOpen={value => toggleRestoreOpen(value, 'restore')}
+        toggleIsOpen={value => toggleOpen(value, 'restore')}
       />
 
       <DeleteForeverBin
         isOpen={isDeleteForeverOpen}
         selectedIds={[...localSelectedStore.selected]}
-        toggleIsOpen={value => toggleRestoreOpen(value, 'delete-forever')}
+        toggleIsOpen={value => toggleOpen(value, 'delete-forever')}
       />
     </div>
   );

@@ -92,6 +92,14 @@ export const formatSizeRaw = (sizeInBytes: number | null): number => {
   }
 };
 
+export const getColorByBgColor = (bgColor: string | null) => {
+  if (!bgColor) {
+    return null;
+  }
+
+  return parseInt(bgColor.replace('#', ''), 16) > 0xffffff / 2 ? '#000' : '#fff';
+};
+
 export const formatSize = (sizeInBytes: number | null): string => {
   if (!sizeInBytes) {
     return '';

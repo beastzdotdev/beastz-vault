@@ -13,12 +13,14 @@ interface FileStuructureFileItemParams {
   onRestore?: (node: RootFileStructure) => void;
   onDeleteForever?: (node: RootFileStructure) => void;
   onCopy?: (node: RootFileStructure) => void;
+  onColorChange?: (node: RootFileStructure) => void;
 }
 
 const FileStuructureContextMenu = (params: {
   node: RootFileStructure;
   onMoveToBin?: (node: RootFileStructure) => void;
   onCopy?: (node: RootFileStructure) => void;
+  onColorChange?: (node: RootFileStructure) => void;
 }) => {
   return (
     <Menu>
@@ -26,7 +28,11 @@ const FileStuructureContextMenu = (params: {
       <MenuItem text="Public link" icon="link" />
       <MenuItem text="Move" icon="nest" />
       <MenuDivider />
-      <MenuItem text="Change color" icon="tint" />
+      <MenuItem
+        text="Change color"
+        icon="tint"
+        onClick={() => params.onColorChange?.(params.node)}
+      />
       <MenuItem text="Details" icon="info-sign" />
       <MenuItem text="Not editable" icon="edit" />
       <MenuItem text="Lock" icon="lock" />
@@ -87,6 +93,7 @@ export const FileStuructureFileItem = observer(
         node={params.node}
         onMoveToBin={params.onMoveToBin}
         onCopy={params.onCopy}
+        onColorChange={params.onColorChange}
       />
     );
 
@@ -102,7 +109,11 @@ export const FileStuructureFileItem = observer(
         >
           {/*//! width 100px behaves like min-width:100px */}
           <div className="flex items-center pl-3 pr-5 flex-grow w-[100px]">
-            <Icon icon={params.node.isFile ? 'document' : 'folder-close'} />
+            <Icon
+              icon={params.node.isFile ? 'document' : 'folder-close'}
+              color={params.node.color ?? undefined}
+            />
+
             <p className="pl-2 truncate">
               {params.node.isFile
                 ? params.node.title + params.node.fileExstensionRaw
