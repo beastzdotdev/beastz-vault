@@ -1,7 +1,9 @@
 import { Button, ContextMenu, Icon, Menu, MenuDivider, MenuItem, Popover } from '@blueprintjs/core';
 import { observer } from 'mobx-react-lite';
+import { useInjection } from 'inversify-react';
 import { formatSize } from '../shared/helper';
 import { RootFileStructure } from '../shared/model';
+import { ProfileStore } from '../features/profile/state/profile.store';
 
 interface FileStuructureFileItemParams {
   isFromBin?: boolean;
@@ -80,6 +82,8 @@ const FileStuructureFromBinContextMenu = (params: {
 
 export const FileStuructureFileItem = observer(
   (params: FileStuructureFileItemParams): React.JSX.Element => {
+    const profileStore = useInjection(ProfileStore);
+
     //
     const contextMenu = params.isFromBin ? (
       <FileStuructureFromBinContextMenu
@@ -125,7 +129,7 @@ export const FileStuructureFileItem = observer(
             <div className="flex items-center justify-start w-[200px] pr-5">
               <Icon icon="user" />
 
-              <p className="truncate max-w-[170px] block pl-2">{'TODO'}</p>
+              <p className="truncate max-w-[170px] block pl-2">{profileStore.user.userName}</p>
             </div>
 
             <div className="flex items-center justify-start w-[200px] pr-5">

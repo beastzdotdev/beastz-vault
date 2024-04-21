@@ -9,6 +9,7 @@ import { SharedStore } from '../../shared/state/shared.store';
 import { FileStructureApiService } from '../../../shared/api';
 import { toast } from '../../../shared/ui';
 import { ChangeColor } from './change-color';
+import { RootFileStructure } from '../../../shared/model';
 
 export const FileStructureFiles = observer((): React.JSX.Element => {
   const fileStructureApiService = useInjection(FileStructureApiService);
@@ -18,25 +19,25 @@ export const FileStructureFiles = observer((): React.JSX.Element => {
   const [isChangeColorOpen, setChangeColorOpen] = useState(false);
 
   const localSelectedStore = useLocalObservable(() => ({
-    selected: new Set<number>(),
+    selectedNodes: new Set<RootFileStructure>(),
 
-    setSelectedSingle(id: number) {
-      if (this.selected.size === 1 && this.selected.has(id)) {
+    setSelectedSingle(node: RootFileStructure) {
+      if (this.selectedNodes.size === 1 && this.selectedNodes.has(node)) {
         return;
       }
 
-      this.selected.clear();
-      this.selected.add(id);
+      this.selectedNodes.clear();
+      this.selectedNodes.add(node);
     },
-    setSelectedMultiple(id: number) {
-      if (this.selected.has(id)) {
-        this.selected.delete(id);
+    setSelectedMultiple(node: RootFileStructure) {
+      if (this.selectedNodes.has(node)) {
+        this.selectedNodes.delete(node);
       } else {
-        this.selected.add(id);
+        this.selectedNodes.add(node);
       }
     },
     clear() {
-      this.selected.clear();
+      this.selectedNodes.clear();
     },
   }));
 
@@ -62,11 +63,11 @@ export const FileStructureFiles = observer((): React.JSX.Element => {
         renderChild={node => {
           return (
             <FileStuructureFileItem
-              isSelected={localSelectedStore.selected.has(node.id)}
+              isSelected={localSelectedStore.selectedNodes.has(node)}
               key={node.id}
               node={node}
               onSelected={node => {
-                localSelectedStore.setSelectedSingle(node.id);
+                localSelectedStore.setSelectedSingle(node);
               }}
               onDoubleClick={async node => {
                 if (node.isFile) {
@@ -78,7 +79,7 @@ export const FileStructureFiles = observer((): React.JSX.Element => {
               }}
               onMoveToBin={async node => {
                 await fileStructureApiService.moveToBin(node.id);
-                window.location.reload(); //TODO no need for refresh just refresh state not browser page
+                window.location.reload(); //TODO no refresh
               }}
               onCopy={node => {
                 navigator.clipboard.writeText(node.title);
@@ -122,14 +123,10 @@ export const FileStructureFiles = observer((): React.JSX.Element => {
       />
 
       <ChangeColor
-        selectedIds={[...localSelectedStore.selected]}
+        selectedNodes={[...localSelectedStore.selectedNodes]}
         isOpen={isChangeColorOpen}
         toggleIsOpen={() => toggleOpen(!isChangeColorOpen, 'change-color')}
       />
-
-      {/* TODO next is details */}
-      {/* TODO https://blueprintjs.com/docs/#core/components/drawer */}
-      {/* TODO https://github.com/palantir/blueprint/blob/develop/packages/docs-app/src/examples/core-examples/drawerExample.tsx */}
     </div>
   );
 });

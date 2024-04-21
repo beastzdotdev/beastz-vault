@@ -10,9 +10,10 @@ import { toast } from '../../../shared/ui';
 import { getColorByBgColor, sleep } from '../../../shared/helper';
 import { ClientApiError } from '../../../shared/errors';
 import { SharedStore } from '../../shared/state/shared.store';
+import { RootFileStructure } from '../../../shared/model';
 
 type Params = {
-  selectedIds: number[];
+  selectedNodes: RootFileStructure[];
   isOpen: boolean;
   toggleIsOpen: (value: boolean) => void;
 };
@@ -46,7 +47,7 @@ const staticColors = [
   { name: 'Purple Dino', hex: '#BA99FF' },
 ];
 
-export const ChangeColor = observer(({ selectedIds, isOpen, toggleIsOpen }: Params) => {
+export const ChangeColor = observer(({ selectedNodes, isOpen, toggleIsOpen }: Params) => {
   const sharedStore = useInjection(SharedStore);
   const fileStructureApiService = useInjection(FileStructureApiService);
 
@@ -86,7 +87,7 @@ export const ChangeColor = observer(({ selectedIds, isOpen, toggleIsOpen }: Para
       return;
     }
 
-    const selectedFsId = selectedIds[0]; //TODO in fututre multiple ids
+    const selectedFsId = selectedNodes[0].id; //TODO in fututre multiple ids
 
     store.setLoading(true);
 
@@ -117,13 +118,13 @@ export const ChangeColor = observer(({ selectedIds, isOpen, toggleIsOpen }: Para
   }, [isOpen, store]);
 
   useEffect(() => {
-    console.log(selectedIds[0]);
+    console.log(selectedNodes[0]);
     console.log(toJS(sharedStore.activeBodyFileStructure));
 
     store.setActiveColor(
-      sharedStore.activeBodyFileStructure.find(e => e.id === selectedIds[0])?.color ?? null
+      sharedStore.activeBodyFileStructure.find(e => e.id === selectedNodes[0]?.id)?.color ?? null
     );
-  }, [selectedIds, sharedStore.activeBodyFileStructure, store]);
+  }, [selectedNodes, sharedStore.activeBodyFileStructure, store]);
 
   return (
     <>
