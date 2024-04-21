@@ -34,6 +34,8 @@ export class RootFileStructure
   mimeTypeRaw: string | null;
   mimeType: FileMimeType | null;
   isEditable: boolean | null;
+  isEncrypted: boolean | null;
+  isLocked: boolean | null;
   rootParentId: number | null;
   parentId: number | null;
 

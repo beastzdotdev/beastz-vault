@@ -3,7 +3,6 @@ import { useInjection } from 'inversify-react';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { useEffect } from 'react';
 import { HexColorPicker } from 'react-colorful';
-import { toJS } from 'mobx';
 import { FileStructureApiService } from '../../../shared/api';
 import { ExceptionMessageCode } from '../../../shared/enum';
 import { toast } from '../../../shared/ui';
@@ -118,9 +117,6 @@ export const ChangeColor = observer(({ selectedNodes, isOpen, toggleIsOpen }: Pa
   }, [isOpen, store]);
 
   useEffect(() => {
-    console.log(selectedNodes[0]);
-    console.log(toJS(sharedStore.activeBodyFileStructure));
-
     store.setActiveColor(
       sharedStore.activeBodyFileStructure.find(e => e.id === selectedNodes[0]?.id)?.color ?? null
     );

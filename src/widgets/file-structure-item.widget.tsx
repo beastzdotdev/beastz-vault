@@ -16,6 +16,7 @@ interface FileStuructureFileItemParams {
   onDeleteForever?: (node: RootFileStructure) => void;
   onCopy?: (node: RootFileStructure) => void;
   onColorChange?: (node: RootFileStructure) => void;
+  onDetails?: (node: RootFileStructure) => void;
 }
 
 const FileStuructureContextMenu = (params: {
@@ -23,6 +24,7 @@ const FileStuructureContextMenu = (params: {
   onMoveToBin?: (node: RootFileStructure) => void;
   onCopy?: (node: RootFileStructure) => void;
   onColorChange?: (node: RootFileStructure) => void;
+  onDetails?: (node: RootFileStructure) => void;
 }) => {
   return (
     <Menu>
@@ -35,7 +37,7 @@ const FileStuructureContextMenu = (params: {
         icon="tint"
         onClick={() => params.onColorChange?.(params.node)}
       />
-      <MenuItem text="Details" icon="info-sign" />
+      <MenuItem text="Details" icon="info-sign" onClick={() => params.onDetails?.(params.node)} />
       <MenuItem text="Not editable" icon="edit" />
       <MenuItem text="Lock" icon="lock" />
       <MenuItem text="Download" icon="cloud-download" />
@@ -63,11 +65,12 @@ const FileStuructureFromBinContextMenu = (params: {
   onRestore?: (node: RootFileStructure) => void;
   onDeleteForever?: (node: RootFileStructure) => void;
   onCopy?: (node: RootFileStructure) => void;
+  onDetails?: (node: RootFileStructure) => void;
 }) => {
   return (
     <Menu>
       <MenuItem text="Copy tittle" icon="duplicate" onClick={() => params.onCopy?.(params.node)} />
-      <MenuItem text="Public link" icon="link" />
+      <MenuItem text="Details" icon="info-sign" onClick={() => params.onDetails?.(params.node)} />
       <MenuDivider />
       <MenuItem text="Restore" icon="history" onClick={() => params.onRestore?.(params.node)} />
       <MenuItem
@@ -91,6 +94,7 @@ export const FileStuructureFileItem = observer(
         onRestore={params.onRestore}
         onDeleteForever={params.onDeleteForever}
         onCopy={params.onCopy}
+        onDetails={params.onDetails}
       />
     ) : (
       <FileStuructureContextMenu
@@ -98,6 +102,7 @@ export const FileStuructureFileItem = observer(
         onMoveToBin={params.onMoveToBin}
         onCopy={params.onCopy}
         onColorChange={params.onColorChange}
+        onDetails={params.onDetails}
       />
     );
 

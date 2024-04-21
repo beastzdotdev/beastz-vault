@@ -10,6 +10,7 @@ import { FileStructureApiService } from '../../../shared/api';
 import { toast } from '../../../shared/ui';
 import { ChangeColor } from './change-color';
 import { RootFileStructure } from '../../../shared/model';
+import { FileStructureDetails } from './file-structure-details';
 
 export const FileStructureFiles = observer((): React.JSX.Element => {
   const fileStructureApiService = useInjection(FileStructureApiService);
@@ -17,6 +18,7 @@ export const FileStructureFiles = observer((): React.JSX.Element => {
   const navigate = useNavigate();
 
   const [isChangeColorOpen, setChangeColorOpen] = useState(false);
+  const [isDetailsOpen, setDetailsOpen] = useState(false);
 
   const localSelectedStore = useLocalObservable(() => ({
     selectedNodes: new Set<RootFileStructure>(),
@@ -41,7 +43,7 @@ export const FileStructureFiles = observer((): React.JSX.Element => {
     },
   }));
 
-  const toggleOpen = (value: boolean, type: 'change-color') => {
+  const toggleOpen = (value: boolean, type: 'change-color' | 'details') => {
     const finalValue = value;
 
     // is closing
@@ -52,6 +54,9 @@ export const FileStructureFiles = observer((): React.JSX.Element => {
     switch (type) {
       case 'change-color':
         setChangeColorOpen(finalValue);
+        break;
+      case 'details':
+        setDetailsOpen(finalValue);
         break;
     }
   };
@@ -87,6 +92,9 @@ export const FileStructureFiles = observer((): React.JSX.Element => {
               }}
               onColorChange={() => {
                 toggleOpen(true, 'change-color');
+              }}
+              onDetails={() => {
+                toggleOpen(true, 'details');
               }}
             />
           );
@@ -125,7 +133,14 @@ export const FileStructureFiles = observer((): React.JSX.Element => {
       <ChangeColor
         selectedNodes={[...localSelectedStore.selectedNodes]}
         isOpen={isChangeColorOpen}
-        toggleIsOpen={() => toggleOpen(!isChangeColorOpen, 'change-color')}
+        toggleIsOpen={value => toggleOpen(value, 'change-color')}
+      />
+
+      <FileStructureDetails
+        selectedNodes={[...localSelectedStore.selectedNodes]}
+        isOpen={isDetailsOpen}
+        toggleIsOpen={value => toggleOpen(value, 'details')}
+        isInBin={false}
       />
     </div>
   );

@@ -11,6 +11,8 @@ import { FileStuructureFileItem } from '../../widgets/file-structure-item.widget
 import { RestoreFromBin } from './widgets/restore-from-bin';
 import { DeleteForeverBin } from './widgets/delete-forever-bin';
 import { toast } from '../../shared/ui';
+import { FileStructureDetails } from '../file-structure/widgets/file-structure-details';
+import { RootFileStructure } from '../../shared/model';
 
 const typeItems: AdvancedSelectItem[] = [
   { key: uuid(), text: 'Images' },
@@ -39,8 +41,10 @@ export const BinPage = observer((): React.JSX.Element => {
   const [modifiedType, setModifiedType] = useState<AdvancedSelectItem | null>(null);
   const [isRestoreOpen, setRestoreOpen] = useState(false);
   const [isDeleteForeverOpen, setDeleteForeverOpen] = useState(false);
+  const [isDetailsOpen, setDetailsOpen] = useState(false);
   const localSelectedStore = useLocalObservable(() => ({
     selected: new Set<number>(),
+    selectedNodes: new Set<RootFileStructure>(),
 
     setSelectedSingle(id: number) {
       if (this.selected.size === 1 && this.selected.has(id)) {
@@ -51,12 +55,22 @@ export const BinPage = observer((): React.JSX.Element => {
       this.selected.add(id);
     },
 
+    setSelectedSingle2(node: RootFileStructure) {
+      if (this.selectedNodes.size === 1 && this.selectedNodes.has(node)) {
+        return;
+      }
+
+      this.selectedNodes.clear();
+      this.selectedNodes.add(node);
+    },
+
     clear() {
       this.selected.clear();
+      this.selectedNodes.clear();
     },
   }));
 
-  const toggleOpen = (value: boolean, type: 'restore' | 'delete-forever') => {
+  const toggleOpen = (value: boolean, type: 'restore' | 'delete-forever' | 'details') => {
     const finalValue = value;
 
     // is closing
@@ -70,6 +84,10 @@ export const BinPage = observer((): React.JSX.Element => {
         break;
       case 'delete-forever':
         setDeleteForeverOpen(finalValue);
+        break;
+      case 'details':
+        setDetailsOpen(finalValue);
+        break;
     }
   };
 
@@ -107,7 +125,12 @@ export const BinPage = observer((): React.JSX.Element => {
                 isFromBin
                 key={binNode.id}
                 node={binNode.fileStructure}
-                onSelected={node => localSelectedStore.setSelectedSingle(node.id)}
+                onSelected={node => {
+                  localSelectedStore.setSelectedSingle2(node);
+
+                  //TODO remove bellow
+                  localSelectedStore.setSelectedSingle(node.id);
+                }}
                 onRestore={() => setRestoreOpen(true)}
                 onDeleteForever={() => setDeleteForeverOpen(true)}
                 onDoubleClick={async node => {
@@ -119,6 +142,9 @@ export const BinPage = observer((): React.JSX.Element => {
                 onCopy={node => {
                   navigator.clipboard.writeText(node.title);
                   toast.showMessage('Copied to clipboard');
+                }}
+                onDetails={() => {
+                  toggleOpen(true, 'details');
                 }}
               />
             );
@@ -152,6 +178,13 @@ export const BinPage = observer((): React.JSX.Element => {
         isOpen={isDeleteForeverOpen}
         selectedIds={[...localSelectedStore.selected]}
         toggleIsOpen={value => toggleOpen(value, 'delete-forever')}
+      />
+
+      <FileStructureDetails
+        selectedNodes={[...localSelectedStore.selectedNodes]}
+        isOpen={isDetailsOpen}
+        toggleIsOpen={value => toggleOpen(value, 'details')}
+        isInBin={true}
       />
     </div>
   );

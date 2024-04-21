@@ -67,6 +67,21 @@ export class FileStructureApiService {
     }
   }
 
+  async getDetails(params: {
+    ids: number[];
+    isInBin?: boolean;
+  }): Promise<AxiosApiResponse<RootFileStructure[]>> {
+    try {
+      const result = await api.get<BasicFileStructureResponseDto[]>(`file-structure/details`, {
+        params,
+      });
+
+      return { data: result.data.map(e => RootFileStructure.customTransform(e)) };
+    } catch (e: unknown) {
+      return { error: e as ClientApiError };
+    }
+  }
+
   async uploadFile(params: {
     file: File;
     keepBoth: boolean;
