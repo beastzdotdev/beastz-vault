@@ -13,6 +13,7 @@
   "type": "module",
   "scripts": {
     "start": "vite --open",
+    "start:dev": "vite --open",
     "build": "tsc && vite build",
     "build:run": "vite preview",
     "lint": "npm run use:nvm && eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
