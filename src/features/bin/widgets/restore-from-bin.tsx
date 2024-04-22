@@ -8,24 +8,25 @@ import { ExceptionMessageCode } from '../../../shared/enum';
 import { toast } from '../../../shared/ui';
 import { sleep } from '../../../shared/helper';
 import { ClientApiError } from '../../../shared/errors';
+import { RootFileStructure } from '../../../shared/model';
 
 type Params = {
-  selectedIds: number[];
+  selectedNodes: RootFileStructure[];
   isOpen: boolean;
   toggleIsOpen: (value: boolean) => void;
 };
 
-export const RestoreFromBin = ({ selectedIds, isOpen, toggleIsOpen }: Params) => {
+export const RestoreFromBin = ({ selectedNodes, isOpen, toggleIsOpen }: Params) => {
   const fileStructureApiService = useInjection(FileStructureApiService);
   const store = useLocalObservable(() => ({
-    id: null as number | null,
+    newParentId: null as number | null,
 
     setSelectedSingle(id: number | null) {
-      this.id = id;
+      this.newParentId = id;
     },
 
     clear() {
-      this.id = null;
+      this.newParentId = null;
     },
   }));
 
@@ -41,11 +42,12 @@ export const RestoreFromBin = ({ selectedIds, isOpen, toggleIsOpen }: Params) =>
   };
 
   const onClickingRestoreSaveButton = async () => {
-    const selectedFsId = selectedIds[0]; //TODO in fututre multiple ids
+    const selectedFsId = selectedNodes[0].id; //TODO in fututre multiple ids
+    const { newParentId } = store;
 
     const startTime = new Date(); // Start time
     const { data, error } = await fileStructureApiService.restoreFromBin(selectedFsId, {
-      newParentId: store.id,
+      newParentId,
     });
     const endTime = new Date(); // Calculate time taken
 

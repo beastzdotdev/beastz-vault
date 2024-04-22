@@ -6,29 +6,24 @@ import { FileStructureApiService } from '../../../shared/api';
 import { toast } from '../../../shared/ui';
 import { sleep } from '../../../shared/helper';
 import { ClientApiError } from '../../../shared/errors';
+import { RootFileStructure } from '../../../shared/model';
 
 type Params = {
-  selectedIds: number[];
+  selectedNodes: RootFileStructure[];
   isOpen: boolean;
   toggleIsOpen: (value: boolean) => void;
 };
 
-export const DeleteForeverBin = observer(({ selectedIds, isOpen, toggleIsOpen }: Params) => {
+export const DeleteForeverBin = observer(({ selectedNodes, isOpen, toggleIsOpen }: Params) => {
   const fileStructureApiService = useInjection(FileStructureApiService);
   const store = useLocalObservable(() => ({
-    id: null as number | null,
     isLoading: false,
-
-    setSelectedSingle(id: number | null) {
-      this.id = id;
-    },
 
     setIsLoading(value: boolean) {
       this.isLoading = value;
     },
 
     clear() {
-      this.id = null;
       this.isLoading = false;
     },
   }));
@@ -40,7 +35,7 @@ export const DeleteForeverBin = observer(({ selectedIds, isOpen, toggleIsOpen }:
   };
 
   const onClickingForeverDeleteButton = async () => {
-    const selectedFsId = selectedIds[0]; //TODO in fututre multiple ids
+    const selectedFsId = selectedNodes[0].id; //TODO in fututre multiple ids
 
     store.setIsLoading(true);
 
