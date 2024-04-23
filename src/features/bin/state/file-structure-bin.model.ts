@@ -1,7 +1,7 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import { Type, plainToInstance } from 'class-transformer';
-import { FileStructureBinDto } from '../api';
-import { RootFileStructure } from './root-file-structure.model';
+import { FileStructureBinDto } from '../../../shared/api';
+import { RootFileStructure } from '../../../shared/model/root-file-structure.model';
 
 export class FileStructureBin implements FileStructureBinDto {
   constructor() {

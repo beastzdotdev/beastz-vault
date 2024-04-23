@@ -14,7 +14,7 @@ import { toast } from '../../shared/ui';
 import { FileStructureDetails } from '../file-structure/widgets/file-structure-details';
 import { RootFileStructure } from '../../shared/model';
 import { FileStructureFileView } from '../file-structure/widgets/file-structure-file-view';
-import { FileStructureBin } from '../../shared/model/file-structure-bin.model';
+import { FileStructureBin } from './state/file-structure-bin.model';
 
 const typeItems: AdvancedSelectItem[] = [
   { key: uuid(), text: 'Images' },

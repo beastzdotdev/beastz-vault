@@ -19,6 +19,8 @@ export const constants = Object.freeze({
     authRecoverPassword: '/auth/user-recover-password',
     guide: '/guide',
     support: '/support',
+    supportTicketCreate: '/support/create',
+    supportTicketDetail: '/support/:id',
     oops: '/oops',
 
     backend: {

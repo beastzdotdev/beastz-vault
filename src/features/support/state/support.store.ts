@@ -1,9 +1,9 @@
 import { makeAutoObservable } from 'mobx';
 import { Singleton } from '../../../shared/ioc';
-import { FileStructureBin } from './file-structure-bin.model';
+import { FileStructureBin } from '../../bin/state/file-structure-bin.model';
 
 @Singleton
-export class BinStore {
+export class SupportStore {
   private _data: FileStructureBin[] = [];
   private _total: number = 0;
 

@@ -26,6 +26,8 @@ import { StoragePage } from './features/storage/storage.page';
 import { BinPage } from './features/bin/bin.page';
 import { binLoader } from './features/bin/bin-loader';
 import { appLoader } from './features/app-loaders';
+import { SupportTicketDetailPage } from './features/support/support-ticket-detail.page';
+import { SupportTicketCreatePage } from './features/support/support-ticket-create.page';
 
 export const router = createBrowserRouter([
   // under / every page is under auth protection
@@ -59,6 +61,18 @@ export const router = createBrowserRouter([
         path: constants.path.bin,
         element: <BinPage />,
         loader: binLoader,
+      },
+      {
+        path: constants.path.support,
+        element: <SupportPage />,
+      },
+      {
+        path: constants.path.supportTicketCreate,
+        element: <SupportTicketCreatePage />,
+      },
+      {
+        path: constants.path.supportTicketDetail,
+        element: <SupportTicketDetailPage />,
       },
       {
         path: '/check-error',
@@ -95,11 +109,6 @@ export const router = createBrowserRouter([
     path: constants.path.authRecoverPassword,
     element: <AuthRecoverPasswordPage />,
   },
-  {
-    path: constants.path.support,
-    element: <SupportPage />,
-  },
-
   {
     path: constants.path.oops,
     element: <OopsPage />,

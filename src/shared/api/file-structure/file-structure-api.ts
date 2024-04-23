@@ -9,7 +9,7 @@ import {
   FileStructureBinDto,
 } from './file-structure-api.schema';
 import { RootFileStructure } from '../../model';
-import { FileStructureBin } from '../../model/file-structure-bin.model';
+import { FileStructureBin } from '../../../features/bin/state/file-structure-bin.model';
 
 @Singleton
 export class FileStructureApiService {
