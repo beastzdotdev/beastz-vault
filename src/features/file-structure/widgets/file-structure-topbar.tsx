@@ -30,7 +30,7 @@ export const FileStructureTopBar = (): React.JSX.Element => {
           className="min-w-[600px]"
         />
 
-        <div>
+        <div className="whitespace-nowrap">
           <Button minimal icon="notifications" intent="none" />
 
           <Popover

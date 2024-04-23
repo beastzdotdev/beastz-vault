@@ -9,10 +9,11 @@ import {
   NonIdealStateIconSize,
 } from '@blueprintjs/core';
 import { observer, useLocalObservable } from 'mobx-react-lite';
-import { useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { RootFileStructure } from '../../../shared/model';
 import { constants } from '../../../shared/constants';
 import { differentiate } from '../../../shared/helper';
+import { api } from '../../../shared/api';
 
 type Params = {
   selectedNode: RootFileStructure;
@@ -24,10 +25,23 @@ type Params = {
 
 export const FileStructureFileView = observer(
   ({ selectedNode, isOpen, toggleIsOpen, isInBin, binFsPath }: Params) => {
-    console.log('selected node', selectedNode);
-
     const store = useLocalObservable(() => ({
       type: differentiate(selectedNode.mimeType),
+      text: '',
+      toggleBreak: false,
+
+      setText(text: string) {
+        this.text = text;
+      },
+
+      setToggleBreak(value: boolean) {
+        this.toggleBreak = value;
+      },
+
+      clear() {
+        this.text = '';
+        this.toggleBreak = false;
+      },
     }));
 
     const getFileUrl = useMemo(() => {
@@ -36,6 +50,27 @@ export const FileStructureFileView = observer(
 
       return constants.path.backend.url + location + path;
     }, [binFsPath, isInBin, selectedNode.path]);
+
+    const getText = useCallback(async () => {
+      if (store.type === 'text') {
+        try {
+          const url = getFileUrl.replace(constants.path.backend.url, '');
+          const textResponse = await api.get(url);
+
+          console.log(textResponse.data);
+          console.log('executing');
+
+          store.setText(textResponse.data);
+        } catch (error) {
+          console.error(error);
+          store.clear();
+        }
+      }
+    }, [getFileUrl, store]);
+
+    useEffect(() => {
+      getText();
+    }, [getText]);
 
     return (
       <>
@@ -69,6 +104,16 @@ export const FileStructureFileView = observer(
                     Print
                   </Button>
                 )}
+                {store.type === 'text' && (
+                  <Button
+                    outlined
+                    className="rounded-full mr-4"
+                    icon="double-chevron-left"
+                    onClick={() => store.setToggleBreak(!store.toggleBreak)}
+                  >
+                    Toggle break
+                  </Button>
+                )}
                 <Button outlined className="rounded-full mr-4" icon="download">
                   Download
                 </Button>
@@ -96,6 +141,7 @@ export const FileStructureFileView = observer(
               }}
             >
               {/* Start */}
+
               {store.type === 'other' && (
                 <>
                   <NonIdealState
@@ -163,7 +209,13 @@ export const FileStructureFileView = observer(
 
               {store.type === 'text' && (
                 <>
-                  <p>text</p>
+                  <div className="xl:w-[75%] lg:w-[85%] w-[100%]  bg-[#1e1e1e] text-[#d4d4d4] p-3 select-text overflow-y-auto">
+                    {store.text.split('\n').map((line, index) => (
+                      <div className={store.toggleBreak ? 'break-all' : ''} key={index}>
+                        {line}
+                      </div>
+                    ))}
+                  </div>
                 </>
               )}
 

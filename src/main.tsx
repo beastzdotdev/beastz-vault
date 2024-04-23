@@ -13,6 +13,8 @@ import './index.scss';
 import './declares/declares.d.ts';
 import './declares/declares.d.tsx';
 
+//TODO https://uiwjs.github.io/react-codemirror/#/
+
 // misc
 FocusStyleManager.onlyShowFocusOnTabs();
 
