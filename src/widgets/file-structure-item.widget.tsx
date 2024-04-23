@@ -1,7 +1,17 @@
-import { Button, ContextMenu, Icon, Menu, MenuDivider, MenuItem, Popover } from '@blueprintjs/core';
+import {
+  Button,
+  ContextMenu,
+  Icon,
+  IconName,
+  Menu,
+  MenuDivider,
+  MenuItem,
+  Popover,
+} from '@blueprintjs/core';
 import { observer } from 'mobx-react-lite';
 import { useInjection } from 'inversify-react';
-import { formatSize } from '../shared/helper';
+import { useMemo } from 'react';
+import { differentiate, formatSize } from '../shared/helper';
 import { RootFileStructure } from '../shared/model';
 import { ProfileStore } from '../features/profile/state/profile.store';
 
@@ -87,6 +97,25 @@ export const FileStuructureFileItem = observer(
   (params: FileStuructureFileItemParams): React.JSX.Element => {
     const profileStore = useInjection(ProfileStore);
 
+    const fsIconResolved = useMemo((): IconName => {
+      if (!params.node.mimeType) {
+        return 'folder-close';
+      }
+
+      switch (differentiate(params.node.mimeType)) {
+        case 'audio':
+          return 'music';
+        case 'image':
+          return 'media';
+        case 'video':
+          return 'video';
+        case 'other':
+        case 'text':
+        default:
+          return 'document';
+      }
+    }, [params.node.mimeType]);
+
     //
     const contextMenu = params.isFromBin ? (
       <FileStuructureFromBinContextMenu
@@ -118,10 +147,7 @@ export const FileStuructureFileItem = observer(
         >
           {/*//! width 100px behaves like min-width:100px */}
           <div className="flex items-center pl-3 pr-5 flex-grow w-[100px]">
-            <Icon
-              icon={params.node.isFile ? 'document' : 'folder-close'}
-              color={params.node.color ?? undefined}
-            />
+            <Icon icon={fsIconResolved} color={params.node.color ?? undefined} />
 
             <p className="pl-2 truncate">
               {params.node.isFile

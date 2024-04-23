@@ -1,3 +1,4 @@
+TODO reafactor all window.location.reload();
 TODO get inspirations from here https://en.eagle.cool/
 
 TODO update pulex/core sidebar tree needs color addition

@@ -42,7 +42,7 @@ export const RestoreFromBin = ({ selectedNodes, isOpen, toggleIsOpen }: Params) 
   };
 
   const onClickingRestoreSaveButton = async () => {
-    const selectedFsId = selectedNodes[0].id; //TODO in fututre multiple ids
+    const selectedFsId = selectedNodes[0].id;
     const { newParentId } = store;
 
     const startTime = new Date(); // Start time
@@ -62,7 +62,7 @@ export const RestoreFromBin = ({ selectedNodes, isOpen, toggleIsOpen }: Params) 
       return;
     }
 
-    window.location.reload(); //TODO here we should not refresh, we should refresh state
+    window.location.reload();
   };
 
   useEffect(() => {

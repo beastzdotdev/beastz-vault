@@ -1,7 +1,14 @@
 import { Breadcrumbs } from '@blueprintjs/core';
+import { constants } from '../../../shared/constants';
 
+//TODO finish
 export const FileStructureBreadcrumb = (): React.JSX.Element => {
-  return <Breadcrumbs className="max-w-sm" items={[{ icon: 'cloud', text: 'cloud' }]} />;
+  return (
+    <Breadcrumbs
+      className="max-w-sm"
+      items={[{ icon: 'cloud', text: 'cloud', href: constants.path.fileStructure }]}
+    />
+  );
 };
 
 // import { Breadcrumbs, BreadcrumbProps } from '@blueprintjs/core';

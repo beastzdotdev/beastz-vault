@@ -11,14 +11,15 @@ import { toast } from '../../../shared/ui';
 import { ChangeColor } from './change-color';
 import { RootFileStructure } from '../../../shared/model';
 import { FileStructureDetails } from './file-structure-details';
+import { FileStructureFileView } from './file-structure-file-view';
 
 export const FileStructureFiles = observer((): React.JSX.Element => {
-  const fileStructureApiService = useInjection(FileStructureApiService);
-  const sharedStore = useInjection(SharedStore);
   const navigate = useNavigate();
-
+  const sharedStore = useInjection(SharedStore);
+  const fileStructureApiService = useInjection(FileStructureApiService);
   const [isChangeColorOpen, setChangeColorOpen] = useState(false);
   const [isDetailsOpen, setDetailsOpen] = useState(false);
+  const [isFileViewOpen, setFileViewOpen] = useState(false);
 
   const localSelectedStore = useLocalObservable(() => ({
     selectedNodes: new Set<RootFileStructure>(),
@@ -43,7 +44,7 @@ export const FileStructureFiles = observer((): React.JSX.Element => {
     },
   }));
 
-  const toggleOpen = (value: boolean, type: 'change-color' | 'details') => {
+  const toggleOpen = (value: boolean, type: 'change-color' | 'details' | 'file-view') => {
     const finalValue = value;
 
     // is closing
@@ -58,6 +59,9 @@ export const FileStructureFiles = observer((): React.JSX.Element => {
       case 'details':
         setDetailsOpen(finalValue);
         break;
+      case 'file-view':
+        setFileViewOpen(finalValue);
+        break;
     }
   };
 
@@ -71,30 +75,23 @@ export const FileStructureFiles = observer((): React.JSX.Element => {
               isSelected={localSelectedStore.selectedNodes.has(node)}
               key={node.id}
               node={node}
-              onSelected={node => {
-                localSelectedStore.setSelectedSingle(node);
-              }}
+              onSelected={node => localSelectedStore.setSelectedSingle(node)}
+              onColorChange={() => toggleOpen(true, 'change-color')}
+              onDetails={() => toggleOpen(true, 'details')}
               onDoubleClick={async node => {
                 if (node.isFile) {
-                  //TODO show file
-                  return;
+                  toggleOpen(true, 'file-view');
+                } else {
+                  navigate(node.link);
                 }
-
-                navigate(node.link);
               }}
               onMoveToBin={async node => {
                 await fileStructureApiService.moveToBin(node.id);
-                window.location.reload(); //TODO no refresh
+                window.location.reload();
               }}
               onCopy={node => {
                 navigator.clipboard.writeText(node.title);
                 toast.showMessage('Copied to clipboard');
-              }}
-              onColorChange={() => {
-                toggleOpen(true, 'change-color');
-              }}
-              onDetails={() => {
-                toggleOpen(true, 'details');
               }}
             />
           );
@@ -130,18 +127,29 @@ export const FileStructureFiles = observer((): React.JSX.Element => {
         }}
       />
 
-      <ChangeColor
-        selectedNodes={[...localSelectedStore.selectedNodes]}
-        isOpen={isChangeColorOpen}
-        toggleIsOpen={value => toggleOpen(value, 'change-color')}
-      />
+      {[...localSelectedStore.selectedNodes].length !== 0 && (
+        <>
+          <ChangeColor
+            selectedNodes={[...localSelectedStore.selectedNodes]}
+            isOpen={isChangeColorOpen}
+            toggleIsOpen={value => toggleOpen(value, 'change-color')}
+          />
 
-      <FileStructureDetails
-        selectedNodes={[...localSelectedStore.selectedNodes]}
-        isOpen={isDetailsOpen}
-        toggleIsOpen={value => toggleOpen(value, 'details')}
-        isInBin={false}
-      />
+          <FileStructureDetails
+            selectedNodes={[...localSelectedStore.selectedNodes]}
+            isOpen={isDetailsOpen}
+            toggleIsOpen={value => toggleOpen(value, 'details')}
+            isInBin={false}
+          />
+
+          <FileStructureFileView
+            selectedNode={[...localSelectedStore.selectedNodes][0]}
+            isOpen={isFileViewOpen}
+            toggleIsOpen={value => toggleOpen(value, 'file-view')}
+            isInBin={false}
+          />
+        </>
+      )}
     </div>
   );
 });

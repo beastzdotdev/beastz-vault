@@ -3,6 +3,7 @@ import queryString from 'query-string';
 import { ZodError, z } from 'zod';
 import { FormikValidationError } from './types';
 import { constants } from './constants';
+import { FileMimeType } from './enum/file-mimte-type.enum';
 
 export const stringEncode = (text: string): Uint8Array => new TextEncoder().encode(text);
 export const stringDecode = (buffer: ArrayBuffer): string => new TextDecoder().decode(buffer);
@@ -166,4 +167,37 @@ export const cleanURL = (
   url.search = urlSearchParams.toString();
 
   return url;
+};
+
+export const differentiate = (
+  value: FileMimeType | null
+): 'text' | 'image' | 'audio' | 'video' | 'other' => {
+  // TODO not supported yet
+  // FileMimeType.TEXT_MARKDOWN
+  // FileMimeType.APPLICATION_JSON
+  // FileMimeType.APPLICATION_XML
+  // FileMimeType.APPLICATION_PDF
+  // FileMimeType.APPLICATION_OCTET_STREAM
+
+  switch (value) {
+    case FileMimeType.TEXT_PLAIN:
+      return 'text';
+    case FileMimeType.IMAGE_JPG:
+    case FileMimeType.IMAGE_PNG:
+    case FileMimeType.IMAGE_GIF:
+    case FileMimeType.IMAGE_WEBP:
+    case FileMimeType.IMAGE_BMP:
+    case FileMimeType.IMAGE_SVG:
+      return 'image';
+    case FileMimeType.AUDIO_MPEG:
+    case FileMimeType.AUDIO_WAV:
+      return 'audio';
+    case FileMimeType.VIDEO_MP4:
+    case FileMimeType.VIDEO_MPEG:
+    case FileMimeType.VIDEO_WEBM:
+    case FileMimeType.VIDEO_QUICKTIME:
+      return 'video';
+    default:
+      return 'other';
+  }
 };

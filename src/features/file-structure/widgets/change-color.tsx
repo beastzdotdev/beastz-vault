@@ -86,7 +86,7 @@ export const ChangeColor = observer(({ selectedNodes, isOpen, toggleIsOpen }: Pa
       return;
     }
 
-    const selectedFsId = selectedNodes[0].id; //TODO in fututre multiple ids
+    const selectedFsId = selectedNodes[0].id;
 
     store.setLoading(true);
 
@@ -107,7 +107,7 @@ export const ChangeColor = observer(({ selectedNodes, isOpen, toggleIsOpen }: Pa
       return;
     }
 
-    window.location.reload(); //TODO here we should not refresh, we should refresh state
+    window.location.reload();
   };
 
   useEffect(() => {

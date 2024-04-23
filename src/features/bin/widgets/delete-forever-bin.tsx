@@ -35,7 +35,7 @@ export const DeleteForeverBin = observer(({ selectedNodes, isOpen, toggleIsOpen 
   };
 
   const onClickingForeverDeleteButton = async () => {
-    const selectedFsId = selectedNodes[0].id; //TODO in fututre multiple ids
+    const selectedFsId = selectedNodes[0].id;
 
     store.setIsLoading(true);
 
@@ -54,7 +54,7 @@ export const DeleteForeverBin = observer(({ selectedNodes, isOpen, toggleIsOpen 
       return;
     }
 
-    window.location.reload(); //TODO here we should not refresh, we should refresh state
+    window.location.reload();
   };
 
   useEffect(() => {
