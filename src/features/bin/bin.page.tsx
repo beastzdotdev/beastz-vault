@@ -14,7 +14,7 @@ import { toast } from '../../shared/ui';
 import { FileStructureDetails } from '../file-structure/widgets/file-structure-details';
 import { RootFileStructure } from '../../shared/model';
 import { FileStructureFileView } from '../file-structure/widgets/file-structure-file-view';
-import { FileStructureBin } from './state/file-structure-bin.model';
+import { Bin } from './model/bin.model';
 
 const typeItems: AdvancedSelectItem[] = [
   { key: uuid(), text: 'Images' },
@@ -47,9 +47,9 @@ export const BinPage = observer((): React.JSX.Element => {
   const [isDetailsOpen, setDetailsOpen] = useState(false);
 
   const localSelectedStore = useLocalObservable(() => ({
-    selectedNodes: new Set<FileStructureBin>(),
+    selectedNodes: new Set<Bin>(),
 
-    setSelectedSingle(node: FileStructureBin) {
+    setSelectedSingle(node: Bin) {
       if (this.selectedNodes.size === 1 && this.selectedNodes.has(node)) {
         return;
       }

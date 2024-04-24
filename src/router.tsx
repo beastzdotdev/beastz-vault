@@ -9,7 +9,7 @@ import { TreeNodesTestPage } from './features/experimental/tree-node-test.page';
 import { AuthUserNotVerifiedPage } from './features/auth/auth-user-not-verified.page';
 import { AuthUserBlockedPage } from './features/auth/auth-user-blocked.page';
 import { AuthUserLockedPage } from './features/auth/auth-user-locked.page';
-import { SupportPage } from './features/support/support.page';
+import { UserSupportPage } from './features/user-support/user-support.page';
 import { AuthVerifyPage } from './features/auth/auth-verify.page';
 import { AuthRecoverPasswordPage } from './features/auth/auth-recover-password.page';
 import { OopsPage } from './features/auth/oops.page';
@@ -26,8 +26,8 @@ import { StoragePage } from './features/storage/storage.page';
 import { BinPage } from './features/bin/bin.page';
 import { binLoader } from './features/bin/bin-loader';
 import { appLoader } from './features/app-loaders';
-import { SupportTicketDetailPage } from './features/support/support-ticket-detail.page';
-import { SupportTicketCreatePage } from './features/support/support-ticket-create.page';
+import { UserSupportTicketDetailPage } from './features/user-support/user-support-ticket-detail.page';
+import { UserSupportTicketCreatePage } from './features/user-support/user-support-ticket-create.page';
 
 export const router = createBrowserRouter([
   // under / every page is under auth protection
@@ -64,15 +64,15 @@ export const router = createBrowserRouter([
       },
       {
         path: constants.path.support,
-        element: <SupportPage />,
+        element: <UserSupportPage />,
       },
       {
         path: constants.path.supportTicketCreate,
-        element: <SupportTicketCreatePage />,
+        element: <UserSupportTicketCreatePage />,
       },
       {
         path: constants.path.supportTicketDetail,
-        element: <SupportTicketDetailPage />,
+        element: <UserSupportTicketDetailPage />,
       },
       {
         path: '/check-error',

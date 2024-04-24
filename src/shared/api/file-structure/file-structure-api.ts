@@ -1,15 +1,13 @@
-import { api } from '..';
-import { AxiosApiResponse, Pagination } from '../../types';
+import { api } from '../api';
+import { AxiosApiResponse } from '../../types';
 import { ClientApiError } from '../../errors/client-error.schema';
 import { Singleton } from '../../ioc';
+import { RootFileStructure } from '../../model';
 import {
   BasicFileStructureResponseDto,
   GetDuplicateStatusResponseDto,
   GetGeneralInfoResponseDto,
-  FileStructureBinDto,
 } from './file-structure-api.schema';
-import { RootFileStructure } from '../../model';
-import { FileStructureBin } from '../../../features/bin/state/file-structure-bin.model';
 
 @Singleton
 export class FileStructureApiService {
@@ -149,27 +147,6 @@ export class FileStructureApiService {
       const result = await api.patch<BasicFileStructureResponseDto>(`file-structure/${id}`, params);
 
       return { data: RootFileStructure.customTransform(result.data) };
-    } catch (e: unknown) {
-      return { error: e as ClientApiError };
-    }
-  }
-
-  async getFromBin(params: {
-    page: number;
-    pageSize: number;
-    parentId?: number;
-  }): Promise<AxiosApiResponse<Pagination<FileStructureBin>>> {
-    try {
-      const result = await api.get<Pagination<FileStructureBinDto>>(`file-structure-bin`, {
-        params,
-      });
-
-      return {
-        data: {
-          data: result.data.data.map(e => FileStructureBin.customTransform(e)),
-          total: result.data.total,
-        },
-      };
     } catch (e: unknown) {
       return { error: e as ClientApiError };
     }

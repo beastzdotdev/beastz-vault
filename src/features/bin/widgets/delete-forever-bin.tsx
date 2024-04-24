@@ -2,11 +2,11 @@ import { Intent, Alert } from '@blueprintjs/core';
 import { useInjection } from 'inversify-react';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { useEffect } from 'react';
-import { FileStructureApiService } from '../../../shared/api';
 import { toast } from '../../../shared/ui';
 import { sleep } from '../../../shared/helper';
 import { ClientApiError } from '../../../shared/errors';
 import { RootFileStructure } from '../../../shared/model';
+import { FileStructureApiService } from '../../../shared/api';
 
 type Params = {
   selectedNodes: RootFileStructure[];

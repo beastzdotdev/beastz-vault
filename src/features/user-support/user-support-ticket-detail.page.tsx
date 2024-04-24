@@ -1,5 +1,5 @@
-import { H2, H4, H5, Intent } from '@blueprintjs/core';
-import { useNavigate, useParams } from 'react-router-dom';
+import { H2, H4, H5 } from '@blueprintjs/core';
+import { useParams } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
 import { useEffect } from 'react';
 import { TEXT_MUTED } from '@blueprintjs/core/lib/esm/common/classes';
@@ -17,25 +17,14 @@ const obj: {
     'BasilBasilBasilBasilBasilBasilBasilBasilBasilBasilBasilBasilBasilBasilBasilBasilBasilBasilBasilBasilBasilBasilBasilBasil',
 };
 
-function getIntent(status: 'pending' | 'resolved' | 'ignored'): Intent {
-  switch (status) {
-    case 'resolved':
-      return 'success';
-    case 'ignored':
-      return 'warning';
-    default:
-      return 'primary';
-  }
-}
-
-export const SupportTicketDetailPage = (): React.JSX.Element => {
-  const navigate = useNavigate();
+export const UserSupportTicketDetailPage = (): React.JSX.Element => {
+  // const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
 
   useEffect(() => {
     // fetch based on id
     console.log(id);
-  }, []);
+  }, [id]);
 
   return (
     <div className="mx-2.5 mt-3 cursor-default">

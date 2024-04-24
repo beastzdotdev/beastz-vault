@@ -3,13 +3,13 @@ import { useInjection } from 'inversify-react';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { useEffect } from 'react';
 import { HexColorPicker } from 'react-colorful';
-import { FileStructureApiService } from '../../../shared/api';
 import { ExceptionMessageCode } from '../../../shared/enum';
 import { toast } from '../../../shared/ui';
 import { getColorByBgColor, sleep } from '../../../shared/helper';
 import { ClientApiError } from '../../../shared/errors';
 import { SharedStore } from '../../shared/state/shared.store';
 import { RootFileStructure } from '../../../shared/model';
+import { FileStructureApiService } from '../../../shared/api';
 
 type Params = {
   selectedNodes: RootFileStructure[];

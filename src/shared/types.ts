@@ -44,21 +44,7 @@ export type FormikValidationError = {
 
 export type FSQueryParams = { id: 'root' } | { id: number; root_parent_id: number; path: string };
 
-export type BasicFileStructure = {
-  id: number;
-  path: string;
-  title: string;
-  depth: number;
-  color: string | null;
-  sizeInBytes: number | null;
-  fileExstensionRaw: string | null;
-  mimeTypeRaw: string | null;
-  mimeType: FileMimeType | null;
-  isEditable: boolean | null;
-  isFile: boolean;
-  rootParentId: number | null;
-  parentId: number | null;
-  lastModifiedAt: Date | null;
-  createdAt: Date;
-  children: BasicFileStructure[];
+export type Calbacks<T = undefined, E = undefined> = {
+  successCallback?: T extends undefined ? () => void : (value: T) => void;
+  errorCallback?: E extends undefined ? () => void : (err: E) => void;
 };

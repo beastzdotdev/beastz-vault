@@ -28,13 +28,3 @@ export class GetDuplicateStatusResponseDto {
 export class GetGeneralInfoResponseDto {
   totalSize: number;
 }
-
-export class FileStructureBinDto {
-  id: number;
-  nameUUID: string;
-  path: string;
-  userId: number;
-  fileStructureId: number;
-  createdAt: Date;
-  fileStructure: BasicFileStructureResponseDto;
-}

@@ -6,9 +6,9 @@ import { useCallback } from 'react';
 import { Icon, Intent, Spinner } from '@blueprintjs/core';
 import { useNavigate } from 'react-router-dom';
 import { SharedStore } from '../features/shared/state/shared.store';
-import { FileStructureApiService } from '../shared/api';
 import { RootFileStructure } from '../shared/model';
 import { sleep } from '../shared/helper';
+import { FileStructureApiService } from '../shared/api';
 
 export const SidebarTree = observer(({ className }: { className?: string }) => {
   const sharedStore = useInjection(SharedStore);

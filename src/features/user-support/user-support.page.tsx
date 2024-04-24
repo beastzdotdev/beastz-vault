@@ -52,11 +52,11 @@ function getIntent(status: 'pending' | 'resolved' | 'ignored'): Intent {
   }
 }
 
-const PopConfirm = <T,>(params: {
-  children: React.ReactNode;
-  onSuccessClick: (value: T) => void;
-  data: T;
-}) => {
+type Something<T> = { children: React.ReactNode; text?: string } & (T extends undefined
+  ? { onSuccessClick: () => void; data?: T }
+  : { onSuccessClick: (value: T) => void; data: T });
+
+const PopConfirm = <T,>(params: Something<T>) => {
   return (
     <Popover
       popoverClassName={Classes.POPOVER_CONTENT_SIZING}
@@ -65,7 +65,10 @@ const PopConfirm = <T,>(params: {
       content={
         <div key="text">
           <H5>Confirm deletion</H5>
-          <p>Are you sure you want to delete these items? You won't be able to recover them.</p>
+          <p>
+            {params?.text ??
+              "Are you sure you want to delete these items? You won't be able to recover them."}
+          </p>
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 15 }}>
             <Button className={Classes.POPOVER_DISMISS} style={{ marginRight: 10 }}>
               Cancel
@@ -73,7 +76,7 @@ const PopConfirm = <T,>(params: {
             <Button
               intent={Intent.DANGER}
               className={Classes.POPOVER_DISMISS}
-              onClick={() => params.onSuccessClick(params.data)}
+              onClick={() => (params.data ? params.onSuccessClick(params.data) : undefined)}
             >
               Delete
             </Button>
@@ -86,23 +89,42 @@ const PopConfirm = <T,>(params: {
   );
 };
 
-export const SupportPage = (): React.JSX.Element => {
+export const UserSupportPage = (): React.JSX.Element => {
   const navigate = useNavigate();
 
   return (
     <div className="mx-2.5 mt-3 cursor-default">
-      <div className="flex justify-between items-center">
-        <H2 className="font-extralight">Support</H2>
+      <H2 className="font-extralight">Support</H2>
 
-        <Button
-          icon="plus"
-          intent="none"
-          text="New ticket"
-          onClick={() => navigate(constants.path.supportTicketCreate)}
-        />
-      </div>
+      <Section
+        title="Active tickets"
+        compact={false}
+        className="mt-8"
+        rightElement={
+          <>
+            <Button
+              outlined
+              intent="primary"
+              icon="plus"
+              onClick={() => navigate(constants.path.supportTicketCreate)}
+            />
 
-      <Section title="Active tickets" compact className="mt-8">
+            <PopConfirm
+              data={undefined}
+              children={
+                <Button
+                  outlined
+                  intent="danger"
+                  icon="delete"
+                  onClick={() => console.log('delete all')}
+                  text="Delete all"
+                />
+              }
+              onSuccessClick={(): void => {}}
+            />
+          </>
+        }
+      >
         <SectionCard padded={false}>
           <CardList compact className="max-h-[316px]">
             {titles.map(e => (
@@ -146,10 +168,6 @@ export const SupportPage = (): React.JSX.Element => {
             ))}
           </CardList>
         </SectionCard>
-      </Section>
-
-      <Section title="Resolved tickets" compact className="mt-8">
-        <SectionCard></SectionCard>
       </Section>
     </div>
   );
