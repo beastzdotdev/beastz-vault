@@ -27,6 +27,7 @@ interface FileStuructureFileItemParams {
   onCopy?: (node: RootFileStructure) => void;
   onColorChange?: (node: RootFileStructure) => void;
   onDetails?: (node: RootFileStructure) => void;
+  onDownload?: (node: RootFileStructure) => void;
 }
 
 const FileStuructureContextMenu = (params: {
@@ -35,6 +36,7 @@ const FileStuructureContextMenu = (params: {
   onCopy?: (node: RootFileStructure) => void;
   onColorChange?: (node: RootFileStructure) => void;
   onDetails?: (node: RootFileStructure) => void;
+  onDownload?: (node: RootFileStructure) => void;
 }) => {
   return (
     <Menu>
@@ -50,7 +52,11 @@ const FileStuructureContextMenu = (params: {
       <MenuItem text="Details" icon="info-sign" onClick={() => params.onDetails?.(params.node)} />
       <MenuItem text="Not editable" icon="edit" />
       <MenuItem text="Lock" icon="lock" />
-      <MenuItem text="Download" icon="cloud-download" />
+      <MenuItem
+        text="Download"
+        icon="cloud-download"
+        onClick={() => params.onDownload?.(params.node)}
+      />
 
       <MenuItem text="Encrypt by" icon="shield">
         <MenuItem text="Text" />
@@ -132,6 +138,7 @@ export const FileStuructureFileItem = observer(
         onCopy={params.onCopy}
         onColorChange={params.onColorChange}
         onDetails={params.onDetails}
+        onDownload={params.onDownload}
       />
     );
 
@@ -175,12 +182,14 @@ export const FileStuructureFileItem = observer(
           {!params.isFromBin && (
             <div className="items-center justify-end flex-grow-0 w-[210px] xl:flex hidden">
               {/* Share and bookmark add later */}
-
               <Button
                 icon="cloud-download"
                 minimal
                 className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
-                onClick={e => e.stopPropagation()}
+                onClick={e => {
+                  e.stopPropagation();
+                  params.onDownload?.(params.node);
+                }}
               />
               <Button
                 icon="edit"

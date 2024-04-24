@@ -80,6 +80,46 @@ export class FileStructureApiService {
     }
   }
 
+  async downloadById(
+    id: number,
+    onProgress?: (params: { loaded: number; total: number; percentCompleted: number }) => void
+  ): Promise<AxiosApiResponse<void>> {
+    try {
+      //TODO download folder
+      // const [progress, setProgress] = useState(0);
+      // onDownloadProgress: progressEvent => {
+      //   const { loaded, total } = progressEvent;
+      //   const percentCompleted = Math.round((loaded * 100) / total);
+      //   setProgress(percentCompleted);
+      // }
+
+      const result = await api.get(`file-structure/download/${id}`, {
+        responseType: 'arraybuffer',
+        onDownloadProgress: progressEvent => {
+          const { loaded, total } = progressEvent;
+
+          if (total) {
+            const percentCompleted = Math.round((loaded * 100) / total);
+
+            onProgress?.({ loaded, total, percentCompleted });
+          }
+        },
+      });
+
+      const fileTitle = result.headers['content-title'] ?? 'example.txt';
+      const url = window.URL.createObjectURL(new Blob([result.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', fileTitle);
+      document.body.appendChild(link);
+      link.click();
+
+      return {};
+    } catch (e: unknown) {
+      return { error: e as ClientApiError };
+    }
+  }
+
   async uploadFile(params: {
     file: File;
     keepBoth: boolean;

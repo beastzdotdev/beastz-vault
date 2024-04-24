@@ -93,6 +93,12 @@ export const FileStructureFiles = observer((): React.JSX.Element => {
                 navigator.clipboard.writeText(node.title);
                 toast.showMessage('Copied to clipboard');
               }}
+              onDownload={async node => {
+                //TODO download folder
+                if (node.isFile) {
+                  await fileStructureApiService.downloadById(node.id);
+                }
+              }}
             />
           );
         }}

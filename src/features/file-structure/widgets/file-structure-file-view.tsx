@@ -13,7 +13,8 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { RootFileStructure } from '../../../shared/model';
 import { constants } from '../../../shared/constants';
 import { differentiate } from '../../../shared/helper';
-import { api } from '../../../shared/api';
+import { FileStructureApiService, api } from '../../../shared/api';
+import { ioc } from '../../../shared/ioc';
 
 type Params = {
   selectedNode: RootFileStructure;
@@ -114,7 +115,14 @@ export const FileStructureFileView = observer(
                     Toggle break
                   </Button>
                 )}
-                <Button outlined className="rounded-full mr-4" icon="download">
+                <Button
+                  outlined
+                  className="rounded-full mr-4"
+                  icon="download"
+                  onClick={() => {
+                    ioc.getContainer().get(FileStructureApiService).downloadById(selectedNode.id);
+                  }}
+                >
                   Download
                 </Button>
                 <Button
@@ -141,6 +149,8 @@ export const FileStructureFileView = observer(
               }}
             >
               {/* Start */}
+
+              {/* TODO refresh on root page then go to video and click it will show error on first try  */}
 
               {store.type === 'other' && (
                 <>
