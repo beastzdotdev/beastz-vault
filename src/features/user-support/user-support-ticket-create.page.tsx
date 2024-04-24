@@ -46,7 +46,12 @@ export const UserSupportTicketCreatePage = (): React.JSX.Element => {
 
   return (
     <div className="mx-2.5 mt-3 cursor-default">
-      <H2 className="font-extralight mb-1">Ticket create</H2>
+      <div className="flex">
+        <div className="flex items-center mr-2">
+          <Button icon="chevron-left" minimal onClick={() => navigate(constants.path.support)} />
+        </div>
+        <H2 className="font-extralight mb-1">Ticket create</H2>
+      </div>
 
       <ControlGroup fill vertical style={{ width: '500px' }} className="mt-10">
         <FormGroup label="Title" labelInfo="(required)">

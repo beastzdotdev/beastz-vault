@@ -1,6 +1,5 @@
 import { ClientApiError } from './errors/client-error.schema';
 import { ExceptionMessageCode } from './enum/exception-message-code.enum';
-import { FileMimeType } from './enum/file-mimte-type.enum';
 
 export type Combine<T, U> = T & U;
 

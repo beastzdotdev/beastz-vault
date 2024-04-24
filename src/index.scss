@@ -210,3 +210,7 @@ input {
 .active-color {
   @apply border-white border-solid scale-125;
 }
+
+.float-button {
+  @apply cursor-pointer fixed bottom-5 right-5 rounded-full w-10 h-10  bg-gray-400 border-[0.5px] border-solid border-white border-opacity-35 hover:scale-105 transition-transform transform active:scale-100 active:duration-75;
+}

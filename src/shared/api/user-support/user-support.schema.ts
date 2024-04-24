@@ -15,3 +15,9 @@ export class UserSupportCreateDto {
   description: string;
   title: string;
 }
+
+export class UserSupportUpdateDto {
+  description?: string;
+  title?: string;
+  status?: UserSupportTicketStatus;
+}

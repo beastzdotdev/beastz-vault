@@ -28,6 +28,8 @@ import { binLoader } from './features/bin/bin-loader';
 import { appLoader } from './features/app-loaders';
 import { UserSupportTicketDetailPage } from './features/user-support/user-support-ticket-detail.page';
 import { UserSupportTicketCreatePage } from './features/user-support/user-support-ticket-create.page';
+import { userSupportTicketDetailLoader } from './features/user-support/user-support-ticket-detail-loader';
+import { userSupportTicketLoader } from './features/user-support/user-support-ticket-loader';
 
 export const router = createBrowserRouter([
   // under / every page is under auth protection
@@ -63,6 +65,7 @@ export const router = createBrowserRouter([
         loader: binLoader,
       },
       {
+        loader: userSupportTicketLoader,
         path: constants.path.support,
         element: <UserSupportPage />,
       },
@@ -71,6 +74,7 @@ export const router = createBrowserRouter([
         element: <UserSupportTicketCreatePage />,
       },
       {
+        loader: userSupportTicketDetailLoader,
         path: constants.path.supportTicketDetail,
         element: <UserSupportTicketDetailPage />,
       },
