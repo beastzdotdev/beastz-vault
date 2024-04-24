@@ -200,6 +200,16 @@ export const FileStuructureFileItem = observer(
                 className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
                 onClick={e => e.stopPropagation()}
               />
+
+              <Button
+                icon="trash"
+                minimal
+                className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
+                onClick={e => {
+                  e.stopPropagation();
+                  params.onMoveToBin?.(params.node);
+                }}
+              />
             </div>
           )}
 

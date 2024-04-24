@@ -1,4 +1,8 @@
-import { UserSupportApiService, UserSupportCreateDto } from '../../../shared/api';
+import {
+  UserSupportApiService,
+  UserSupportCreateDto,
+  UserSupportMessageCreateDto,
+} from '../../../shared/api';
 import { UserSupportTicketStatus } from '../../../shared/enum';
 import { ClientApiError } from '../../../shared/errors';
 import { Inject, Singleton } from '../../../shared/ioc';
@@ -70,6 +74,25 @@ export class UserSupportController {
     }
 
     toast.showMessage('All ticket deleted successfully');
+    cbs?.successCallback?.();
+
+    window.location.reload();
+  }
+
+  async sendMessage(
+    userSupportId: number | string,
+    params: UserSupportMessageCreateDto,
+    cbs?: Calbacks<undefined, ClientApiError>
+  ) {
+    const { error } = await this.userSupportApiService.sendMessage(userSupportId, params);
+
+    if (error) {
+      toast.error(error?.message || 'Sorry, something went wrong');
+      cbs?.errorCallback?.(error!);
+      return;
+    }
+
+    toast.showMessage('Create message successfully');
     cbs?.successCallback?.();
 
     window.location.reload();

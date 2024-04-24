@@ -13,13 +13,22 @@ export const userSupportTicketDetailLoader = async (_args: LoaderFunctionArgs) =
     throw new Error('Sorry, something went wrong');
   }
 
-  const { data, error } = await userSupportApiService.getById(id);
+  const [supportResponse, messageResponse] = await Promise.all([
+    userSupportApiService.getById(id),
+    userSupportApiService.getAllMessage({ userSupportId: id, page: 1, pageSize: 100 }),
+  ]);
 
-  if (error || !data) {
+  if (
+    supportResponse.error ||
+    !supportResponse.data ||
+    messageResponse.error ||
+    !messageResponse.data
+  ) {
     throw new Error('Sorry, something went wrong loading ticket data');
   }
 
-  userSupportStore.setSingleData(data);
+  userSupportStore.setSingleData(supportResponse.data);
+  userSupportStore.setMessages(messageResponse.data.data);
 
   return 'ok';
 };

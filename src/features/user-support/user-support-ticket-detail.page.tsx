@@ -1,19 +1,33 @@
-import { Button, Callout, CompoundTag, H2, H4, H5, Icon } from '@blueprintjs/core';
+import { Button, Callout, CompoundTag, H2, H4, H5, Tag } from '@blueprintjs/core';
 import { TEXT_MUTED } from '@blueprintjs/core/lib/esm/common/classes';
 import { useInjection } from 'inversify-react';
 import { observer } from 'mobx-react-lite';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import { UserSupportStore } from './state/user-support.store';
 import { getTagIntentForSupport } from './user-support.helper';
 import { constants } from '../../shared/constants';
+import { UserSupportMessageModal } from './widget/user-support-message-modal';
+import { PopConfirmCustom } from '../../components/pop-confirm-custom';
 
 export const UserSupportTicketDetailPage = observer((): React.JSX.Element => {
   const userSupportStore = useInjection(UserSupportStore);
   const navigate = useNavigate();
+  const [isUserSupportMessageModelOpen, setUserSupportMessageModelOpen] = useState(false);
 
   return (
     <div className="mx-2.5 mt-3 cursor-default">
-      <Button icon="plus" outlined className="float-button" />
+      <Button
+        icon="plus"
+        outlined
+        className="float-button"
+        onClick={() => setUserSupportMessageModelOpen(true)}
+      />
+
+      <UserSupportMessageModal
+        isOpen={isUserSupportMessageModelOpen}
+        toggleIsOpen={setUserSupportMessageModelOpen}
+      />
 
       <div className="flex justify-between">
         <div className="flex items-center">
@@ -21,6 +35,7 @@ export const UserSupportTicketDetailPage = observer((): React.JSX.Element => {
             <Button icon="chevron-left" minimal onClick={() => navigate(constants.path.support)} />
           </div>
           <H2 className="font-extralight mb-1">Ticket review</H2>
+
           <CompoundTag
             intent={getTagIntentForSupport(userSupportStore.singleData.status)}
             children={userSupportStore.singleData.status}
@@ -29,7 +44,14 @@ export const UserSupportTicketDetailPage = observer((): React.JSX.Element => {
             minimal
           />
         </div>
-        B
+
+        <PopConfirmCustom
+          text="Hello, fellow user, please keep in mind that here only first 100 messages is loaded."
+          title="Information"
+          doNotShowButton
+        >
+          <Button outlined intent="primary" icon="info-sign" className="ml-3" />
+        </PopConfirmCustom>
       </div>
 
       <H5 className={`${TEXT_MUTED} font-extralight`}>{userSupportStore.singleData.uuid}</H5>
@@ -49,6 +71,42 @@ export const UserSupportTicketDetailPage = observer((): React.JSX.Element => {
             ))}
           </Callout>
         </div>
+      </div>
+
+      <div className="mt-10 max-h-[550px] overflow-y-auto">
+        {userSupportStore.messages.map(e => {
+          const supportImg = e.userSupportImages?.[0];
+
+          return (
+            <Callout
+              key={e.id}
+              compact
+              intent="none"
+              className={`max-w-[700px] max-h-auto break-words mt-5 ${
+                e.fromAdmin ? 'ml-auto' : ''
+              }`}
+            >
+              {e.fromAdmin && <Tag intent={'primary'} children={'From admin'} minimal />}
+
+              <div className={`${e.fromAdmin ? 'mt-3' : ''}`}>{e.text}</div>
+
+              {supportImg !== undefined && (
+                <>
+                  <img
+                    style={{
+                      objectFit: 'cover',
+                      maxWidth: '500px',
+                      aspectRatio: '16 / 9',
+                    }}
+                    alt="Image not loaded, sorry"
+                    src={constants.path.backend.url + '/hub' + supportImg.path}
+                    className="mt-3"
+                  />
+                </>
+              )}
+            </Callout>
+          );
+        })}
       </div>
     </div>
   );

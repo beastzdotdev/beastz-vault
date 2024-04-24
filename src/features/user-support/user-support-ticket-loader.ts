@@ -14,7 +14,6 @@ export const userSupportTicketLoader = async (_args: LoaderFunctionArgs) => {
   }
 
   userSupportStore.setData(data.data);
-  userSupportStore.setTotal(data.total);
 
   return 'ok';
 };

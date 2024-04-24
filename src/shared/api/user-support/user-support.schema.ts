@@ -21,3 +21,24 @@ export class UserSupportUpdateDto {
   title?: string;
   status?: UserSupportTicketStatus;
 }
+
+export class UserSupportMessageCreateDto {
+  file?: File;
+  text: string;
+}
+
+export class UserSupportImageDto {
+  id: number;
+  path: string;
+  createdAt: Date;
+}
+
+export class UserSupportMessageDto {
+  id: number;
+  userId: number;
+  fromAdmin: boolean;
+  text: string;
+  userSupportId: number;
+  createdAt: Date;
+  userSupportImages: UserSupportImageDto[];
+}

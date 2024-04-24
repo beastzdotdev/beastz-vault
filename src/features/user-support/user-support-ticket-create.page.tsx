@@ -23,7 +23,7 @@ export const UserSupportTicketCreatePage = (): React.JSX.Element => {
   const navigate = useNavigate();
   const userSupportController = useInjection(UserSupportController);
 
-  const userForm = useFormik({
+  const form = useFormik({
     initialValues: {
       description: '',
       title: '',
@@ -41,7 +41,7 @@ export const UserSupportTicketCreatePage = (): React.JSX.Element => {
     },
   });
 
-  const userFormFields = fields<(typeof userForm)['initialValues']>();
+  const formFields = fields<(typeof form)['initialValues']>();
   const [showErrorMessage, setShowErrorMessage] = useState(false);
 
   return (
@@ -56,27 +56,27 @@ export const UserSupportTicketCreatePage = (): React.JSX.Element => {
       <ControlGroup fill vertical style={{ width: '500px' }} className="mt-10">
         <FormGroup label="Title" labelInfo="(required)">
           <InputGroup
-            intent={userForm.errors.title && showErrorMessage ? Intent.DANGER : Intent.NONE}
+            intent={form.errors.title && showErrorMessage ? Intent.DANGER : Intent.NONE}
             placeholder="Enter title"
-            name={userFormFields.title}
-            value={userForm.values.title}
-            onChange={userForm.handleChange}
+            name={formFields.title}
+            value={form.values.title}
+            onChange={form.handleChange}
           />
-          {showErrorMessage && <FormErrorMessage message={userForm.errors.title} />}
+          {showErrorMessage && <FormErrorMessage message={form.errors.title} />}
         </FormGroup>
 
         <FormGroup label="Description" labelInfo="(required)" className="mt-5">
           <TextArea
             fill
-            intent={userForm.errors.description && showErrorMessage ? Intent.DANGER : Intent.NONE}
+            intent={form.errors.description && showErrorMessage ? Intent.DANGER : Intent.NONE}
             placeholder="Enter description"
-            name={userFormFields.description}
-            value={userForm.values.description}
-            onChange={userForm.handleChange}
+            name={formFields.description}
+            value={form.values.description}
+            onChange={form.handleChange}
             autoResize
             className="!resize-none hover:!resize-y max-h-52 min-h-24"
           />
-          {showErrorMessage && <FormErrorMessage message={userForm.errors.description} />}
+          {showErrorMessage && <FormErrorMessage message={form.errors.description} />}
         </FormGroup>
 
         <br />
@@ -92,7 +92,7 @@ export const UserSupportTicketCreatePage = (): React.JSX.Element => {
             text="Create"
             onClick={() => {
               setShowErrorMessage(true);
-              userForm.submitForm();
+              form.submitForm();
             }}
           />
         </div>
