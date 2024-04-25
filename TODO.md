@@ -84,6 +84,13 @@ TODO checkout this https://million.dev/lint
 TODO checkout this https://www.google.com/search?q=blocknote&oq=blocknote&gs_lcrp=EgZjaHJvbWUqDggAEEUYJxg7GIAEGIoFMg4IABBFGCcYOxiABBiKBTIGCAEQRRhAMgcIAhAAGIAEMgcIAxAAGIAEMgcIBBAAGIAEMgYIBRBFGDwyBggGEEUYPDIGCAcQRRg80gEIMTQ2OWowajmoAgCwAgE&sourceid=chrome&ie=UTF-8
 
 
+//TODO download folder
+// const [progress, setProgress] = useState(0);
+// onDownloadProgress: progressEvent => {
+//   const { loaded, total } = progressEvent;
+//   const percentCompleted = Math.round((loaded * 100) / total);
+//   setProgress(percentCompleted);
+// }
 
 
 

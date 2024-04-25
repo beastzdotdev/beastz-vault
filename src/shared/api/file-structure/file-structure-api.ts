@@ -85,14 +85,6 @@ export class FileStructureApiService {
     onProgress?: (params: { loaded: number; total: number; percentCompleted: number }) => void
   ): Promise<AxiosApiResponse<void>> {
     try {
-      //TODO download folder
-      // const [progress, setProgress] = useState(0);
-      // onDownloadProgress: progressEvent => {
-      //   const { loaded, total } = progressEvent;
-      //   const percentCompleted = Math.round((loaded * 100) / total);
-      //   setProgress(percentCompleted);
-      // }
-
       const result = await api.get(`file-structure/download/${id}`, {
         responseType: 'arraybuffer',
         onDownloadProgress: progressEvent => {
@@ -100,14 +92,15 @@ export class FileStructureApiService {
 
           if (total) {
             const percentCompleted = Math.round((loaded * 100) / total);
-
             onProgress?.({ loaded, total, percentCompleted });
           }
         },
       });
 
       const fileTitle = result.headers['content-title'] ?? 'example.txt';
-      const url = window.URL.createObjectURL(new Blob([result.data]));
+      const fileType = result.headers['content-type'];
+
+      const url = window.URL.createObjectURL(new Blob([result.data], { type: fileType }));
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', fileTitle);

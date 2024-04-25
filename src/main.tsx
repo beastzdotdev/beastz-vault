@@ -15,8 +15,6 @@ import './declares/declares.d.tsx';
 
 //TODO https://uiwjs.github.io/react-codemirror/#/
 
-//TODO go to every folder download to do and finish
-
 // misc
 FocusStyleManager.onlyShowFocusOnTabs();
 
