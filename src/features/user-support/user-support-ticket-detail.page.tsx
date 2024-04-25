@@ -16,7 +16,7 @@ export const UserSupportTicketDetailPage = observer((): React.JSX.Element => {
   const [isUserSupportMessageModelOpen, setUserSupportMessageModelOpen] = useState(false);
 
   return (
-    <div className="mx-2.5 mt-3 cursor-default">
+    <div className="px-2.5 pt-3 cursor-default">
       <Button
         icon="plus"
         outlined

@@ -13,7 +13,14 @@ import './index.scss';
 import './declares/declares.d.ts';
 import './declares/declares.d.tsx';
 
-//TODO https://uiwjs.github.io/react-codemirror/#/
+//!!!!====================================
+//!!!!====================================
+//!!!!====================================
+//!!!!====================================
+//!!!!====================================
+//TODO get example from encryption test page what we need is to get file buffer from backend for specific fs
+//TODO then encrypt it and on fs.id and encrypted file in dto send and on response replace in state
+//TODO also disable on bin
 
 // misc
 FocusStyleManager.onlyShowFocusOnTabs();

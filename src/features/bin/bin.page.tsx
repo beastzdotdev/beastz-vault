@@ -99,7 +99,7 @@ export const BinPage = observer((): React.JSX.Element => {
   };
 
   return (
-    <div className="mx-2.5 mt-3 cursor-default">
+    <div className="px-2.5 pt-3 cursor-default">
       <H2 className="font-extralight">Bin</H2>
 
       <div className="w-full flex mt-5">

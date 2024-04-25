@@ -25,7 +25,7 @@ export const UserSupportPage = observer((): React.JSX.Element => {
   const userSupportController = useInjection(UserSupportController);
 
   return (
-    <div className="mx-2.5 mt-3 cursor-default">
+    <div className="px-2.5 pt-3 cursor-default">
       <H2 className="font-extralight">Support</H2>
 
       <Section

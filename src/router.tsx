@@ -30,6 +30,7 @@ import { UserSupportTicketDetailPage } from './features/user-support/user-suppor
 import { UserSupportTicketCreatePage } from './features/user-support/user-support-ticket-create.page';
 import { userSupportTicketDetailLoader } from './features/user-support/user-support-ticket-detail-loader';
 import { userSupportTicketLoader } from './features/user-support/user-support-ticket-loader';
+import { OpenEncryptionPage } from './features/open-encryption/open-encryption.page';
 
 export const router = createBrowserRouter([
   // under / every page is under auth protection
@@ -73,6 +74,7 @@ export const router = createBrowserRouter([
         path: constants.path.supportTicketCreate,
         element: <UserSupportTicketCreatePage />,
       },
+
       {
         loader: userSupportTicketDetailLoader,
         path: constants.path.supportTicketDetail,
@@ -85,6 +87,8 @@ export const router = createBrowserRouter([
       },
     ],
   },
+
+  // auth
   {
     path: constants.path.signIn,
     element: <AuthSignInPage />,
@@ -113,6 +117,18 @@ export const router = createBrowserRouter([
     path: constants.path.authRecoverPassword,
     element: <AuthRecoverPasswordPage />,
   },
+
+  // open encryption
+  {
+    path: constants.path.openEncryption.full,
+    element: <OpenEncryptionPage />,
+  },
+  {
+    path: constants.path.openEncryption.mini,
+    element: <OpenEncryptionPage />,
+  },
+
+  // error
   {
     path: constants.path.oops,
     element: <OopsPage />,

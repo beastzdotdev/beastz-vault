@@ -94,7 +94,10 @@ TODO checkout this https://www.google.com/search?q=blocknote&oq=blocknote&gs_lcr
 
 
 
+//TODO https://uiwjs.github.io/react-codemirror/#/
 
 
 
 
+TODO get more storage
+TODO clean up space

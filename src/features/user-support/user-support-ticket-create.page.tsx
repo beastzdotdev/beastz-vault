@@ -45,7 +45,7 @@ export const UserSupportTicketCreatePage = (): React.JSX.Element => {
   const [showErrorMessage, setShowErrorMessage] = useState(false);
 
   return (
-    <div className="mx-2.5 mt-3 cursor-default">
+    <div className="px-2.5 pt-3 cursor-default">
       <div className="flex">
         <div className="flex items-center mr-2">
           <Button icon="chevron-left" minimal onClick={() => navigate(constants.path.support)} />

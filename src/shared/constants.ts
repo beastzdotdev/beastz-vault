@@ -23,6 +23,11 @@ export const constants = Object.freeze({
     supportTicketDetail: '/support/:id',
     oops: '/oops',
 
+    openEncryption: {
+      mini: '/oe',
+      full: '/open-encryption',
+    },
+
     backend: {
       url: import.meta.env.VITE_BACKEND_URL,
     },
