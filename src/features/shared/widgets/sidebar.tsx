@@ -20,6 +20,7 @@ import { SharedStore } from '../state/shared.store';
 import { constants } from '../../../shared/constants';
 import { ProfileIcon } from './profile';
 import { StorageLimitIndicator } from './general/storage-limit-indicator';
+import { CreateFileDialog } from './create-file/create-file-dialog';
 
 export const Sidebar = () => {
   const { sidebarRef, sidebarWidth, startResizing } = useResize();
@@ -28,6 +29,7 @@ export const Sidebar = () => {
   const folderUploadRef = useRef<HTMLInputElement>(null);
   const sharedStore = useInjection(SharedStore);
   const [isFolderCreateOpen, setIsFolderCreateOpen] = useState(false);
+  const [isCreateFileOpen, setIsCreateFileOpen] = useState(false);
   const navigate = useNavigate();
 
   return (
@@ -37,6 +39,7 @@ export const Sidebar = () => {
       style={{ width: sidebarWidth }}
     >
       <CreateFolderDialog isOpen={isFolderCreateOpen} setIsOpen={setIsFolderCreateOpen} />
+      <CreateFileDialog isOpen={isCreateFileOpen} toggleIsOpen={setIsCreateFileOpen} />
 
       <div className="resize-bar" onMouseDown={startResizing}>
         <div className="resize-line"></div>
@@ -61,14 +64,17 @@ export const Sidebar = () => {
               <Popover
                 content={
                   <Menu>
-                    <MenuItem text="New" icon="document" type="file" />
+                    <MenuItem
+                      text="New"
+                      icon="document"
+                      type="file"
+                      onClick={() => setIsCreateFileOpen(true)}
+                    />
 
                     <MenuItem
                       text="Create"
                       icon="folder-new"
-                      onClick={() => {
-                        setIsFolderCreateOpen(true);
-                      }}
+                      onClick={() => setIsFolderCreateOpen(true)}
                     />
 
                     <MenuDivider />

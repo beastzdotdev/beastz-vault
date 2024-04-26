@@ -33,6 +33,7 @@
     "@blueprintjs/table": "^5.1.2",
     "@pulexui/core": "^0.0.22",
     "@total-typescript/ts-reset": "^0.5.1",
+    "@uiw/react-codemirror": "^4.21.25",
     "axios": "^1.6.7",
     "class-transformer": "^0.5.1",
     "filenamify": "^6.0.0",
