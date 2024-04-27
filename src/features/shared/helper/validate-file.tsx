@@ -4,7 +4,7 @@ import { bus } from '../../../shared/bus';
 import { constants } from '../../../shared/constants';
 import { formatSize } from '../../../shared/helper';
 
-export const validateFileSize = (files: FileList | null): files is FileList => {
+export const validateFileSize = (files: FileList | File[] | null): files is FileList => {
   if (!files?.length) {
     return false;
   }
@@ -20,7 +20,7 @@ export const validateFileSize = (files: FileList | null): files is FileList => {
   return true;
 };
 
-export const cleanFiles = (files: FileList): File[] => {
+export const cleanFiles = (files: FileList | File[]): File[] => {
   const sanitizedFiles: File[] = [];
   const ignoredFiles: (
     | { name: string; reason: 'name' }
@@ -49,7 +49,12 @@ export const cleanFiles = (files: FileList): File[] => {
     bus.emit('show-alert', {
       message: (
         <>
-          <H3>Warning, This files will be ignored</H3>
+          {files.length === 1 ? (
+            <H3>Warning, This file has some problems</H3>
+          ) : (
+            <H3>Warning, This files will be ignored</H3>
+          )}
+
           <br />
 
           <CardList compact className="whitespace-nowrap max-h-64" bordered={false}>

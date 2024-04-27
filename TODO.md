@@ -101,3 +101,5 @@ TODO checkout this https://www.google.com/search?q=blocknote&oq=blocknote&gs_lcr
 
 TODO get more storage
 TODO clean up space
+
+TODO at the end move some stuff to shared library from backend and frontend

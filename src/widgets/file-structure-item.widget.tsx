@@ -28,6 +28,7 @@ interface FileStuructureFileItemParams {
   onColorChange?: (node: RootFileStructure) => void;
   onDetails?: (node: RootFileStructure) => void;
   onDownload?: (node: RootFileStructure) => void;
+  onEncrypt?: (node: RootFileStructure) => void;
 }
 
 const FileStuructureContextMenu = (params: {
@@ -37,6 +38,7 @@ const FileStuructureContextMenu = (params: {
   onColorChange?: (node: RootFileStructure) => void;
   onDetails?: (node: RootFileStructure) => void;
   onDownload?: (node: RootFileStructure) => void;
+  onEncrypt?: (node: RootFileStructure) => void;
 }) => {
   return (
     <Menu>
@@ -52,16 +54,12 @@ const FileStuructureContextMenu = (params: {
       <MenuItem text="Details" icon="info-sign" onClick={() => params.onDetails?.(params.node)} />
       <MenuItem text="Not editable" icon="edit" />
       <MenuItem text="Lock" icon="lock" />
+      <MenuItem text="Encrypt" icon="shield" onClick={() => params.onEncrypt?.(params.node)} />
       <MenuItem
         text="Download"
         icon="cloud-download"
         onClick={() => params.onDownload?.(params.node)}
       />
-
-      <MenuItem text="Encrypt by" icon="shield">
-        <MenuItem text="Text" />
-        <MenuItem text="Pin" />
-      </MenuItem>
 
       <MenuDivider />
       <MenuItem text="Coming soon" icon="clean">
@@ -108,17 +106,29 @@ export const FileStuructureFileItem = observer(
         return 'folder-close';
       }
 
+      //* some other icon option
+      // control
+      // widget-footer
+      // square
+      // column-layout
+      // th-list
+      // application
+
       switch (differentiate(params.node.mimeType)) {
+        case 'text':
+          return 'document';
         case 'audio':
           return 'music';
         case 'image':
           return 'media';
         case 'video':
           return 'video';
+
+        // all other
+        case 'byte':
         case 'other':
-        case 'text':
         default:
-          return 'document';
+          return 'square';
       }
     }, [params.node.mimeType]);
 
@@ -139,6 +149,7 @@ export const FileStuructureFileItem = observer(
         onColorChange={params.onColorChange}
         onDetails={params.onDetails}
         onDownload={params.onDownload}
+        onEncrypt={params.onEncrypt}
       />
     );
 
@@ -207,7 +218,10 @@ export const FileStuructureFileItem = observer(
                 icon="shield"
                 minimal
                 className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
-                onClick={e => e.stopPropagation()}
+                onClick={e => {
+                  e.stopPropagation();
+                  params.onEncrypt?.(params.node);
+                }}
               />
 
               <Button

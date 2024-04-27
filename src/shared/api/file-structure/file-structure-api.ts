@@ -82,32 +82,74 @@ export class FileStructureApiService {
 
   async downloadById(
     id: number,
-    onProgress?: (params: { loaded: number; total: number; percentCompleted: number }) => void
-  ): Promise<AxiosApiResponse<void>> {
+    shouldSave: boolean = true,
+    params?: {
+      onProgress?: (params: { loaded: number; total: number; percentCompleted: number }) => void;
+    }
+  ): Promise<AxiosApiResponse<{ file: File; title: string }>> {
     try {
-      const result = await api.get(`file-structure/download/${id}`, {
-        responseType: 'arraybuffer',
-        onDownloadProgress: progressEvent => {
-          const { loaded, total } = progressEvent;
+      const result = await api.get<Blob>(`file-structure/download/${id}`, {
+        responseType: 'blob',
+        ...(params?.onProgress && {
+          onDownloadProgress: progressEvent => {
+            const { loaded, total } = progressEvent;
 
-          if (total) {
-            const percentCompleted = Math.round((loaded * 100) / total);
-            onProgress?.({ loaded, total, percentCompleted });
-          }
-        },
+            if (total) {
+              const percentCompleted = Math.round((loaded * 100) / total);
+              params?.onProgress?.({ loaded, total, percentCompleted });
+            }
+          },
+        }),
       });
 
       const fileTitle = result.headers['content-title'] ?? 'example.txt';
       const fileType = result.headers['content-type'];
 
-      const url = window.URL.createObjectURL(new Blob([result.data], { type: fileType }));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', fileTitle);
-      document.body.appendChild(link);
-      link.click();
+      if (shouldSave) {
+        const url = window.URL.createObjectURL(new Blob([result.data], { type: fileType }));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', fileTitle);
+        document.body.appendChild(link);
+        link.click();
+      }
 
-      return {};
+      return {
+        data: {
+          file: new File([result.data], fileTitle, { type: fileType }),
+          title: fileTitle,
+        },
+      };
+    } catch (e: unknown) {
+      return { error: e as ClientApiError };
+    }
+  }
+
+  async uploadEncryptedFile(params: {
+    encryptedFile: File;
+    fileStructureId: number;
+  }): Promise<AxiosApiResponse<RootFileStructure>> {
+    const { encryptedFile, fileStructureId } = params;
+
+    const formData = new FormData();
+    formData.append('encryptedFile', encryptedFile);
+
+    if (fileStructureId) {
+      formData.append('fileStructureId', fileStructureId.toString());
+    }
+
+    try {
+      const result = await api.post<BasicFileStructureResponseDto>(
+        'file-structure/upload-encrypted-file',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+
+      return { data: RootFileStructure.customTransform(result.data) };
     } catch (e: unknown) {
       return { error: e as ClientApiError };
     }

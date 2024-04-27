@@ -88,12 +88,13 @@ async function handleAxiosResponseError(error: unknown) {
       }
 
       if (error.code === AxiosError.ERR_NETWORK) {
+        // hard refresh on network err
         window.location.href = cleanURL(constants.path.oops, { text: errNetworkText }).toString();
         return Promise.reject(generalClientError);
       }
     }
 
-    // unknown error, router.navigate to oops
+    // unknown error, navigate to oops
     window.location.href = cleanURL(constants.path.oops).toString();
     return Promise.reject(generalClientError);
   } catch (error) {

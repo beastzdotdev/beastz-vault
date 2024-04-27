@@ -31,7 +31,8 @@ export const FileStructureTopBar = (): React.JSX.Element => {
         />
 
         <div className="whitespace-nowrap">
-          <Button minimal icon="notifications" intent="none" />
+          {/* TODO: Notification */}
+          {/* <Button minimal icon="notifications" intent="none" /> */}
 
           <Popover
             content={
@@ -56,7 +57,7 @@ export const FileStructureTopBar = (): React.JSX.Element => {
             }
             placement="right-start"
           >
-            <Button minimal icon="layers" intent="none" />
+            <Button minimal icon="layout-grid" intent="none" />
           </Popover>
         </div>
       </div>

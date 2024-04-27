@@ -211,6 +211,7 @@ export const Sidebar = () => {
               </NavLink>
 
               <StorageLimitIndicator />
+              <p className="text-xs text-gray-500 text-muted mx-2.5 mt-1.5">version 0.0.1</p>
             </ButtonGroup>
           </div>
         </div>

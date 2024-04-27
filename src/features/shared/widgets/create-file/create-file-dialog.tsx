@@ -1,22 +1,26 @@
-import { basicSetup } from 'codemirror';
-import { Prec, keymap } from '@uiw/react-codemirror';
-// import CodeMirror, { EditorView } from '@codemirror';
-
+import { Suspense, lazy, useCallback, useRef } from 'react';
 import { observer, useLocalObservable } from 'mobx-react-lite';
-import { Button, Dialog, EditableText, Menu, MenuDivider, MenuItem } from '@blueprintjs/core';
-import { Suspense, lazy, useRef } from 'react';
-import { ReactCodeMirrorRef } from '@uiw/react-codemirror';
+import { Prec, keymap, ReactCodeMirrorRef, basicSetup } from '@uiw/react-codemirror';
+import { indentLess, insertNewlineKeepIndent, insertTab } from '@codemirror/commands';
 import {
-  defaultKeymap,
-  indentLess,
-  insertNewlineKeepIndent,
-  insertTab,
-} from '@codemirror/commands';
+  Button,
+  Dialog,
+  EditableText,
+  Menu,
+  MenuDivider,
+  MenuItem,
+  Switch,
+} from '@blueprintjs/core';
+
+import { useInjection } from 'inversify-react';
 import { MenuPopover } from '../../../../components/menu-popover';
+import { FileStructureApiService } from '../../../../shared/api';
+import { getFileStructureUrlParams } from '../../helper/get-url-params';
+import { cleanFiles, validateFileSize } from '../../helper/validate-file';
+import { toast } from '../../../../shared/ui';
+import { SharedController } from '../../state/shared.controller';
 
 const CodeMirrorLay = lazy(() => import('@uiw/react-codemirror'));
-
-// minimalSetup({})
 
 type Params = {
   isOpen: boolean;
@@ -49,10 +53,14 @@ const highestPredesenceKeymapExtensions = Prec.highest(
 
 export const CreateFileDialog = observer(({ isOpen, toggleIsOpen }: Params) => {
   const editorRef = useRef<ReactCodeMirrorRef>(null);
+  const fileStructureApiService = useInjection(FileStructureApiService);
+  const sharedController = useInjection(SharedController);
 
   const store = useLocalObservable(() => ({
     text: '',
     title: '',
+    loading: false,
+    replace: false,
 
     get isDisabled() {
       return this.text === '' || this.title === '';
@@ -66,9 +74,19 @@ export const CreateFileDialog = observer(({ isOpen, toggleIsOpen }: Params) => {
       this.title = title;
     },
 
+    setLoading(value: boolean) {
+      this.loading = value;
+    },
+
+    setReplace(value: boolean) {
+      this.replace = value;
+    },
+
     clear() {
       this.text = '';
       this.title = '';
+      this.loading = false;
+      this.replace = false;
     },
   }));
 
@@ -107,6 +125,63 @@ export const CreateFileDialog = observer(({ isOpen, toggleIsOpen }: Params) => {
     </>
   );
 
+  const saveFile = useCallback(async () => {
+    store.setLoading(true);
+
+    const { parentId, rootParentId } = getFileStructureUrlParams();
+    const file = new File([store.text], store.title, { type: 'text/plain' });
+
+    if (!validateFileSize([file])) {
+      store.setLoading(false);
+      return;
+    }
+
+    const sanitizedFiles = cleanFiles([file]);
+
+    if (!sanitizedFiles.length) {
+      store.setLoading(false);
+      return;
+    }
+
+    if (!store.replace) {
+      const { data: duplicateData, error } = await fileStructureApiService.getDuplicateStatus({
+        titles: sanitizedFiles.map(() => file.name),
+        isFile: true,
+        parentId,
+      });
+
+      if (error) {
+        toast.error(error?.message || 'Sorry, something went wrong');
+        store.setLoading(false);
+        return;
+      }
+
+      if (duplicateData?.find(e => e.title === file.name)?.hasDuplicate) {
+        toast.showDefaultMessage('Diplicate name detected, please use another one');
+        store.setLoading(false);
+        return;
+      }
+    }
+
+    const { data, error: uploadError } = await fileStructureApiService.uploadFile({
+      file: file,
+      keepBoth: !store.replace,
+      parentId,
+      rootParentId,
+    });
+
+    if (uploadError) {
+      toast.error(uploadError?.message || 'Sorry, something went wrong');
+      store.setLoading(false);
+      return;
+    }
+
+    sharedController.createFileStructureInState(data!, store.replace);
+
+    toggleIsOpen(false);
+    store.clear();
+  }, [fileStructureApiService, sharedController, store, toggleIsOpen]);
+
   return (
     <>
       <Dialog
@@ -140,38 +215,39 @@ export const CreateFileDialog = observer(({ isOpen, toggleIsOpen }: Params) => {
 
         <Suspense fallback={<div className="w-full h-[800px]"></div>}>
           <CodeMirrorLay
-            // <CodeMirrorLay
             value={store.text}
             height="800px"
             theme={'dark'}
-            spellCheck
-            extensions={[basicSetup, highestPredesenceKeymapExtensions]}
-            onChange={value => {
-              store.setText(value);
-            }}
             ref={editorRef}
-            // onKeyDown={e => {
-            //   if (e.key.toLowerCase() === 'tab') {
-            //     e.preventDefault();
-            //     handleTabKey();
-            //   }
-            // }}
+            spellCheck
+            extensions={[basicSetup(), highestPredesenceKeymapExtensions]}
+            onChange={value => store.setText(value)}
             basicSetup={{
               foldGutter: false,
               allowMultipleSelections: true,
               highlightActiveLine: true,
               lineNumbers: true,
-              //
               defaultKeymap: true,
             }}
           />
         </Suspense>
 
-        <div className="p-3 flex justify-end">
-          {JSON.stringify(store.title)}
-          {JSON.stringify(store.text)}
-          {JSON.stringify(store.isDisabled)}
-          <Button text="Save" disabled={store.isDisabled} />
+        <div className="p-3 flex justify-between select-none items-center">
+          <Switch
+            checked={store.replace}
+            labelElement="Should replace"
+            className="m-0"
+            innerLabelChecked="on"
+            innerLabel="off"
+            onChange={e => store.setReplace(e.currentTarget.checked)}
+          />
+          <Button
+            text="Save"
+            loading={store.loading}
+            disabled={store.isDisabled}
+            className="px-5"
+            onClick={saveFile}
+          />
         </div>
       </Dialog>
     </>

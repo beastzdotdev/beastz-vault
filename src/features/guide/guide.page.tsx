@@ -18,6 +18,16 @@ export const GuidePage = () => {
       <hr />
       <ol className="list-decimal list-inside">
         <li>
+          State change
+          <ol className="list-decimal list-inside pl-5">
+            <li>
+              Sorry but some ui changes require page reload to take effect (will be resolved in next
+              version)
+            </li>
+          </ol>
+        </li>
+
+        <li>
           Encryption
           <ol className="list-decimal list-inside pl-5">
             <li>

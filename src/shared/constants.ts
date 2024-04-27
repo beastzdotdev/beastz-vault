@@ -33,6 +33,7 @@ export const constants = Object.freeze({
     },
   },
 
+  ENCRYPTION_EXT: '.enc',
   MAX_FILE_UPLOAD_SIZE_IN_MB: 30, // max file upload for single file ~30mb
   MAX_FILE_COUNT: 150, // max file upload count from folder
   MAX_ALLOWED_TOTAL_SIZE_IN_GB: 30, // total allowed file size ~30 GB

@@ -113,7 +113,6 @@ export const CreateFolderDialog = ({
               <InputGroup
                 autoFocus
                 tabIndex={1}
-                className="clear-start"
                 intent={
                   folderNameForm.errors.folderName && showErrorMessage ? Intent.DANGER : Intent.NONE
                 }

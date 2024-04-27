@@ -171,7 +171,7 @@ export const cleanURL = (
 
 export const differentiate = (
   value: FileMimeType | null
-): 'text' | 'image' | 'audio' | 'video' | 'other' => {
+): 'text' | 'image' | 'audio' | 'video' | 'byte' | 'other' => {
   // TODO not supported yet
   // FileMimeType.TEXT_MARKDOWN
   // FileMimeType.APPLICATION_JSON
@@ -182,6 +182,8 @@ export const differentiate = (
   switch (value) {
     case FileMimeType.TEXT_PLAIN:
       return 'text';
+    case FileMimeType.APPLICATION_OCTET_STREAM:
+      return 'byte';
     case FileMimeType.IMAGE_JPG:
     case FileMimeType.IMAGE_PNG:
     case FileMimeType.IMAGE_GIF:

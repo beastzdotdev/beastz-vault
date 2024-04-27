@@ -12,6 +12,7 @@ import { ChangeColor } from './change-color';
 import { RootFileStructure } from '../../../shared/model';
 import { FileStructureDetails } from './file-structure-details';
 import { FileStructureFileView } from './file-structure-file-view';
+import { FileStructureEncrypt } from './file-structure-encrypt/file-structure-encrypt';
 
 export const FileStructureFiles = observer((): React.JSX.Element => {
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ export const FileStructureFiles = observer((): React.JSX.Element => {
   const [isChangeColorOpen, setChangeColorOpen] = useState(false);
   const [isDetailsOpen, setDetailsOpen] = useState(false);
   const [isFileViewOpen, setFileViewOpen] = useState(false);
+  const [isFileStructureEncryptOpen, setFileStructureEncryptOpen] = useState(false);
 
   const localSelectedStore = useLocalObservable(() => ({
     selectedNodes: new Set<RootFileStructure>(),
@@ -44,7 +46,10 @@ export const FileStructureFiles = observer((): React.JSX.Element => {
     },
   }));
 
-  const toggleOpen = (value: boolean, type: 'change-color' | 'details' | 'file-view') => {
+  const toggleOpen = (
+    value: boolean,
+    type: 'change-color' | 'details' | 'file-view' | 'encrypt'
+  ) => {
     const finalValue = value;
 
     // is closing
@@ -62,6 +67,9 @@ export const FileStructureFiles = observer((): React.JSX.Element => {
       case 'file-view':
         setFileViewOpen(finalValue);
         break;
+      case 'encrypt':
+        setFileStructureEncryptOpen(finalValue);
+        break;
     }
   };
 
@@ -78,6 +86,7 @@ export const FileStructureFiles = observer((): React.JSX.Element => {
               onSelected={node => localSelectedStore.setSelectedSingle(node)}
               onColorChange={() => toggleOpen(true, 'change-color')}
               onDetails={() => toggleOpen(true, 'details')}
+              onEncrypt={async () => toggleOpen(true, 'encrypt')}
               onDoubleClick={async node => {
                 if (node.isFile) {
                   toggleOpen(true, 'file-view');
@@ -150,6 +159,12 @@ export const FileStructureFiles = observer((): React.JSX.Element => {
             isOpen={isFileViewOpen}
             toggleIsOpen={value => toggleOpen(value, 'file-view')}
             isInBin={false}
+          />
+
+          <FileStructureEncrypt
+            selectedNodes={[...localSelectedStore.selectedNodes]}
+            isOpen={isFileStructureEncryptOpen}
+            toggleIsOpen={value => toggleOpen(value, 'encrypt')}
           />
         </>
       )}
