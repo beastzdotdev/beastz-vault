@@ -89,7 +89,7 @@ export const Sidebar = () => {
                       onClick={() => folderUploadRef.current?.click()}
                     />
                     <MenuDivider />
-                    <MenuItem text="Gorilla doc (coming soon)" icon="application" />
+                    <MenuItem disabled text="Gorilla doc (coming soon)" icon="application" />
                   </Menu>
                 }
                 placement="right-start"
@@ -97,8 +97,8 @@ export const Sidebar = () => {
                 <Button icon="plus" rightIcon="chevron-right" text="New" />
               </Popover>
 
-              <Button icon="updated" text="Recent" />
-              <Button icon="cog" text="Settings" />
+              <Button icon="updated" text="Recent" disabled />
+              <Button icon="cog" text="Settings" disabled />
             </ButtonGroup>
           </div>
 

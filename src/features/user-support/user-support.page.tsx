@@ -39,7 +39,7 @@ export const UserSupportPage = observer((): React.JSX.Element => {
               title="Information"
               doNotShowButton
             >
-              <Button outlined intent="primary" icon="info-sign" />
+              <Button outlined intent="primary" icon="high-priority" />
             </PopConfirmCustom>
             <Button
               outlined

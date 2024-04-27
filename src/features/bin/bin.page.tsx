@@ -1,10 +1,8 @@
-import { v4 as uuid } from 'uuid';
 import { Button, H2, Intent, NonIdealState, NonIdealStateIconSize } from '@blueprintjs/core';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { useState } from 'react';
 import { useInjection } from 'inversify-react';
 import { useNavigate } from 'react-router-dom';
-import { AdvancedSelectItem, AdvancedSelect } from '../../components/advanced-select';
 import { BinStore } from './state/bin.store';
 import { SafeRenderArray } from '../../components/safe-render-array';
 import { FileStuructureFileItem } from '../../widgets/file-structure-item.widget';
@@ -16,31 +14,31 @@ import { RootFileStructure } from '../../shared/model';
 import { FileStructureFileView } from '../file-structure/widgets/file-structure-file-view';
 import { Bin } from './model/bin.model';
 
-const typeItems: AdvancedSelectItem[] = [
-  { key: uuid(), text: 'Images' },
-  { key: uuid(), text: 'Pdfs' },
-  { key: uuid(), text: 'Videos' },
-  { key: uuid(), text: 'Audios' },
-  { key: uuid(), text: 'Shortcuts' },
-  { key: uuid(), text: 'Folders' },
-  { key: uuid(), text: 'Files' },
-  { key: uuid(), text: 'Archives (zip)' },
-];
+// const typeItems: AdvancedSelectItem[] = [
+//   { key: uuid(), text: 'Images' },
+//   { key: uuid(), text: 'Pdfs' },
+//   { key: uuid(), text: 'Videos' },
+//   { key: uuid(), text: 'Audios' },
+//   { key: uuid(), text: 'Shortcuts' },
+//   { key: uuid(), text: 'Folders' },
+//   { key: uuid(), text: 'Files' },
+//   { key: uuid(), text: 'Archives (zip)' },
+// ];
 
-const modifiedItems: AdvancedSelectItem[] = [
-  { key: uuid(), text: 'Today' },
-  { key: uuid(), text: 'Last 7 days' },
-  { key: uuid(), text: 'Last 30days' },
-  { key: uuid(), text: 'This year' },
-  { key: uuid(), text: 'Last year' },
-  { key: uuid(), text: 'Custom' },
-];
+// const modifiedItems: AdvancedSelectItem[] = [
+//   { key: uuid(), text: 'Today' },
+//   { key: uuid(), text: 'Last 7 days' },
+//   { key: uuid(), text: 'Last 30days' },
+//   { key: uuid(), text: 'This year' },
+//   { key: uuid(), text: 'Last year' },
+//   { key: uuid(), text: 'Custom' },
+// ];
 
 export const BinPage = observer((): React.JSX.Element => {
   const navigate = useNavigate();
   const binStore = useInjection(BinStore);
-  const [selectedType, setSelectedType] = useState<AdvancedSelectItem | null>(null);
-  const [modifiedType, setModifiedType] = useState<AdvancedSelectItem | null>(null);
+  // const [selectedType, setSelectedType] = useState<AdvancedSelectItem | null>(null);
+  // const [modifiedType, setModifiedType] = useState<AdvancedSelectItem | null>(null);
   const [isDeleteForeverOpen, setDeleteForeverOpen] = useState(false);
   const [isFileViewOpen, setFileViewOpen] = useState(false);
   const [isRestoreOpen, setRestoreOpen] = useState(false);
@@ -102,7 +100,7 @@ export const BinPage = observer((): React.JSX.Element => {
     <div className="px-2.5 pt-3 cursor-default">
       <H2 className="font-extralight">Bin</H2>
 
-      <div className="w-full flex mt-5">
+      {/* <div className="w-full flex mt-5">
         <AdvancedSelect
           buttonProps={{ outlined: true }}
           className="min-w-[90px]"
@@ -119,7 +117,7 @@ export const BinPage = observer((): React.JSX.Element => {
           placeholder="Modified"
           handleSelect={value => setModifiedType(value)}
         />
-      </div>
+      </div> */}
 
       <div className="gorilla-file-structure mt-5">
         <SafeRenderArray

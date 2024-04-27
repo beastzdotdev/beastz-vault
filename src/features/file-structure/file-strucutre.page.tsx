@@ -1,33 +1,30 @@
-import { v4 as uuid } from 'uuid';
-import { useState } from 'react';
 import { FileStructureTopBar } from './widgets/file-structure-topbar';
-import { AdvancedSelect, AdvancedSelectItem } from '../../components/advanced-select';
 import { FileStructureFiles } from './widgets/file-structure-files';
 import { FileStructureBreadcrumb } from './widgets/file-structure-breadcrumb';
 
-const typeItems: AdvancedSelectItem[] = [
-  { key: uuid(), text: 'Images' },
-  { key: uuid(), text: 'Pdfs' },
-  { key: uuid(), text: 'Videos' },
-  { key: uuid(), text: 'Audios' },
-  { key: uuid(), text: 'Shortcuts' },
-  { key: uuid(), text: 'Folders' },
-  { key: uuid(), text: 'Files' },
-  { key: uuid(), text: 'Archives (zip)' },
-];
+// const typeItems: AdvancedSelectItem[] = [
+//   { key: uuid(), text: 'Images' },
+//   { key: uuid(), text: 'Pdfs' },
+//   { key: uuid(), text: 'Videos' },
+//   { key: uuid(), text: 'Audios' },
+//   { key: uuid(), text: 'Shortcuts' },
+//   { key: uuid(), text: 'Folders' },
+//   { key: uuid(), text: 'Files' },
+//   { key: uuid(), text: 'Archives (zip)' },
+// ];
 
-const modifiedItems: AdvancedSelectItem[] = [
-  { key: uuid(), text: 'Today' },
-  { key: uuid(), text: 'Last 7 days' },
-  { key: uuid(), text: 'Last 30days' },
-  { key: uuid(), text: 'This year' },
-  { key: uuid(), text: 'Last year' },
-  { key: uuid(), text: 'Custom' },
-];
+// const modifiedItems: AdvancedSelectItem[] = [
+//   { key: uuid(), text: 'Today' },
+//   { key: uuid(), text: 'Last 7 days' },
+//   { key: uuid(), text: 'Last 30days' },
+//   { key: uuid(), text: 'This year' },
+//   { key: uuid(), text: 'Last year' },
+//   { key: uuid(), text: 'Custom' },
+// ];
 
 export const FileStructurePage = (): React.JSX.Element => {
-  const [selectedType, setSelectedType] = useState<AdvancedSelectItem | null>(null);
-  const [modifiedType, setModifiedType] = useState<AdvancedSelectItem | null>(null);
+  // const [selectedType, setSelectedType] = useState<AdvancedSelectItem | null>(null);
+  // const [modifiedType, setModifiedType] = useState<AdvancedSelectItem | null>(null);
 
   return (
     <>
@@ -38,7 +35,7 @@ export const FileStructurePage = (): React.JSX.Element => {
           <FileStructureBreadcrumb />
 
           <div className="w-full flex pt-3">
-            <AdvancedSelect
+            {/* <AdvancedSelect
               className="min-w-[90px]"
               items={typeItems}
               value={selectedType}
@@ -52,7 +49,7 @@ export const FileStructurePage = (): React.JSX.Element => {
               value={modifiedType}
               placeholder="Modified"
               handleSelect={value => setModifiedType(value)}
-            />
+            /> */}
 
             {/* <AdvancedSelect
               className="ml-3 min-w-[100px]"

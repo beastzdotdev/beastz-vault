@@ -29,32 +29,32 @@ export const UserSupportTicketDetailPage = observer((): React.JSX.Element => {
         toggleIsOpen={setUserSupportMessageModelOpen}
       />
 
-      <div className="flex justify-between">
-        <div className="flex items-center">
-          <div className="flex items-center mr-2">
-            <Button icon="chevron-left" minimal onClick={() => navigate(constants.path.support)} />
-          </div>
-          <H2 className="font-extralight mb-1">Ticket review</H2>
-
-          <CompoundTag
-            intent={getTagIntentForSupport(userSupportStore.singleData.status)}
-            children={userSupportStore.singleData.status}
-            leftContent={'Status'}
-            className="ml-3"
-            minimal
-          />
+      <div className="flex items-center">
+        <div className="flex items-center mr-2">
+          <Button icon="chevron-left" minimal onClick={() => navigate(constants.path.support)} />
         </div>
+        <H2 className="font-extralight mb-1">Ticket review</H2>
+
+        <CompoundTag
+          intent={getTagIntentForSupport(userSupportStore.singleData.status)}
+          children={userSupportStore.singleData.status}
+          leftContent={'Status'}
+          className="ml-3"
+          minimal
+        />
+      </div>
+
+      <div className="flex items-center">
+        <H5 className={`${TEXT_MUTED} font-extralight m-0`}>{userSupportStore.singleData.uuid}</H5>
 
         <PopConfirmCustom
           text="Hello, fellow user, please keep in mind that here only first 100 messages is loaded."
           title="Information"
           doNotShowButton
         >
-          <Button outlined intent="primary" icon="info-sign" className="ml-3" />
+          <Button outlined small intent="primary" icon="high-priority" className="ml-3" />
         </PopConfirmCustom>
       </div>
-
-      <H5 className={`${TEXT_MUTED} font-extralight`}>{userSupportStore.singleData.uuid}</H5>
 
       <br />
       <br />

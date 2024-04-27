@@ -109,3 +109,9 @@ TODO public link
 TODO open encryption
 
 TODO in future i think it would be better to move all opening modal into signal like event emitter or event bus
+TODO reset password page
+
+TODO breadcrumb
+TODO create custom portal and modal for file view do not like blueprint version or just update
+TODO finish storage page
+TODO custom pagination component
