@@ -28,3 +28,14 @@ export class GetDuplicateStatusResponseDto {
 export class GetGeneralInfoResponseDto {
   totalSize: number;
 }
+
+class DuplChecker {
+  title: string;
+  mimeTypeRaw?: string;
+}
+
+export class GetDuplicateStatusQueryDto {
+  items: DuplChecker[];
+  isFile: boolean;
+  parentId?: number;
+}

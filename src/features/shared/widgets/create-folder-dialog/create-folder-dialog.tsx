@@ -48,7 +48,7 @@ export const CreateFolderDialog = ({
 
       const { data: duplData, error: duplError } = await fileStructureApiService.getDuplicateStatus(
         {
-          titles: [values.folderName],
+          items: [{ title: values.folderName }],
           isFile: false,
           parentId,
         }

@@ -141,7 +141,7 @@ export const BinPage = observer((): React.JSX.Element => {
                   }
                 }}
                 onCopy={node => {
-                  navigator.clipboard.writeText(node.title);
+                  navigator.clipboard.writeText(node.title + (node.fileExstensionRaw ?? ''));
                   toast.showMessage('Copied to clipboard');
                 }}
               />
@@ -168,32 +168,40 @@ export const BinPage = observer((): React.JSX.Element => {
 
       {[...localSelectedStore.selectedNodes].length !== 0 && (
         <>
-          <RestoreFromBin
-            selectedNodes={localSelectedStore.nodes}
-            isOpen={isRestoreOpen}
-            toggleIsOpen={value => toggleOpen(value, 'restore')}
-          />
+          {isRestoreOpen && (
+            <RestoreFromBin
+              selectedNodes={localSelectedStore.nodes}
+              isOpen={isRestoreOpen}
+              toggleIsOpen={value => toggleOpen(value, 'restore')}
+            />
+          )}
 
-          <DeleteForeverBin
-            selectedNodes={localSelectedStore.nodes}
-            isOpen={isDeleteForeverOpen}
-            toggleIsOpen={value => toggleOpen(value, 'delete-forever')}
-          />
+          {isDeleteForeverOpen && (
+            <DeleteForeverBin
+              selectedNodes={localSelectedStore.nodes}
+              isOpen={isDeleteForeverOpen}
+              toggleIsOpen={value => toggleOpen(value, 'delete-forever')}
+            />
+          )}
 
-          <FileStructureDetails
-            selectedNodes={localSelectedStore.nodes}
-            isOpen={isDetailsOpen}
-            toggleIsOpen={value => toggleOpen(value, 'details')}
-            isInBin={true}
-          />
+          {isDetailsOpen && (
+            <FileStructureDetails
+              selectedNodes={localSelectedStore.nodes}
+              isOpen={isDetailsOpen}
+              toggleIsOpen={value => toggleOpen(value, 'details')}
+              isInBin={true}
+            />
+          )}
 
-          <FileStructureFileView
-            selectedNode={localSelectedStore.nodes[0]}
-            isOpen={isFileViewOpen}
-            toggleIsOpen={value => toggleOpen(value, 'file-view')}
-            isInBin={true}
-            binFsPath={localSelectedStore.binNodePath}
-          />
+          {isFileViewOpen && (
+            <FileStructureFileView
+              selectedNode={localSelectedStore.nodes[0]}
+              isOpen={isFileViewOpen}
+              toggleIsOpen={value => toggleOpen(value, 'file-view')}
+              isInBin={true}
+              binFsPath={localSelectedStore.binNodePath}
+            />
+          )}
         </>
       )}
     </div>

@@ -43,8 +43,7 @@ const FileStuructureContextMenu = (params: {
   return (
     <Menu>
       <MenuItem text="Copy tittle" icon="duplicate" onClick={() => params.onCopy?.(params.node)} />
-      <MenuItem text="Public link" icon="link" />
-      <MenuItem text="Move" icon="nest" />
+
       <MenuDivider />
       <MenuItem
         text="Change color"
@@ -52,9 +51,23 @@ const FileStuructureContextMenu = (params: {
         onClick={() => params.onColorChange?.(params.node)}
       />
       <MenuItem text="Details" icon="info-sign" onClick={() => params.onDetails?.(params.node)} />
-      <MenuItem text="Not editable" icon="edit" />
-      <MenuItem text="Lock" icon="lock" />
-      <MenuItem text="Encrypt" icon="shield" onClick={() => params.onEncrypt?.(params.node)} />
+
+      {params.node.isFile && (
+        <>
+          <MenuItem
+            text={params.node.isEditable ? 'Diable editing' : 'Make editable'}
+            icon={params.node.isEditable ? 'cross' : 'edit'}
+          />
+
+          <MenuItem
+            text={params.node.isLocked ? 'Unlock' : 'Lock'}
+            icon={params.node.isLocked ? 'unlock' : 'lock'}
+          />
+
+          <MenuItem text="Encrypt" icon="shield" onClick={() => params.onEncrypt?.(params.node)} />
+        </>
+      )}
+
       <MenuItem
         text="Download"
         icon="cloud-download"
@@ -63,6 +76,8 @@ const FileStuructureContextMenu = (params: {
 
       <MenuDivider />
       <MenuItem text="Coming soon" icon="clean">
+        <MenuItem disabled text="Public link" icon="link" />
+        <MenuItem disabled text="Move" icon="nest" />
         <MenuItem disabled text="Share" icon="share" />
         <MenuItem disabled text="Bookmark" icon="bookmark" />
         <MenuItem disabled text="Add shortcut" icon="folder-new" />
@@ -192,46 +207,37 @@ export const FileStuructureFileItem = observer(
 
           {!params.isFromBin && (
             <div className="items-center justify-end flex-grow-0 w-[210px] xl:flex hidden">
-              {/* Share and bookmark add later */}
               <Button
                 icon="cloud-download"
                 minimal
                 className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
-                onClick={e => {
-                  e.stopPropagation();
-                  params.onDownload?.(params.node);
-                }}
+                onClick={() => params.onDownload?.(params.node)}
               />
+              {params.node.isFile && (
+                <Button
+                  icon="shield"
+                  minimal
+                  className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
+                  onClick={() => params.onEncrypt?.(params.node)}
+                />
+              )}
               <Button
-                icon="edit"
+                icon="info-sign"
                 minimal
                 className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
-                onClick={e => e.stopPropagation()}
+                onClick={() => params.onDetails?.(params.node)}
               />
               <Button
-                icon="lock"
+                icon="tint"
                 minimal
                 className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
-                onClick={e => e.stopPropagation()}
+                onClick={() => params.onColorChange?.(params.node)}
               />
-              <Button
-                icon="shield"
-                minimal
-                className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
-                onClick={e => {
-                  e.stopPropagation();
-                  params.onEncrypt?.(params.node);
-                }}
-              />
-
               <Button
                 icon="trash"
                 minimal
                 className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
-                onClick={e => {
-                  e.stopPropagation();
-                  params.onMoveToBin?.(params.node);
-                }}
+                onClick={() => params.onMoveToBin?.(params.node)}
               />
             </div>
           )}

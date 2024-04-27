@@ -103,3 +103,9 @@ TODO get more storage
 TODO clean up space
 
 TODO at the end move some stuff to shared library from backend and frontend
+TODO copy path
+TODO copy color
+TODO public link
+TODO open encryption
+
+TODO in future i think it would be better to move all opening modal into signal like event emitter or event bus

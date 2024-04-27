@@ -203,3 +203,12 @@ export const differentiate = (
       return 'other';
   }
 };
+
+export const download = (obj: Blob | MediaSource, title: string) => {
+  const url = window.URL.createObjectURL(obj);
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', title);
+  document.body.appendChild(link);
+  link.click();
+};

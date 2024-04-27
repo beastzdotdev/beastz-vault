@@ -5,9 +5,11 @@ import { Singleton } from '../../ioc';
 import { RootFileStructure } from '../../model';
 import {
   BasicFileStructureResponseDto,
+  GetDuplicateStatusQueryDto,
   GetDuplicateStatusResponseDto,
   GetGeneralInfoResponseDto,
 } from './file-structure-api.schema';
+import { download } from '../../helper';
 
 @Singleton
 export class FileStructureApiService {
@@ -28,11 +30,9 @@ export class FileStructureApiService {
     }
   }
 
-  async getDuplicateStatus(params: {
-    titles: string[];
-    parentId?: number;
-    isFile: boolean;
-  }): Promise<AxiosApiResponse<GetDuplicateStatusResponseDto[]>> {
+  async getDuplicateStatus(
+    params: GetDuplicateStatusQueryDto
+  ): Promise<AxiosApiResponse<GetDuplicateStatusResponseDto[]>> {
     try {
       const result = await api.get<GetDuplicateStatusResponseDto[]>(
         `file-structure/duplicate-status`,
@@ -105,13 +105,9 @@ export class FileStructureApiService {
       const fileTitle = result.headers['content-title'] ?? 'example.txt';
       const fileType = result.headers['content-type'];
 
+      //TODO: this should not be here
       if (shouldSave) {
-        const url = window.URL.createObjectURL(new Blob([result.data], { type: fileType }));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', fileTitle);
-        document.body.appendChild(link);
-        link.click();
+        download(new Blob([result.data], { type: fileType }), fileTitle);
       }
 
       return {

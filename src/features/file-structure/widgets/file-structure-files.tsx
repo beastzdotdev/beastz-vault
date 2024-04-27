@@ -99,7 +99,7 @@ export const FileStructureFiles = observer((): React.JSX.Element => {
                 window.location.reload();
               }}
               onCopy={node => {
-                navigator.clipboard.writeText(node.title);
+                navigator.clipboard.writeText(node.title + (node.fileExstensionRaw ?? ''));
                 toast.showMessage('Copied to clipboard');
               }}
               onDownload={async node => {
@@ -141,31 +141,39 @@ export const FileStructureFiles = observer((): React.JSX.Element => {
 
       {[...localSelectedStore.selectedNodes].length !== 0 && (
         <>
-          <ChangeColor
-            selectedNodes={[...localSelectedStore.selectedNodes]}
-            isOpen={isChangeColorOpen}
-            toggleIsOpen={value => toggleOpen(value, 'change-color')}
-          />
+          {isChangeColorOpen && (
+            <ChangeColor
+              selectedNodes={[...localSelectedStore.selectedNodes]}
+              isOpen={isChangeColorOpen}
+              toggleIsOpen={value => toggleOpen(value, 'change-color')}
+            />
+          )}
 
-          <FileStructureDetails
-            selectedNodes={[...localSelectedStore.selectedNodes]}
-            isOpen={isDetailsOpen}
-            toggleIsOpen={value => toggleOpen(value, 'details')}
-            isInBin={false}
-          />
+          {isDetailsOpen && (
+            <FileStructureDetails
+              selectedNodes={[...localSelectedStore.selectedNodes]}
+              isOpen={isDetailsOpen}
+              toggleIsOpen={value => toggleOpen(value, 'details')}
+              isInBin={false}
+            />
+          )}
 
-          <FileStructureFileView
-            selectedNode={[...localSelectedStore.selectedNodes][0]}
-            isOpen={isFileViewOpen}
-            toggleIsOpen={value => toggleOpen(value, 'file-view')}
-            isInBin={false}
-          />
+          {isFileViewOpen && (
+            <FileStructureFileView
+              selectedNode={[...localSelectedStore.selectedNodes][0]}
+              isOpen={isFileViewOpen}
+              toggleIsOpen={value => toggleOpen(value, 'file-view')}
+              isInBin={false}
+            />
+          )}
 
-          <FileStructureEncrypt
-            selectedNodes={[...localSelectedStore.selectedNodes]}
-            isOpen={isFileStructureEncryptOpen}
-            toggleIsOpen={value => toggleOpen(value, 'encrypt')}
-          />
+          {isFileStructureEncryptOpen && (
+            <FileStructureEncrypt
+              selectedNodes={[...localSelectedStore.selectedNodes]}
+              isOpen={isFileStructureEncryptOpen}
+              toggleIsOpen={value => toggleOpen(value, 'encrypt')}
+            />
+          )}
         </>
       )}
     </div>

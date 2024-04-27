@@ -1,3 +1,7 @@
+import { useFormik } from 'formik';
+import { useInjection } from 'inversify-react';
+import { observer, useLocalObservable } from 'mobx-react-lite';
+import { useEffect, useState } from 'react';
 import {
   Dialog,
   DialogBody,
@@ -9,24 +13,20 @@ import {
   Callout,
   Tooltip,
 } from '@blueprintjs/core';
-import { useInjection } from 'inversify-react';
-import { observer, useLocalObservable } from 'mobx-react-lite';
-import { useEffect, useState } from 'react';
-import { useFormik } from 'formik';
-import { ExceptionMessageCode } from '../../../../shared/enum';
+
 import { toast } from '../../../../shared/ui';
+import { ExceptionMessageCode } from '../../../../shared/enum';
 import { sleep, zodFormikErrorAdapter } from '../../../../shared/helper';
 import { ClientApiError } from '../../../../shared/errors';
 import { RootFileStructure } from '../../../../shared/model';
 import { FileStructureApiService } from '../../../../shared/api';
 import { FormErrorMessage } from '../../../../components/form-error-message';
-
+import { constants } from '../../../../shared/constants';
+import { encryption } from '../../../../shared/encryption';
 import {
   fsEncryptionValidation,
   fsEncryptionValidationFields,
 } from './file-structure-encrypt-validation';
-import { constants } from '../../../../shared/constants';
-import { encryption } from '../../../../shared/encryption';
 
 type Params = {
   selectedNodes: RootFileStructure[];
@@ -35,7 +35,6 @@ type Params = {
 };
 
 export const FileStructureEncrypt = observer(({ selectedNodes, isOpen, toggleIsOpen }: Params) => {
-  // const sharedStore = useInjection(SharedStore);
   const fileStructureApiService = useInjection(FileStructureApiService);
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const form = useFormik({

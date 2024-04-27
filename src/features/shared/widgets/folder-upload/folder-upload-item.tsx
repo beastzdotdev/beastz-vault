@@ -220,7 +220,7 @@ export const FolderUploadItem = observer(
         folderUploadAtomicStore.setTotalLength(totalLength);
 
         const { data: duplicateData, error } = await fileStructureApiService.getDuplicateStatus({
-          titles: [tree[0].name],
+          items: [{ title: tree[0].name }],
           isFile: false,
           parentId,
         });

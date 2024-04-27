@@ -2,15 +2,7 @@ import { Suspense, lazy, useCallback, useRef } from 'react';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { Prec, keymap, ReactCodeMirrorRef, basicSetup } from '@uiw/react-codemirror';
 import { indentLess, insertNewlineKeepIndent, insertTab } from '@codemirror/commands';
-import {
-  Button,
-  Dialog,
-  EditableText,
-  Menu,
-  MenuDivider,
-  MenuItem,
-  Switch,
-} from '@blueprintjs/core';
+import { Button, Dialog, EditableText, MenuItem, Switch } from '@blueprintjs/core';
 
 import { useInjection } from 'inversify-react';
 import { MenuPopover } from '../../../../components/menu-popover';
@@ -19,6 +11,7 @@ import { getFileStructureUrlParams } from '../../helper/get-url-params';
 import { cleanFiles, validateFileSize } from '../../helper/validate-file';
 import { toast } from '../../../../shared/ui';
 import { SharedController } from '../../state/shared.controller';
+import { download } from '../../../../shared/helper';
 
 const CodeMirrorLay = lazy(() => import('@uiw/react-codemirror'));
 
@@ -66,6 +59,18 @@ export const CreateFileDialog = observer(({ isOpen, toggleIsOpen }: Params) => {
       return this.text === '' || this.title === '';
     },
 
+    get realTitle() {
+      return this.title + '.txt';
+    },
+
+    get isTitleEmpty() {
+      return this.title === '';
+    },
+
+    get isTextEmpty() {
+      return this.text === '';
+    },
+
     setText(text: string) {
       this.text = text;
     },
@@ -90,46 +95,77 @@ export const CreateFileDialog = observer(({ isOpen, toggleIsOpen }: Params) => {
     },
   }));
 
-  const menuItems = (
-    <>
-      <MenuPopover
-        menuChildren={
-          <>
-            <MenuItem text="New" label="⌘C" />
-            <MenuItem text="Open..." />
+  const close = useCallback(() => {
+    store.clear();
+    toggleIsOpen(false);
+  }, [store, toggleIsOpen]);
 
-            <MenuDivider className="mx-1" />
+  const saveLocaly = () => {
+    if (store.isTextEmpty) {
+      toast.showDefaultMessage('Nothing to save');
+      return;
+    }
 
-            <MenuItem text="Close" />
-            <MenuItem text="Save" />
-            <MenuItem text="Save as..." />
+    const title = store.isTitleEmpty ? 'example.txt' : store.realTitle;
 
-            <MenuDivider className="mx-1" />
+    download(new File([store.text], title, { type: 'text/plain' }), title);
+  };
 
-            <MenuItem text="Gorilla doc (coming soon)" disabled />
-          </>
-        }
-      >
-        <Button text="New" small minimal />
-      </MenuPopover>
-
-      <MenuPopover
-        menuChildren={
-          <Menu small>
-            <MenuItem text="Wrap text" />
-          </Menu>
-        }
-      >
-        <Button text="Format" small minimal />
-      </MenuPopover>
-    </>
+  const currentMenuItems = (
+    <MenuPopover
+      menuChildren={
+        <>
+          <MenuItem text="New" onClick={() => store.clear()} />
+          <MenuItem text="Close" onClick={() => close()} />
+          <MenuItem text="Save" onClick={() => saveLocaly()} />
+        </>
+      }
+    >
+      <Button text="File" small minimal />
+    </MenuPopover>
   );
+
+  //TODO in future
+  // const menuItems = (
+  //   <>
+  //     <MenuPopover
+  //       menuChildren={
+  //         <>
+  //           <MenuItem text="New" label="⌘C" />
+  //           <MenuItem text="Open..." />
+
+  //           <MenuDivider className="mx-1" />
+
+  //           <MenuItem text="Close" />
+  //           <MenuItem text="Save" />
+  //           <MenuItem text="Save as..." />
+
+  //           <MenuDivider className="mx-1" />
+
+  //           <MenuItem text="Gorilla doc (coming soon)" disabled />
+  //         </>
+  //       }
+  //     >
+  //       <Button text="File" small minimal />
+  //     </MenuPopover>
+
+  //     <MenuPopover
+  //       menuChildren={
+  //         <Menu small>
+  //           <MenuItem text="Wrap text" />
+  //         </Menu>
+  //       }
+  //     >
+  //       <Button text="Format" small minimal />
+  //     </MenuPopover>
+  //   </>
+  // );
 
   const saveFile = useCallback(async () => {
     store.setLoading(true);
 
     const { parentId, rootParentId } = getFileStructureUrlParams();
-    const file = new File([store.text], store.title, { type: 'text/plain' });
+    const file = new File([store.text], store.realTitle, { type: 'text/plain' });
 
     if (!validateFileSize([file])) {
       store.setLoading(false);
@@ -145,7 +181,7 @@ export const CreateFileDialog = observer(({ isOpen, toggleIsOpen }: Params) => {
 
     if (!store.replace) {
       const { data: duplicateData, error } = await fileStructureApiService.getDuplicateStatus({
-        titles: sanitizedFiles.map(() => file.name),
+        items: sanitizedFiles.map(() => ({ title: store.realTitle, mimeTypeRaw: 'text/plain' })),
         isFile: true,
         parentId,
       });
@@ -178,18 +214,14 @@ export const CreateFileDialog = observer(({ isOpen, toggleIsOpen }: Params) => {
 
     sharedController.createFileStructureInState(data!, store.replace);
 
-    toggleIsOpen(false);
-    store.clear();
-  }, [fileStructureApiService, sharedController, store, toggleIsOpen]);
+    close();
+  }, [close, fileStructureApiService, sharedController, store]);
 
   return (
     <>
       <Dialog
         isOpen={isOpen}
-        onClose={() => {
-          store.clear();
-          toggleIsOpen(false);
-        }}
+        onClose={() => close()}
         canOutsideClickClose
         canEscapeKeyClose
         shouldReturnFocusOnClose
@@ -198,7 +230,7 @@ export const CreateFileDialog = observer(({ isOpen, toggleIsOpen }: Params) => {
         className="!shadow-none relative w-[900px]"
       >
         <div className="relative select-none">
-          <div>{menuItems}</div>
+          <div>{currentMenuItems}</div>
           <div className="absolute left-1/2 -translate-x-1/2 top-0">
             <EditableText
               placeholder="Edit title..."
