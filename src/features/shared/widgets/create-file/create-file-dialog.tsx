@@ -1,24 +1,62 @@
-import CodeMirror from '@uiw/react-codemirror';
+import { basicSetup } from 'codemirror';
+import { Prec, keymap } from '@uiw/react-codemirror';
+// import CodeMirror, { EditorView } from '@codemirror';
+
 import { observer, useLocalObservable } from 'mobx-react-lite';
+import { Button, Dialog, EditableText, Menu, MenuDivider, MenuItem } from '@blueprintjs/core';
+import { Suspense, lazy, useRef } from 'react';
+import { ReactCodeMirrorRef } from '@uiw/react-codemirror';
 import {
-  Button,
-  Dialog,
-  EditableText,
-  Menu,
-  MenuDivider,
-  MenuItem,
-  Popover,
-} from '@blueprintjs/core';
+  defaultKeymap,
+  indentLess,
+  insertNewlineKeepIndent,
+  insertTab,
+} from '@codemirror/commands';
+import { MenuPopover } from '../../../../components/menu-popover';
+
+const CodeMirrorLay = lazy(() => import('@uiw/react-codemirror'));
+
+// minimalSetup({})
 
 type Params = {
   isOpen: boolean;
   toggleIsOpen: (value: boolean) => void;
 };
 
+const highestPredesenceKeymapExtensions = Prec.highest(
+  keymap.of([
+    {
+      key: 'Tab',
+      preventDefault: true,
+      run: insertTab,
+    },
+    {
+      key: 'Shift-Tab',
+      preventDefault: true,
+      run: indentLess,
+    },
+    {
+      key: 'Enter',
+      preventDefault: true,
+      run: insertNewlineKeepIndent,
+    },
+
+    // for future settings pages
+    // return insertNewlineKeepIndent({ state, dispatch });
+    // return insertNewline({ state, dispatch });
+  ])
+);
+
 export const CreateFileDialog = observer(({ isOpen, toggleIsOpen }: Params) => {
+  const editorRef = useRef<ReactCodeMirrorRef>(null);
+
   const store = useLocalObservable(() => ({
     text: '',
     title: '',
+
+    get isDisabled() {
+      return this.text === '' || this.title === '';
+    },
 
     setText(text: string) {
       this.text = text;
@@ -36,44 +74,38 @@ export const CreateFileDialog = observer(({ isOpen, toggleIsOpen }: Params) => {
 
   const menuItems = (
     <>
-      <Popover
-        placement="bottom-start"
-        transitionDuration={0}
-        content={
-          <Menu small>
-            <MenuItem text="New" />
+      <MenuPopover
+        menuChildren={
+          <>
+            <MenuItem text="New" label="⌘C" />
             <MenuItem text="Open..." />
 
-            <MenuDivider />
+            <MenuDivider className="mx-1" />
 
             <MenuItem text="Close" />
             <MenuItem text="Save" />
             <MenuItem text="Save as..." />
 
-            <MenuDivider />
+            <MenuDivider className="mx-1" />
 
             <MenuItem text="Gorilla doc (coming soon)" disabled />
-          </Menu>
+          </>
         }
       >
         <Button text="New" small minimal />
-      </Popover>
+      </MenuPopover>
 
-      <Popover
-        placement="bottom-start"
-        transitionDuration={0}
-        content={
+      <MenuPopover
+        menuChildren={
           <Menu small>
             <MenuItem text="Wrap text" />
           </Menu>
         }
       >
         <Button text="Format" small minimal />
-      </Popover>
+      </MenuPopover>
     </>
   );
-
-  console.log('rerender');
 
   return (
     <>
@@ -106,22 +138,40 @@ export const CreateFileDialog = observer(({ isOpen, toggleIsOpen }: Params) => {
           </div>
         </div>
 
-        <CodeMirror
-          value={store.text}
-          height="800px"
-          theme={'dark'}
-          spellCheck
-          onChange={value => store.setText(value)}
-          basicSetup={{
-            lineNumbers: true,
-            foldGutter: false,
-            allowMultipleSelections: true,
-            highlightActiveLine: true,
-          }}
-        />
+        <Suspense fallback={<div className="w-full h-[800px]"></div>}>
+          <CodeMirrorLay
+            // <CodeMirrorLay
+            value={store.text}
+            height="800px"
+            theme={'dark'}
+            spellCheck
+            extensions={[basicSetup, highestPredesenceKeymapExtensions]}
+            onChange={value => {
+              store.setText(value);
+            }}
+            ref={editorRef}
+            // onKeyDown={e => {
+            //   if (e.key.toLowerCase() === 'tab') {
+            //     e.preventDefault();
+            //     handleTabKey();
+            //   }
+            // }}
+            basicSetup={{
+              foldGutter: false,
+              allowMultipleSelections: true,
+              highlightActiveLine: true,
+              lineNumbers: true,
+              //
+              defaultKeymap: true,
+            }}
+          />
+        </Suspense>
 
         <div className="p-3 flex justify-end">
-          <Button text="Save" />
+          {JSON.stringify(store.title)}
+          {JSON.stringify(store.text)}
+          {JSON.stringify(store.isDisabled)}
+          <Button text="Save" disabled={store.isDisabled} />
         </div>
       </Dialog>
     </>

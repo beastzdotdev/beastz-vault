@@ -15,6 +15,7 @@ import { FileStructureDetails } from '../file-structure/widgets/file-structure-d
 import { RootFileStructure } from '../../shared/model';
 import { FileStructureFileView } from '../file-structure/widgets/file-structure-file-view';
 import { Bin } from './model/bin.model';
+import { Editor } from '../shared/widgets/create-file/editor-test';
 
 const typeItems: AdvancedSelectItem[] = [
   { key: uuid(), text: 'Images' },
@@ -102,6 +103,10 @@ export const BinPage = observer((): React.JSX.Element => {
     <div className="px-2.5 pt-3 cursor-default">
       <H2 className="font-extralight">Bin</H2>
 
+      <br />
+      <Editor />
+      <br />
+
       <div className="w-full flex mt-5">
         <AdvancedSelect
           buttonProps={{ outlined: true }}
@@ -111,7 +116,6 @@ export const BinPage = observer((): React.JSX.Element => {
           placeholder="Type"
           handleSelect={value => setSelectedType(value)}
         />
-
         <AdvancedSelect
           buttonProps={{ outlined: true }}
           className="ml-3 min-w-[120px]"
