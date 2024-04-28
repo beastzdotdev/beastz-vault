@@ -52,10 +52,10 @@ const FileStuructureContextMenu = (params: {
       />
       <MenuItem text="Details" icon="info-sign" onClick={() => params.onDetails?.(params.node)} />
 
-      {/* TODO */}
-      {/* {params.node.isFile && (
+      {params.node.isFile && (
         <>
-          <MenuItem
+          {/* TODO */}
+          {/* <MenuItem
             text={params.node.isEditable ? 'Diable editing' : 'Make editable'}
             icon={params.node.isEditable ? 'cross' : 'edit'}
           />
@@ -63,11 +63,11 @@ const FileStuructureContextMenu = (params: {
           <MenuItem
             text={params.node.isLocked ? 'Unlock' : 'Lock'}
             icon={params.node.isLocked ? 'unlock' : 'lock'}
-          />
+          /> */}
 
           <MenuItem text="Encrypt" icon="shield" onClick={() => params.onEncrypt?.(params.node)} />
         </>
-      )} */}
+      )}
 
       <MenuItem
         text="Download"
