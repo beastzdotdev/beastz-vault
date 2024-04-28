@@ -221,3 +221,38 @@ export const download = (obj: Blob | MediaSource, title: string) => {
 export const openLink = (path?: string | null) => {
   path ? window.open(path, '_blank') : null;
 };
+
+export const readTextFromFile = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = e => {
+      resolve(e.target?.result as string);
+    };
+
+    reader.onerror = () => {
+      reject(null);
+    };
+
+    reader.readAsText(file);
+  });
+};
+
+// function readFileAsBytes(file: File): Promise<Uint8Array | null> {
+//   return new Promise((resolve, reject) => {
+//     const reader = new FileReader();
+
+//     reader.onload = function (event) {
+//       resolve(new Uint8Array(event.target?.result as ArrayBuffer));
+//     };
+
+//     reader.onerror = function (event) {
+//       console.log('='.repeat(20));
+//       console.log(event.target?.error);
+
+//       reject(null);
+//     };
+
+//     reader.readAsArrayBuffer(file);
+//   });
+// }

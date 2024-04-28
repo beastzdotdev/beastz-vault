@@ -15,11 +15,13 @@ import { useEffect } from 'react';
 import { useInjection } from 'inversify-react';
 import { RootFileStructure } from '../../../shared/model';
 import { constants } from '../../../shared/constants';
-import { differentiate, openLink, sleep } from '../../../shared/helper';
+import { differentiate, openLink, readTextFromFile, sleep } from '../../../shared/helper';
 import { FileStructureApiService, api } from '../../../shared/api';
 import { TextFileEditor } from '../../../widgets/text-editor';
 import { toast } from '../../../shared/ui';
 import { SharedController } from '../../shared/state/shared.controller';
+import { encryption } from '../../../shared/encryption';
+import { FormErrorMessage } from '../../../components/form-error-message';
 
 type Params = {
   selectedNode: RootFileStructure;
@@ -35,11 +37,13 @@ export const FileStructureFileView = observer(
     const type = differentiate(selectedNode?.mimeType);
 
     const store = useLocalObservable(() => ({
+      url: selectedNode.absRelativePath ?? '',
+      secret: '',
       isEncryptedViewActive: selectedNode.isEncrypted,
 
-      //temp
-      secret: '',
-      url: '',
+      setUrl(url: string) {
+        this.url = url;
+      },
 
       setSecret(secret: string) {
         this.secret = secret;
@@ -50,14 +54,18 @@ export const FileStructureFileView = observer(
       },
 
       clear() {
+        this.url = '';
         this.secret = '';
         this.isEncryptedViewActive = false;
       },
     }));
 
+    //TODO need backup mimetype in backend and remove forceShow text and allow other types of file to be encrypted
     const textStore = useLocalObservable(() => ({
       text: '',
       loading: false,
+      forceShowText: false,
+      encryptErrorMessage: null as string | null,
 
       setText(text: string) {
         this.text = text;
@@ -67,12 +75,26 @@ export const FileStructureFileView = observer(
         this.loading = value;
       },
 
+      setForceShowText(value: boolean) {
+        this.forceShowText = value;
+      },
+
+      setEncryptErrorMessage(value: string | null) {
+        this.encryptErrorMessage = value;
+      },
+
       clear() {
         this.text = '';
+        this.forceShowText = false;
         this.loading = false;
+        this.encryptErrorMessage = null;
       },
 
       async setTextInitial(): Promise<void> {
+        if (selectedNode.isEncrypted) {
+          return;
+        }
+
         let finalText = '';
 
         try {
@@ -95,11 +117,6 @@ export const FileStructureFileView = observer(
       textStore.clear();
       toggleIsOpen(false);
     };
-    // const closeDialog = useCallback(() => {
-    //   store.clear();
-    //   textStore.clear();
-    //   closeDialog();
-    // }, [store, textStore]);
 
     useEffect(() => {
       if (type === 'text') {
@@ -112,52 +129,42 @@ export const FileStructureFileView = observer(
       }
     }, [isOpen, store, textStore, type]);
 
-    // const onDecrypt = async () => {
-    //   try {
-    //     const url = getFileUrl.replace(constants.path.backend.url, '');
-    //     const response = await api.get<Blob>(url, { responseType: 'blob' });
+    const onDecrypt = async () => {
+      if (!selectedNode.absRelativePath) {
+        return;
+      }
 
-    //     const decryptedFile = await encryption.aes256gcm.decryptBuffer(
-    //       new Uint8Array(await response.data.arrayBuffer()),
-    //       store.secret
-    //     );
+      try {
+        const url = selectedNode.absRelativePath.replace(constants.path.backend.url, '');
+        const response = await api.get<Blob>(url, { responseType: 'blob' });
 
-    //     const file = new File([decryptedFile], selectedNode.name, {
-    //       type: selectedNode.mimeTypeRaw!,
-    //     });
+        const decryptedFile = await encryption.aes256gcm
+          .decryptBuffer(new Uint8Array(await response.data.arrayBuffer()), store.secret)
+          .catch(() => null);
 
-    //     //TODO: before you finish this finish absolutePath in backend first
-    //     //TODO: different for text file read
+        if (!decryptedFile) {
+          textStore.setEncryptErrorMessage('Sorry, incorrect password');
+          return;
+        }
 
-    //     //TODO: move this in helper
-    //     // const reader = new FileReader();
-    //     // reader.onload = () => {
-    //     //   textElement.textContent = reader.result as string;
-    //     // };
-    //     // reader.readAsText(file);
+        const file = new File([decryptedFile], selectedNode.name);
 
-    //     // const fileName= decryptedFile.name.includes('.enc') ? decryptedFile.name.replace('.enc', '') : decryptedFile.name,
-    //     // saveFile({
-    //     //   bytes: decryptedFile,
-    //     //   fileName: file.name.includes('.enc') ? file.name.replace('.enc', '') : file.name,
-    //     // });
+        const text = await readTextFromFile(file);
 
-    //     store.url = URL.createObjectURL(file);
+        console.log(text);
 
-    //     console.log(response);
-    //     console.log(response.data);
-    //     console.log(URL.createObjectURL(response.data));
-    //     console.log('='.repeat(20));
-    //     console.log(file);
-    //     console.log(URL.createObjectURL(file));
-    //     console.log('executing');
+        textStore.setText(text);
+        store.setIsEncryptedViewActive(false);
+        textStore.setForceShowText(true);
 
-    //     // store.setText(textResponse.data);
-    //   } catch (error) {
-    //     console.error(error);
-    //     store.clear();
-    //   }
-    // };
+        //TODO this will be decrypted url for img and other
+        // store.setUrl(URL.createObjectURL(file));
+      } catch (error) {
+        console.log('='.repeat(20));
+        console.error(error);
+        toast.error('Sorry, something went wrong');
+      }
+    };
 
     return (
       <>
@@ -171,8 +178,6 @@ export const FileStructureFileView = observer(
           enforceFocus
           className="shadow-none fixed top-0 left-0 bottom-0 m-0 right-0 w-full h-full !bg-transparent overflow-hidden select-none"
         >
-          <img src={store.url} alt="" />
-
           {store.isEncryptedViewActive ? (
             <DialogBody className="max-h-none flex flex-col">
               <div className="pb-5 flex justify-between">
@@ -182,38 +187,49 @@ export const FileStructureFileView = observer(
                     {isInBin && ' - Bin'}
                   </H3>
                 </div>
+
+                <div>
+                  <Button
+                    outlined
+                    className="rounded-full mr-4"
+                    icon="download"
+                    onClick={() => fileStructureApiService.downloadById(selectedNode.id)}
+                  >
+                    Download
+                  </Button>
+                  <Button
+                    icon="link"
+                    className="rounded-full mr-2"
+                    outlined
+                    onClick={() => openLink(selectedNode.absRelativePath)}
+                  />
+                  <Button
+                    icon="cross"
+                    className="rounded-full"
+                    outlined
+                    onClick={() => closeDialog()}
+                  />
+                </div>
               </div>
 
-              <div
-                className="flex-1 overflow-hidden flex justify-center"
-                onClick={() => {
-                  if (type === 'image' || type === 'other') {
-                    closeDialog();
-                  }
-                }}
-              >
-                {selectedNode.path}
-                <br />
-                {selectedNode.absRelativePath}
-
+              <div className="flex-1 overflow-hidden flex justify-center">
                 <FormGroup label="Secret message" labelInfo="(required)" className="select-none">
                   <InputGroup
-                    className="min-w-96"
+                    className="min-w-96 border border-gray-200 border-opacity-40"
                     autoFocus
                     tabIndex={1}
                     inputClassName="select-text"
-                    intent="none"
+                    intent="success"
                     name="Secret"
                     value={store.secret}
                     onChange={e => store.setSecret(e.target.value)}
                   />
 
-                  <Button
-                    className="mt-5"
-                    text="Decrypt"
-                    //
-                    // onClick={onDecrypt}
-                  />
+                  {textStore.encryptErrorMessage && (
+                    <FormErrorMessage message={textStore.encryptErrorMessage} />
+                  )}
+
+                  <Button className="mt-5" text="Decrypt" onClick={onDecrypt} />
                 </FormGroup>
               </div>
             </DialogBody>
@@ -315,32 +331,28 @@ export const FileStructureFileView = observer(
                       aspectRatio: '16 / 9',
                     }}
                     crossOrigin="use-credentials"
-                    src={selectedNode.absRelativePath ?? ''}
+                    src={store.url}
                     alt="Image not loaded, sorry"
                   />
                 )}
 
                 {type === 'audio' && (
                   <div className="flex items-center">
-                    <audio controls src={selectedNode.absRelativePath ?? ''} />
+                    <audio controls src={store.url} />
                   </div>
                 )}
 
-                {type === 'video' && (
-                  <video
-                    controls
-                    src={selectedNode.absRelativePath ?? ''}
-                    disablePictureInPicture
-                  />
-                )}
+                {type === 'video' && <video controls src={store.url} disablePictureInPicture />}
 
-                {type === 'text' && (
+                {(type === 'text' || textStore.forceShowText) && (
                   <>
                     <div className="w-[900px]">
                       <TextFileEditor
                         hideNewInMenu
                         hideReplaceSwitch
                         disableTitleEdit
+                        hideFooter={textStore.forceShowText}
+                        readOnly={textStore.forceShowText}
                         title={selectedNode.title}
                         text={textStore.text}
                         loading={textStore.loading}

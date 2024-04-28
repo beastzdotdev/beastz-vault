@@ -14,6 +14,7 @@ import { useMemo } from 'react';
 import { differentiate, formatSize } from '../shared/helper';
 import { RootFileStructure } from '../shared/model';
 import { ProfileStore } from '../features/profile/state/profile.store';
+import { FileMimeType } from '../shared/enum/file-mimte-type.enum';
 
 interface FileStuructureFileItemParams {
   isFromBin?: boolean;
@@ -65,7 +66,14 @@ const FileStuructureContextMenu = (params: {
             icon={params.node.isLocked ? 'unlock' : 'lock'}
           /> */}
 
-          <MenuItem text="Encrypt" icon="shield" onClick={() => params.onEncrypt?.(params.node)} />
+          {/* TODO for now only for text */}
+          {params.node.mimeType === FileMimeType.TEXT_PLAIN && (
+            <MenuItem
+              text="Encrypt"
+              icon="shield"
+              onClick={() => params.onEncrypt?.(params.node)}
+            />
+          )}
         </>
       )}
 

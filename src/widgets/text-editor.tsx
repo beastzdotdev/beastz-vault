@@ -21,9 +21,11 @@ export type Params = {
   replace?: boolean;
   loading?: boolean;
 
+  readOnly?: boolean;
   hideReplaceSwitch?: boolean;
   disableTitleEdit?: boolean;
   hideNewInMenu?: boolean;
+  hideFooter?: boolean;
 
   onSave: (params: TextFileEditorOnSaveParams) => void;
   onClose: () => void;
@@ -46,7 +48,13 @@ const highestPredesenceKeymapExtensions = Prec.highest(
     {
       key: 'Enter',
       preventDefault: true,
-      run: insertNewlineKeepIndent,
+      run: ({ state, dispatch }) => {
+        if (state.readOnly) {
+          return false;
+        }
+
+        return insertNewlineKeepIndent({ state, dispatch });
+      },
     },
 
     // for future settings pages
@@ -97,14 +105,16 @@ export const TextFileEditor = observer((params: Params) => {
   }));
 
   const saveLocaly = () => {
-    if (store.isTextEmpty) {
-      toast.showDefaultMessage('Nothing to save');
-      return;
-    }
+    runInAction(() => {
+      if (store.isTextEmpty) {
+        toast.showDefaultMessage('Nothing to save');
+        return;
+      }
 
-    const title = store.isTitleEmpty ? 'example.txt' : store.realTitle;
+      const title = store.isTitleEmpty ? 'example.txt' : store.realTitle;
 
-    download(new File([store.text], title, { type: 'text/plain' }), title);
+      download(new File([store.text], title, { type: 'text/plain' }), title);
+    });
   };
 
   useEffect(() => {
@@ -157,6 +167,7 @@ export const TextFileEditor = observer((params: Params) => {
           height="800px"
           theme={'dark'}
           spellCheck
+          readOnly={params.readOnly}
           extensions={[basicSetup(), highestPredesenceKeymapExtensions]}
           onChange={value => store.setText(value)}
           basicSetup={{
@@ -169,38 +180,40 @@ export const TextFileEditor = observer((params: Params) => {
         />
       </Suspense>
 
-      <div
-        className={`p-3 flex select-none items-center ${
-          params?.hideReplaceSwitch ? 'justify-end' : 'justify-between'
-        }`}
-      >
-        {!params.hideReplaceSwitch && (
-          <Switch
-            checked={store.replace}
-            labelElement="Should replace"
-            className="m-0"
-            innerLabelChecked="on"
-            innerLabel="off"
-            onChange={e => store.setReplace(e.currentTarget.checked)}
+      {!params.hideFooter && (
+        <div
+          className={`p-3 flex select-none items-center ${
+            params?.hideReplaceSwitch ? 'justify-end' : 'justify-between'
+          }`}
+        >
+          {!params.hideReplaceSwitch && (
+            <Switch
+              checked={store.replace}
+              labelElement="Should replace"
+              className="m-0"
+              innerLabelChecked="on"
+              innerLabel="off"
+              onChange={e => store.setReplace(e.currentTarget.checked)}
+            />
+          )}
+          <Button
+            text="Save"
+            loading={params?.loading}
+            disabled={store.isDisabled}
+            className="px-5"
+            onClick={() =>
+              runInAction(() => {
+                params.onSave({
+                  realTitle: store.realTitle,
+                  text: store.text,
+                  title: store.title,
+                  replace: store.replace,
+                });
+              })
+            }
           />
-        )}
-        <Button
-          text="Save"
-          loading={params?.loading}
-          disabled={store.isDisabled}
-          className="px-5"
-          onClick={() =>
-            runInAction(() => {
-              params.onSave({
-                realTitle: store.realTitle,
-                text: store.text,
-                title: store.title,
-                replace: store.replace,
-              });
-            })
-          }
-        />
-      </div>
+        </div>
+      )}
     </div>
   );
 });
