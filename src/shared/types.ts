@@ -41,6 +41,8 @@ export type FormikValidationError = {
   inner: { path: string; message: string }[];
 };
 
+export type GeneralFileType = 'text' | 'image' | 'audio' | 'video' | 'byte' | 'other';
+
 export type FSQueryParams = { id: 'root' } | { id: number; root_parent_id: number; path: string };
 
 export type Calbacks<T = undefined, E = undefined> = {

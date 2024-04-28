@@ -1,13 +1,10 @@
-import { v4 as uuid } from 'uuid';
 import { Button, H2, ProgressBar, Tooltip } from '@blueprintjs/core';
 import { useInjection } from 'inversify-react';
 import { computed } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import { useState } from 'react';
 import { constants } from '../../shared/constants';
 import { formatSizeRaw, formatSize } from '../../shared/helper';
 import { SharedStore } from '../shared/state/shared.store';
-import { AdvancedSelectItem, AdvancedSelect } from '../../components/advanced-select';
 
 import './storage.scss';
 

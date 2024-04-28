@@ -1,7 +1,7 @@
 import queryString from 'query-string';
 
 import { ZodError, z } from 'zod';
-import { FormikValidationError } from './types';
+import { FormikValidationError, GeneralFileType } from './types';
 import { constants } from './constants';
 import { FileMimeType } from './enum/file-mimte-type.enum';
 
@@ -169,15 +169,20 @@ export const cleanURL = (
   return url;
 };
 
-export const differentiate = (
-  value: FileMimeType | null
-): 'text' | 'image' | 'audio' | 'video' | 'byte' | 'other' => {
-  // TODO not supported yet
-  // FileMimeType.TEXT_MARKDOWN
-  // FileMimeType.APPLICATION_JSON
-  // FileMimeType.APPLICATION_XML
-  // FileMimeType.APPLICATION_PDF
-  // FileMimeType.APPLICATION_OCTET_STREAM
+//TODO: not supported yet
+/**
+ * FileMimeType.TEXT_MARKDOWN
+ * FileMimeType.APPLICATION_JSON
+ * FileMimeType.APPLICATION_XML
+ * FileMimeType.APPLICATION_PDF
+ * FileMimeType.APPLICATION_OCTET_STREAM
+ * @param value
+ * @returns
+ */
+export const differentiate = (value: FileMimeType | null): GeneralFileType => {
+  if (!value) {
+    return 'other';
+  }
 
   switch (value) {
     case FileMimeType.TEXT_PLAIN:
@@ -211,4 +216,8 @@ export const download = (obj: Blob | MediaSource, title: string) => {
   link.setAttribute('download', title);
   document.body.appendChild(link);
   link.click();
+};
+
+export const openLink = (path?: string | null) => {
+  path ? window.open(path, '_blank') : null;
 };

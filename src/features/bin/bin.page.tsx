@@ -60,10 +60,6 @@ export const BinPage = observer((): React.JSX.Element => {
       this.selectedNodes.clear();
     },
 
-    get binNodePath() {
-      return [...this.selectedNodes]?.[0]?.path;
-    },
-
     get nodes(): RootFileStructure[] {
       return [...this.selectedNodes].map(e => e.fileStructure);
     },
@@ -197,7 +193,6 @@ export const BinPage = observer((): React.JSX.Element => {
               isOpen={isFileViewOpen}
               toggleIsOpen={value => toggleOpen(value, 'file-view')}
               isInBin={true}
-              binFsPath={localSelectedStore.binNodePath}
             />
           )}
         </>

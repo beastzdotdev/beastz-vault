@@ -38,6 +38,7 @@ export class RootFileStructure
   isLocked: boolean | null;
   rootParentId: number | null;
   parentId: number | null;
+  absRelativePath: string | null;
 
   //! New
   link: string;

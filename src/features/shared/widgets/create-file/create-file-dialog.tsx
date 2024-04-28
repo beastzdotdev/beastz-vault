@@ -1,227 +1,107 @@
-import { Suspense, lazy, useCallback, useRef } from 'react';
+import { useCallback } from 'react';
 import { observer, useLocalObservable } from 'mobx-react-lite';
-import { Prec, keymap, ReactCodeMirrorRef, basicSetup } from '@uiw/react-codemirror';
-import { indentLess, insertNewlineKeepIndent, insertTab } from '@codemirror/commands';
-import { Button, Dialog, EditableText, MenuItem, Switch } from '@blueprintjs/core';
+import { Dialog } from '@blueprintjs/core';
 
 import { useInjection } from 'inversify-react';
-import { MenuPopover } from '../../../../components/menu-popover';
 import { FileStructureApiService } from '../../../../shared/api';
 import { getFileStructureUrlParams } from '../../helper/get-url-params';
 import { cleanFiles, validateFileSize } from '../../helper/validate-file';
 import { toast } from '../../../../shared/ui';
 import { SharedController } from '../../state/shared.controller';
-import { download } from '../../../../shared/helper';
-
-const CodeMirrorLay = lazy(() => import('@uiw/react-codemirror'));
+import { TextFileEditor, TextFileEditorOnSaveParams } from '../../../../widgets/text-editor';
 
 type Params = {
   isOpen: boolean;
   toggleIsOpen: (value: boolean) => void;
 };
 
-const highestPredesenceKeymapExtensions = Prec.highest(
-  keymap.of([
-    {
-      key: 'Tab',
-      preventDefault: true,
-      run: insertTab,
-    },
-    {
-      key: 'Shift-Tab',
-      preventDefault: true,
-      run: indentLess,
-    },
-    {
-      key: 'Enter',
-      preventDefault: true,
-      run: insertNewlineKeepIndent,
-    },
-
-    // for future settings pages
-    // return insertNewlineKeepIndent({ state, dispatch });
-    // return insertNewline({ state, dispatch });
-  ])
-);
-
 export const CreateFileDialog = observer(({ isOpen, toggleIsOpen }: Params) => {
-  const editorRef = useRef<ReactCodeMirrorRef>(null);
   const fileStructureApiService = useInjection(FileStructureApiService);
   const sharedController = useInjection(SharedController);
 
   const store = useLocalObservable(() => ({
-    text: '',
-    title: '',
     loading: false,
-    replace: false,
-
-    get isDisabled() {
-      return this.text === '' || this.title === '';
-    },
-
-    get realTitle() {
-      return this.title + '.txt';
-    },
-
-    get isTitleEmpty() {
-      return this.title === '';
-    },
-
-    get isTextEmpty() {
-      return this.text === '';
-    },
-
-    setText(text: string) {
-      this.text = text;
-    },
-
-    setTitle(title: string) {
-      this.title = title;
-    },
 
     setLoading(value: boolean) {
       this.loading = value;
     },
 
-    setReplace(value: boolean) {
-      this.replace = value;
-    },
-
     clear() {
-      this.text = '';
-      this.title = '';
       this.loading = false;
-      this.replace = false;
     },
   }));
 
-  const close = useCallback(() => {
+  const closeDialog = useCallback(() => {
     store.clear();
     toggleIsOpen(false);
   }, [store, toggleIsOpen]);
 
-  const saveLocaly = () => {
-    if (store.isTextEmpty) {
-      toast.showDefaultMessage('Nothing to save');
-      return;
-    }
+  const saveFile = useCallback(
+    async (params: TextFileEditorOnSaveParams) => {
+      const { realTitle, replace, text } = params;
 
-    const title = store.isTitleEmpty ? 'example.txt' : store.realTitle;
+      store.setLoading(true);
 
-    download(new File([store.text], title, { type: 'text/plain' }), title);
-  };
+      const { parentId, rootParentId } = getFileStructureUrlParams();
+      const file = new File([text], realTitle, { type: 'text/plain' });
 
-  const currentMenuItems = (
-    <MenuPopover
-      menuChildren={
-        <>
-          <MenuItem text="New" onClick={() => store.clear()} />
-          <MenuItem text="Close" onClick={() => close()} />
-          <MenuItem text="Save" onClick={() => saveLocaly()} />
-        </>
+      if (!validateFileSize([file])) {
+        store.setLoading(false);
+        return;
       }
-    >
-      <Button text="File" small minimal />
-    </MenuPopover>
-  );
 
-  //TODO in future
-  // const menuItems = (
-  //   <>
-  //     <MenuPopover
-  //       menuChildren={
-  //         <>
-  //           <MenuItem text="New" label="⌘C" />
-  //           <MenuItem text="Open..." />
+      const sanitizedFiles = cleanFiles([file]);
 
-  //           <MenuDivider className="mx-1" />
+      if (!sanitizedFiles.length) {
+        store.setLoading(false);
+        return;
+      }
 
-  //           <MenuItem text="Close" />
-  //           <MenuItem text="Save" />
-  //           <MenuItem text="Save as..." />
+      if (!replace) {
+        const { data: duplicateData, error } = await fileStructureApiService.getDuplicateStatus({
+          items: sanitizedFiles.map(() => ({ title: realTitle, mimeTypeRaw: 'text/plain' })),
+          isFile: true,
+          parentId,
+        });
 
-  //           <MenuDivider className="mx-1" />
+        if (error) {
+          toast.error(error?.message || 'Sorry, something went wrong');
+          store.setLoading(false);
+          return;
+        }
 
-  //           <MenuItem text="Gorilla doc (coming soon)" disabled />
-  //         </>
-  //       }
-  //     >
-  //       <Button text="File" small minimal />
-  //     </MenuPopover>
+        if (duplicateData?.find(e => e.title === file.name)?.hasDuplicate) {
+          toast.showDefaultMessage('Diplicate name detected, please use another one');
+          store.setLoading(false);
+          return;
+        }
+      }
 
-  //     <MenuPopover
-  //       menuChildren={
-  //         <Menu small>
-  //           <MenuItem text="Wrap text" />
-  //         </Menu>
-  //       }
-  //     >
-  //       <Button text="Format" small minimal />
-  //     </MenuPopover>
-  //   </>
-  // );
-
-  const saveFile = useCallback(async () => {
-    store.setLoading(true);
-
-    const { parentId, rootParentId } = getFileStructureUrlParams();
-    const file = new File([store.text], store.realTitle, { type: 'text/plain' });
-
-    if (!validateFileSize([file])) {
-      store.setLoading(false);
-      return;
-    }
-
-    const sanitizedFiles = cleanFiles([file]);
-
-    if (!sanitizedFiles.length) {
-      store.setLoading(false);
-      return;
-    }
-
-    if (!store.replace) {
-      const { data: duplicateData, error } = await fileStructureApiService.getDuplicateStatus({
-        items: sanitizedFiles.map(() => ({ title: store.realTitle, mimeTypeRaw: 'text/plain' })),
-        isFile: true,
+      const { data, error: uploadError } = await fileStructureApiService.uploadFile({
+        file: file,
+        keepBoth: !replace,
         parentId,
+        rootParentId,
       });
 
-      if (error) {
-        toast.error(error?.message || 'Sorry, something went wrong');
+      if (uploadError) {
+        toast.error(uploadError?.message || 'Sorry, something went wrong');
         store.setLoading(false);
         return;
       }
 
-      if (duplicateData?.find(e => e.title === file.name)?.hasDuplicate) {
-        toast.showDefaultMessage('Diplicate name detected, please use another one');
-        store.setLoading(false);
-        return;
-      }
-    }
+      sharedController.createFileStructureInState(data!, replace);
 
-    const { data, error: uploadError } = await fileStructureApiService.uploadFile({
-      file: file,
-      keepBoth: !store.replace,
-      parentId,
-      rootParentId,
-    });
-
-    if (uploadError) {
-      toast.error(uploadError?.message || 'Sorry, something went wrong');
-      store.setLoading(false);
-      return;
-    }
-
-    sharedController.createFileStructureInState(data!, store.replace);
-
-    close();
-  }, [close, fileStructureApiService, sharedController, store]);
+      closeDialog();
+    },
+    [closeDialog, fileStructureApiService, sharedController, store]
+  );
 
   return (
     <>
       <Dialog
         isOpen={isOpen}
-        onClose={() => close()}
+        onClose={() => closeDialog()}
         canOutsideClickClose
         canEscapeKeyClose
         shouldReturnFocusOnClose
@@ -229,58 +109,7 @@ export const CreateFileDialog = observer(({ isOpen, toggleIsOpen }: Params) => {
         enforceFocus
         className="!shadow-none relative w-[900px]"
       >
-        <div className="relative select-none">
-          <div>{currentMenuItems}</div>
-          <div className="absolute left-1/2 -translate-x-1/2 top-0">
-            <EditableText
-              placeholder="Edit title..."
-              multiline={false}
-              minWidth={20}
-              className="max-w-40"
-              maxLength={256}
-              value={store.title}
-              onChange={store.setTitle}
-            />
-            {'.txt'}
-          </div>
-        </div>
-
-        <Suspense fallback={<div className="w-full h-[800px]"></div>}>
-          <CodeMirrorLay
-            value={store.text}
-            height="800px"
-            theme={'dark'}
-            ref={editorRef}
-            spellCheck
-            extensions={[basicSetup(), highestPredesenceKeymapExtensions]}
-            onChange={value => store.setText(value)}
-            basicSetup={{
-              foldGutter: false,
-              allowMultipleSelections: true,
-              highlightActiveLine: true,
-              lineNumbers: true,
-              defaultKeymap: true,
-            }}
-          />
-        </Suspense>
-
-        <div className="p-3 flex justify-between select-none items-center">
-          <Switch
-            checked={store.replace}
-            labelElement="Should replace"
-            className="m-0"
-            innerLabelChecked="on"
-            innerLabel="off"
-            onChange={e => store.setReplace(e.currentTarget.checked)}
-          />
-          <Button
-            text="Save"
-            loading={store.loading}
-            disabled={store.isDisabled}
-            className="px-5"
-            onClick={saveFile}
-          />
-        </div>
+        <TextFileEditor loading={store.loading} onSave={saveFile} onClose={() => closeDialog()} />
       </Dialog>
     </>
   );

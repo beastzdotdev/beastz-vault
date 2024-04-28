@@ -52,7 +52,8 @@ const FileStuructureContextMenu = (params: {
       />
       <MenuItem text="Details" icon="info-sign" onClick={() => params.onDetails?.(params.node)} />
 
-      {params.node.isFile && (
+      {/* TODO */}
+      {/* {params.node.isFile && (
         <>
           <MenuItem
             text={params.node.isEditable ? 'Diable editing' : 'Make editable'}
@@ -66,7 +67,7 @@ const FileStuructureContextMenu = (params: {
 
           <MenuItem text="Encrypt" icon="shield" onClick={() => params.onEncrypt?.(params.node)} />
         </>
-      )}
+      )} */}
 
       <MenuItem
         text="Download"
@@ -76,6 +77,9 @@ const FileStuructureContextMenu = (params: {
 
       <MenuDivider />
       <MenuItem text="Coming soon" icon="clean">
+        <MenuItem disabled text="Diable editing" icon="cross" />
+        <MenuItem disabled text="Lock" icon="lock" />
+
         <MenuItem disabled text="Public link" icon="link" />
         <MenuItem disabled text="Move" icon="nest" />
         <MenuItem disabled text="Share" icon="share" />

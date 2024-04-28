@@ -223,6 +223,22 @@ export class FileStructureApiService {
     }
   }
 
+  async replaceTextById(
+    id: number,
+    params: { text: string }
+  ): Promise<AxiosApiResponse<RootFileStructure>> {
+    try {
+      const result = await api.patch<BasicFileStructureResponseDto>(
+        `file-structure/replace-text/${id}`,
+        params
+      );
+
+      return { data: RootFileStructure.customTransform(result.data) };
+    } catch (e: unknown) {
+      return { error: e as ClientApiError };
+    }
+  }
+
   async moveToBin(id: number): Promise<AxiosApiResponse<RootFileStructure>> {
     try {
       const result = await api.patch<BasicFileStructureResponseDto>(
