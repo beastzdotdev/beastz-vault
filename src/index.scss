@@ -4,11 +4,14 @@
 
 @import './variables.scss';
 
-@import 'normalize.css';
+@import 'normalize.css/normalize.css';
+
 @import '@blueprintjs/core/lib/css/blueprint.css';
 @import '@blueprintjs/colors/lib/scss/colors';
 @import '@blueprintjs/core/src/common/variables';
 @import '@blueprintjs/core/src/common/mixins';
+
+// @import '@blueprintjs/select';
 
 @import '@blueprintjs/table/lib/css/table.css';
 @import '@blueprintjs/datetime2/src/blueprint-datetime2.scss';

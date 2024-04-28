@@ -13,6 +13,18 @@ import { download } from '../../helper';
 
 @Singleton
 export class FileStructureApiService {
+  async search(params?: { search: string }): Promise<AxiosApiResponse<RootFileStructure[]>> {
+    try {
+      const result = await api.get<BasicFileStructureResponseDto[]>(`file-structure/search`, {
+        params,
+      });
+
+      return { data: result.data.map(e => RootFileStructure.customTransform(e)) };
+    } catch (e: unknown) {
+      return { error: e as ClientApiError };
+    }
+  }
+
   async getContent(params?: {
     parentId?: number;
     focusRootParentId?: number;

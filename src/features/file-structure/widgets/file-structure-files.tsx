@@ -2,7 +2,7 @@ import { Button, Intent, NonIdealState, NonIdealStateIconSize } from '@blueprint
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { useInjection } from 'inversify-react';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FileStuructureFileItem } from '../../../widgets/file-structure-item.widget';
 import { SafeRenderArray } from '../../../components/safe-render-array';
 import { SharedStore } from '../../shared/state/shared.store';
@@ -13,6 +13,7 @@ import { RootFileStructure } from '../../../shared/model';
 import { FileStructureDetails } from './file-structure-details';
 import { FileStructureFileView } from './file-structure-file-view';
 import { FileStructureEncrypt } from './file-structure-encrypt/file-structure-encrypt';
+import { bus } from '../../../shared/bus';
 
 export const FileStructureFiles = observer((): React.JSX.Element => {
   const navigate = useNavigate();
@@ -72,6 +73,18 @@ export const FileStructureFiles = observer((): React.JSX.Element => {
         break;
     }
   };
+
+  useEffect(
+    () => {
+      bus.addListener('show-file', ({ fs }) => {
+        localSelectedStore.setSelectedSingle(fs);
+        toggleOpen(true, 'file-view');
+      });
+    },
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
   return (
     <div className="gorilla-file-structure">
