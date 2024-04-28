@@ -1,8 +1,8 @@
-import { InputGroup, MenuItem } from '@blueprintjs/core';
+import { InputGroup, MenuItem, Tag } from '@blueprintjs/core';
 import { Select } from '@blueprintjs/select';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { useInjection } from 'inversify-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDebouncedValue } from '../../../hooks/use-debounce.hook';
 import { RootFileStructure } from '../../../shared/model';
@@ -12,7 +12,11 @@ import { bus } from '../../../shared/bus';
 
 export const FileStructureSearchBar = observer((): React.JSX.Element => {
   const navigate = useNavigate();
+  const [value, setValue] = useState('');
   const fileStructureApiService = useInjection(FileStructureApiService);
+  const debouncedSearchTerm = useDebouncedValue(value, 500);
+
+  const el = useRef<HTMLInputElement>(null);
 
   const store = useLocalObservable(() => ({
     items: [] as RootFileStructure[],
@@ -25,9 +29,6 @@ export const FileStructureSearchBar = observer((): React.JSX.Element => {
       this.items.length = 0;
     },
   }));
-
-  const [value, setValue] = useState('');
-  const debouncedSearchTerm = useDebouncedValue(value, 500);
 
   useEffect(
     () => {
@@ -50,6 +51,21 @@ export const FileStructureSearchBar = observer((): React.JSX.Element => {
     [debouncedSearchTerm]
   );
 
+  useEffect(() => {
+    const handleKeyUp = (event: KeyboardEvent) => {
+      if (event.key === '/' && el.current) {
+        el.current.click();
+        el.current.focus();
+      }
+    };
+
+    window.addEventListener('keyup', handleKeyUp);
+
+    return () => {
+      window.removeEventListener('keyup', handleKeyUp); // Cleanup on unmount
+    };
+  }, [el]);
+
   const handleSelectOnItem = (
     item: RootFileStructure,
     _event?: React.SyntheticEvent<HTMLElement>
@@ -59,7 +75,9 @@ export const FileStructureSearchBar = observer((): React.JSX.Element => {
     } else {
       navigate(item.link);
     }
+
     console.log('select', item);
+
     store.clear();
     setValue('');
   };
@@ -91,10 +109,12 @@ export const FileStructureSearchBar = observer((): React.JSX.Element => {
         )}
       >
         <InputGroup
+          inputRef={el}
           value={value ?? ''}
           onChange={e => setValue(e.target.value)}
           leftIcon="search"
           placeholder="Search content"
+          rightElement={<Tag minimal={true}>/</Tag>}
         />
       </Select>
     </>
