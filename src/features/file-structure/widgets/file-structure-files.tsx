@@ -116,7 +116,11 @@ export const FileStructureFiles = observer((): React.JSX.Element => {
                 toast.showMessage('Copied to clipboard');
               }}
               onDownload={async node => {
-                await fileStructureApiService.downloadById(node.id);
+                const { error } = await fileStructureApiService.downloadById(node.id);
+                if (error) {
+                  toast.error(error?.message ?? 'Sorry, something went wrong');
+                  return;
+                }
               }}
             />
           );

@@ -1,26 +1,75 @@
 import { useInjection } from 'inversify-react';
-import { observer } from 'mobx-react-lite';
+import { observer, useLocalObservable } from 'mobx-react-lite';
 import { MobxTree } from '@pulexui/core';
-import { toJS } from 'mobx';
-import { useCallback } from 'react';
-import { Icon, Intent, Spinner } from '@blueprintjs/core';
+import { useCallback, useState } from 'react';
+import { Icon, Intent, Spinner, showContextMenu } from '@blueprintjs/core';
 import { useNavigate } from 'react-router-dom';
 import { SharedStore } from '../features/shared/state/shared.store';
 import { RootFileStructure } from '../shared/model';
 import { sleep } from '../shared/helper';
 import { FileStructureApiService } from '../shared/api';
+import { FileStuructureContextMenu } from './file-structure-item.widget';
+import { toast } from '../shared/ui';
+import { ChangeColor } from '../features/file-structure/widgets/change-color';
+import { FileStructureDetails } from '../features/file-structure/widgets/file-structure-details';
+import { FileStructureEncrypt } from '../features/file-structure/widgets/file-structure-encrypt/file-structure-encrypt';
+import { FileStructureFileView } from '../features/file-structure/widgets/file-structure-file-view';
 
 export const SidebarTree = observer(({ className }: { className?: string }) => {
   const sharedStore = useInjection(SharedStore);
   const fileStructureApiService = useInjection(FileStructureApiService);
   const navigate = useNavigate();
 
-  const handleNodeClick = useCallback(
-    async (node: RootFileStructure) => {
-      if (node.isFile) {
-        //TODO file
-        return;
+  //TODO duplication resolve !!!
+  const [isChangeColorOpen, setChangeColorOpen] = useState(false);
+  const [isDetailsOpen, setDetailsOpen] = useState(false);
+  const [isFileViewOpen, setFileViewOpen] = useState(false);
+  const [isFileStructureEncryptOpen, setFileStructureEncryptOpen] = useState(false);
+
+  //TODO duplication resolve !!!
+  const store = useLocalObservable(() => ({
+    selectedNode: null as RootFileStructure | null,
+
+    setSelectedNode(node: RootFileStructure | null) {
+      this.selectedNode = node;
+    },
+
+    clear() {
+      this.selectedNode = null;
+    },
+  }));
+
+  //TODO duplication resolve !!!
+  const toggleOpen = useCallback(
+    (value: boolean, type: 'change-color' | 'details' | 'file-view' | 'encrypt') => {
+      const finalValue = value;
+
+      // is closing
+      if (!finalValue) {
+        store.clear();
       }
+
+      switch (type) {
+        case 'change-color':
+          setChangeColorOpen(finalValue);
+          break;
+        case 'details':
+          setDetailsOpen(finalValue);
+          break;
+        case 'file-view':
+          setFileViewOpen(finalValue);
+          break;
+        case 'encrypt':
+          setFileStructureEncryptOpen(finalValue);
+          break;
+      }
+    },
+    [store]
+  );
+
+  const selectNode = useCallback(
+    (node: RootFileStructure) => {
+      store.setSelectedNode(node);
 
       // 1. It is better to select node first for animation speed
       node.setIsSelected(true);
@@ -31,6 +80,18 @@ export const SidebarTree = observer(({ className }: { className?: string }) => {
           n.setIsSelected(false);
         }
       });
+    },
+    [sharedStore, store]
+  );
+
+  const handleNodeClick = useCallback(
+    async (node: RootFileStructure) => {
+      if (node.isFile) {
+        //TODO
+        return;
+      }
+
+      selectNode(node);
 
       if (node && node.link) {
         const existingLocation = window.location;
@@ -94,14 +155,48 @@ export const SidebarTree = observer(({ className }: { className?: string }) => {
     []
   );
 
+  //! This causes warning, blueprint library at fault
   const handleContextMenu = useCallback(
     async (e: React.MouseEvent<HTMLDivElement, MouseEvent>, node: RootFileStructure) => {
       e.preventDefault();
-      console.log('Right Click', e.pageX, e.pageY, toJS(node));
+
+      // select node first
+      selectNode(node);
+
+      //TODO duplication resolve !!!
+      showContextMenu({
+        content: (
+          <FileStuructureContextMenu
+            node={node}
+            key={node.id}
+            onColorChange={() => toggleOpen(true, 'change-color')}
+            onDetails={() => toggleOpen(true, 'details')}
+            onEncrypt={async () => toggleOpen(true, 'encrypt')}
+            onMoveToBin={async node => {
+              await fileStructureApiService.moveToBin(node.id);
+              window.location.reload();
+            }}
+            onCopy={node => {
+              navigator.clipboard.writeText(node.title + (node.fileExstensionRaw ?? ''));
+              toast.showMessage('Copied to clipboard');
+            }}
+            onDownload={async node => {
+              const { error } = await fileStructureApiService.downloadById(node.id);
+              if (error) {
+                toast.error(error?.message ?? 'Sorry, something went wrong');
+                return;
+              }
+            }}
+          />
+        ),
+        targetOffset: {
+          left: e.clientX,
+          top: e.clientY,
+        },
+      });
     },
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [fileStructureApiService, selectNode, toggleOpen]
   );
 
   return (
@@ -116,12 +211,50 @@ export const SidebarTree = observer(({ className }: { className?: string }) => {
         onContextMenu={({ node, e }) => handleContextMenu(e, node)}
         renderTypeIcon={node => {
           if (node.activeIcon === 'spinner') {
-            return <Spinner size={20} intent={Intent.PRIMARY} />;
+            return <Spinner size={20} intent={Intent.PRIMARY} color={node.color ?? undefined} />;
           }
 
-          return <Icon icon={node.activeIcon} />;
+          return <Icon icon={node.activeIcon} color={node.color ?? undefined} />;
         }}
       />
+
+      {store.selectedNode !== null && (
+        <>
+          {isChangeColorOpen && (
+            <ChangeColor
+              selectedNodes={[store.selectedNode]}
+              isOpen={isChangeColorOpen}
+              toggleIsOpen={value => toggleOpen(value, 'change-color')}
+            />
+          )}
+
+          {isDetailsOpen && (
+            <FileStructureDetails
+              selectedNodes={[store.selectedNode]}
+              isOpen={isDetailsOpen}
+              toggleIsOpen={value => toggleOpen(value, 'details')}
+              isInBin={false}
+            />
+          )}
+
+          {isFileViewOpen && (
+            <FileStructureFileView
+              selectedNode={[store.selectedNode][0]}
+              isOpen={isFileViewOpen}
+              toggleIsOpen={value => toggleOpen(value, 'file-view')}
+              isInBin={false}
+            />
+          )}
+
+          {isFileStructureEncryptOpen && (
+            <FileStructureEncrypt
+              selectedNodes={[store.selectedNode]}
+              isOpen={isFileStructureEncryptOpen}
+              toggleIsOpen={value => toggleOpen(value, 'encrypt')}
+            />
+          )}
+        </>
+      )}
     </>
   );
 });

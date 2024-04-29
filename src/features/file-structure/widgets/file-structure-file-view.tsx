@@ -193,7 +193,13 @@ export const FileStructureFileView = observer(
                     outlined
                     className="rounded-full mr-4"
                     icon="download"
-                    onClick={() => fileStructureApiService.downloadById(selectedNode.id)}
+                    onClick={async () => {
+                      const { error } = await fileStructureApiService.downloadById(selectedNode.id);
+                      if (error) {
+                        toast.error(error?.message ?? 'Sorry, something went wrong');
+                        return;
+                      }
+                    }}
                   >
                     Download
                   </Button>
@@ -259,7 +265,13 @@ export const FileStructureFileView = observer(
                     outlined
                     className="rounded-full mr-4"
                     icon="download"
-                    onClick={() => fileStructureApiService.downloadById(selectedNode.id)}
+                    onClick={async () => {
+                      const { error } = await fileStructureApiService.downloadById(selectedNode.id);
+                      if (error) {
+                        toast.error(error?.message ?? 'Sorry, something went wrong');
+                        return;
+                      }
+                    }}
                   >
                     Download
                   </Button>

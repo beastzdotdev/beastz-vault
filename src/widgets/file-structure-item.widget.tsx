@@ -32,7 +32,7 @@ interface FileStuructureFileItemParams {
   onEncrypt?: (node: RootFileStructure) => void;
 }
 
-const FileStuructureContextMenu = (params: {
+export const FileStuructureContextMenu = (params: {
   node: RootFileStructure;
   onMoveToBin?: (node: RootFileStructure) => void;
   onCopy?: (node: RootFileStructure) => void;

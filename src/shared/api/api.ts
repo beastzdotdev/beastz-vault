@@ -38,7 +38,12 @@ async function handleAxiosResponseError(error: unknown) {
   try {
     if (error instanceof AxiosError) {
       const originalConfig = error.config;
-      const responseBody = error.response?.data;
+      let responseBody = error.response?.data;
+
+      if (responseBody instanceof Blob) {
+        responseBody = JSON.parse(await responseBody.text());
+      }
+
       const exceptionBody = await ExceptionSchema.passthrough().safeParseAsync(responseBody);
 
       // this should not happen, router.navigate to oops
