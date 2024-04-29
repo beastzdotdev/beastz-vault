@@ -1,14 +1,15 @@
 import { Button, H2, ProgressBar, Tooltip } from '@blueprintjs/core';
 import { useInjection } from 'inversify-react';
 import { computed } from 'mobx';
-import { observer } from 'mobx-react-lite';
+import { observer, useLocalObservable } from 'mobx-react-lite';
 import { constants } from '../../shared/constants';
-import { formatSizeRaw, formatSize, cleanURL } from '../../shared/helper';
+import { formatSizeRaw, formatSize, cleanURL, sleep } from '../../shared/helper';
 import { SharedStore } from '../shared/state/shared.store';
 
 import './storage.scss';
 import { FileStructureApiService } from '../../shared/api';
 import { toast } from '../../shared/ui';
+import { PopConfirmCustom } from '../../components/pop-confirm-custom';
 
 // const typeItems: AdvancedSelectItem[] = [
 //   { key: uuid(), text: 'Images' },
@@ -34,6 +35,18 @@ export const StoragePage = observer((): React.JSX.Element => {
   // const [selectedType, setSelectedType] = useState<AdvancedSelectItem | null>(null);
   // const [modifiedType, setModifiedType] = useState<AdvancedSelectItem | null>(null);
 
+  const store = useLocalObservable(() => ({
+    loading: false,
+
+    setLoading(value: boolean) {
+      this.loading = value;
+    },
+
+    clear() {
+      this.loading = false;
+    },
+  }));
+
   const sharedStore = useInjection(SharedStore);
   const fileStructureApiService = useInjection(FileStructureApiService);
   const progressBarValue = computed(() => {
@@ -48,21 +61,32 @@ export const StoragePage = observer((): React.JSX.Element => {
   });
 
   const cleanUp = async () => {
+    store.setLoading(true);
+
+    const startTime = new Date(); // Start time
     const { error } = await fileStructureApiService.cleanUpSpace();
+    const endTime = new Date(); // Calculate time taken
+
+    // this is necessary because if axios took less than 200ms animation seems weird
+    if (endTime.getTime() - startTime.getTime() < 200) {
+      // add another 400 ms waiting
+      await sleep(400);
+    }
 
     if (error) {
       toast.error(error?.message || 'Sorry, something went wrong');
+      store.clear();
       return;
     }
 
     // hard redirect to file structure
+    store.clear();
     window.location.href = cleanURL(constants.path.fileStructure).toString();
   };
 
   return (
     <div className="px-2.5 pt-3 cursor-default">
       <H2 className="font-extralight">Storage</H2>
-
       {/* <div className="w-full flex mt-5">
         <AdvancedSelect
           buttonProps={{ outlined: true }}
@@ -82,7 +106,6 @@ export const StoragePage = observer((): React.JSX.Element => {
           handleSelect={value => setModifiedType(value)}
         />
       </div> */}
-
       <div className="w-full mt-8">
         <p className="text-xs mt-1.5">
           <span className="text-3xl font-light">
@@ -94,7 +117,6 @@ export const StoragePage = observer((): React.JSX.Element => {
           </span>
         </p>
       </div>
-
       <div className="w-full mt-2">
         <ProgressBar
           value={progressBarValue.get()}
@@ -104,7 +126,6 @@ export const StoragePage = observer((): React.JSX.Element => {
           className="h-3 gorilla-page-storage-indicator"
         />
       </div>
-
       <div className="w-full mt-3 flex">
         <Tooltip
           popoverClassName="gorilla-popover-override"
@@ -124,6 +145,7 @@ export const StoragePage = observer((): React.JSX.Element => {
         </Tooltip>
 
         <Tooltip
+          disabled // TODO this is upcoming feature
           popoverClassName="gorilla-popover-override"
           usePortal
           placement="bottom-start"
@@ -132,8 +154,6 @@ export const StoragePage = observer((): React.JSX.Element => {
           hoverOpenDelay={75}
           hoverCloseDelay={200}
           fill
-          // TODO this is upcoming feature
-          disabled
           content={<span>Occupied space: 10000000 mb</span>}
         >
           <div className="flex items-center hover:opacity-50 delay-75 transition-all ml-4">
@@ -142,21 +162,21 @@ export const StoragePage = observer((): React.JSX.Element => {
           </div>
         </Tooltip>
       </div>
-
       <div className="w-full mt-5">
         <Button outlined intent="success" disabled>
-          Get more storage
+          Get more storage (soon)
         </Button>
 
-        {/* TODO */}
-        <Button className="ml-3" onClick={cleanUp}>
-          Clean up space
-        </Button>
-      </div>
-
-      {/* <div className="mt-10">
-        <h1>Page will be finished soon !!!</h1>
-      </div> */}
+        <PopConfirmCustom
+          title="Clean up space"
+          text="Are you sure you want to clean up space? (this action cannot be undone)"
+          onSuccessClick={cleanUp}
+        >
+          <Button className="ml-3" intent="danger" loading={store.loading}>
+            Clean up space
+          </Button>
+        </PopConfirmCustom>
+      </div>{' '}
     </div>
   );
 });
