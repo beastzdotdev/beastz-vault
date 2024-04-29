@@ -2,6 +2,7 @@
  * @description / beofre every route is needed for redirection
  */
 export const constants = Object.freeze({
+  VERSION: '0.0.1',
   SIZE: 1024, // 1kb
 
   path: {
