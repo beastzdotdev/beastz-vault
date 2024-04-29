@@ -1,4 +1,4 @@
-import { OverlayToaster, Position } from '@blueprintjs/core';
+import { Intent, OverlayToaster, Position } from '@blueprintjs/core';
 import { createRoot } from 'react-dom/client';
 
 export const [fileContentProgressToast, globalCenterToast, globalTopRightToast] = await Promise.all(
@@ -56,10 +56,10 @@ export const toast = Object.freeze({
     });
   },
 
-  showMessage(message: string) {
+  showMessage(message: string, intent?: Intent) {
     globalTopRightToast.show({
       message,
-      intent: 'none',
+      intent: intent ?? 'none',
       icon: 'info-sign',
       timeout: 2000,
     });

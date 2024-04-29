@@ -80,4 +80,28 @@ export class AuthController {
       toast.error('Error on verify');
     }
   }
+
+  async recoverPassword(params: { email: string }) {
+    const { error, data } = await this.authApiService.recoverPassword({
+      email: params.email,
+    });
+
+    if (error || !data) {
+      if (!error) {
+        toast.error('Sorry, something went wrong');
+        return;
+      }
+
+      if (error.message === ExceptionMessageCode.USER_EMAIL_EXISTS) {
+        toast.error('User email already exists');
+        return;
+      }
+      if (error.message === ExceptionMessageCode.USER_NOT_FOUND) {
+        toast.error('User not found');
+        return;
+      }
+
+      toast.error('Error on verify');
+    }
+  }
 }

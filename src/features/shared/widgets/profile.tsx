@@ -21,13 +21,13 @@ export const ProfileIcon = observer(() => {
                 width={24}
                 height={24}
                 alt="no profile img"
-                className="rounded-sm ml-1.5 border border-solid border-gray-500 border-opacity-50"
+                className="rounded-full ml-1.5 border border-solid border-gray-500 border-opacity-50"
               />
             ) : (
               <DefaultLogo
                 width={24}
                 height={24}
-                className="rounded-sm ml-1.5 border border-solid border-gray-500 border-opacity-50"
+                className="rounded-full ml-1.5 border border-solid border-gray-500 border-opacity-50"
                 gender={profileStore.user.gender}
               />
             )}

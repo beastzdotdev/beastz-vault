@@ -69,6 +69,8 @@ export const ProfilePage = observer((): React.JSX.Element => {
         gender: data.gender,
       });
 
+      toast.showMessage('User updated successfully', 'success');
+
       // /profile-image-15647b3b-3b4d-4614-98c9-f4fc8d165cdb.jpeg
     },
   });
@@ -109,6 +111,7 @@ export const ProfilePage = observer((): React.JSX.Element => {
 
     // replace user
     profileStore.setUser(data);
+    toast.showMessage('User profile picture updated successfully', 'success');
   };
 
   return (
@@ -181,9 +184,9 @@ export const ProfilePage = observer((): React.JSX.Element => {
             </H5>
             <H5
               className="font-extralight flex justify-between"
-              onClick={() => copy(moment(profileStore.user.birthDate).calendar())}
+              onClick={() => copy(moment(profileStore.user.birthDate).format('DD/MM/YYYY'))}
             >
-              birthDate: <strong>{moment(profileStore.user.birthDate).calendar()}</strong>
+              birthDate: <strong>{moment(profileStore.user.birthDate).format('DD/MM/YYYY')}</strong>
             </H5>
             <H5
               className="font-extralight flex justify-between"
@@ -199,9 +202,10 @@ export const ProfilePage = observer((): React.JSX.Element => {
             </H5>
             <H5
               className="font-extralight flex justify-between"
-              onClick={() => copy(moment(profileStore.user.createdAt).calendar())}
+              onClick={() => copy(moment(profileStore.user.createdAt).format('DD/MM/YYYY'))}
             >
-              created date: <strong>{moment(profileStore.user.createdAt).calendar()}</strong>
+              created date:{' '}
+              <strong>{moment(profileStore.user.createdAt).format('DD/MM/YYYY')}</strong>
             </H5>
 
             <div className="flex justify-end mt-10">

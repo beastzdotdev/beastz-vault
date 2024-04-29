@@ -123,7 +123,7 @@ export const FileStructureDetails = observer(
             <div className="flex justify-between mt-3">
               <p className="font-bold">Modifiet at</p>
               <p>
-                {moment(store.node?.lastModifiedAt).calendar()}
+                {moment(store.node?.lastModifiedAt).format('DD/MM/YYYY')}
                 <span className="font-bold ml-2">
                   {moment(store.node?.lastModifiedAt).format('L')}
                 </span>
@@ -132,7 +132,7 @@ export const FileStructureDetails = observer(
             <div className="flex justify-between mt-3">
               <p className="font-bold">Created at</p>
               <p>
-                {moment(store.node?.createdAt).calendar()}
+                {moment(store.node?.createdAt).format('DD/MM/YYYY')}
                 <span className="font-bold ml-2">{moment(store.node?.createdAt).format('L')}</span>
               </p>
             </div>
