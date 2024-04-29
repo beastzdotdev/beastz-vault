@@ -2,7 +2,6 @@ import moment from 'moment';
 import { useFormik } from 'formik';
 import { observer } from 'mobx-react-lite';
 import { useInjection } from 'inversify-react';
-import { useNavigate } from 'react-router-dom';
 import { DateInput3 } from '@blueprintjs/datetime2';
 import { Suspense, useRef, useState } from 'react';
 import {
@@ -23,17 +22,17 @@ import {
 import { ProfileStore } from './state/profile.store';
 import { constants } from '../../shared/constants';
 import { toast } from '../../shared/ui';
-import { differentiateObj, fields, zodFormikErrorAdapter } from '../../shared/helper';
+import { cleanURL, differentiateObj, fields, zodFormikErrorAdapter } from '../../shared/helper';
 import { profileUpdateValidation } from './validation/profile-update-validation';
 import { FormErrorMessage } from '../../components/form-error-message';
 import { Gender } from '../../shared/enum';
-import { UpdateUserDetailsDto, UserApiService } from '../../shared/api';
+import { AuthApiService, UpdateUserDetailsDto, UserApiService } from '../../shared/api';
 import { DefaultLogo } from '../shared/widgets/default-logo';
 
 export const ProfilePage = observer((): React.JSX.Element => {
-  const navigate = useNavigate();
   const profileStore = useInjection(ProfileStore);
   const userApiService = useInjection(UserApiService);
+  const authApiService = useInjection(AuthApiService);
 
   const form = useFormik({
     initialValues: {
@@ -70,20 +69,21 @@ export const ProfilePage = observer((): React.JSX.Element => {
       });
 
       toast.showMessage('User updated successfully', 'success');
-
-      // /profile-image-15647b3b-3b4d-4614-98c9-f4fc8d165cdb.jpeg
     },
   });
   const formFields = fields<(typeof form)['initialValues']>();
   const [showErrorMessage, setShowErrorMessage] = useState(false);
 
-  //TODO
-  const WebSignOut = async () => {
-    try {
-      navigate(constants.path.signIn);
-    } catch (e: unknown) {
-      // showErrorMessage(handleFirebaseError(e));
+  const signOut = async () => {
+    const { error } = await authApiService.signOut();
+
+    if (error) {
+      toast.error(error?.message || 'Sorry, something went wrong');
+      return;
     }
+
+    // hard redirect to sign in
+    window.location.href = cleanURL(constants.path.signIn).toString();
   };
 
   const SIZE = 150;
@@ -215,7 +215,7 @@ export const ProfilePage = observer((): React.JSX.Element => {
                 rightIcon="log-out"
                 intent="primary"
                 text="Sign out"
-                onClick={WebSignOut}
+                onClick={signOut}
               />
             </div>
           </Card>

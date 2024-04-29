@@ -36,6 +36,15 @@ export class AuthApiService {
     }
   }
 
+  async signOut(): Promise<AxiosApiResponse<void>> {
+    try {
+      const result: AxiosResponse = await api.post('auth/sign-out');
+      return { data: result.data };
+    } catch (e: unknown) {
+      return { error: e as ClientApiError };
+    }
+  }
+
   async verify(params: { email: string }): Promise<AxiosApiResponse<void>> {
     try {
       const result: AxiosResponse = await api.post('auth/account-verify/send', params);
@@ -44,6 +53,7 @@ export class AuthApiService {
       return { error: e as ClientApiError };
     }
   }
+
   async recoverPassword(params: RecoverPasswordSendDto): Promise<AxiosApiResponse<void>> {
     try {
       const result: AxiosResponse = await api.post('auth/recover-password/send', params);
