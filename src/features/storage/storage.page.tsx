@@ -3,10 +3,12 @@ import { useInjection } from 'inversify-react';
 import { computed } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { constants } from '../../shared/constants';
-import { formatSizeRaw, formatSize } from '../../shared/helper';
+import { formatSizeRaw, formatSize, cleanURL } from '../../shared/helper';
 import { SharedStore } from '../shared/state/shared.store';
 
 import './storage.scss';
+import { FileStructureApiService } from '../../shared/api';
+import { toast } from '../../shared/ui';
 
 // const typeItems: AdvancedSelectItem[] = [
 //   { key: uuid(), text: 'Images' },
@@ -33,6 +35,7 @@ export const StoragePage = observer((): React.JSX.Element => {
   // const [modifiedType, setModifiedType] = useState<AdvancedSelectItem | null>(null);
 
   const sharedStore = useInjection(SharedStore);
+  const fileStructureApiService = useInjection(FileStructureApiService);
   const progressBarValue = computed(() => {
     const value =
       formatSizeRaw(sharedStore.generalInfo.totalSize) / constants.MAX_ALLOWED_FILE_SIZE_BYTES;
@@ -43,6 +46,18 @@ export const StoragePage = observer((): React.JSX.Element => {
 
     return value;
   });
+
+  const cleanUp = async () => {
+    const { error } = await fileStructureApiService.cleanUpSpace();
+
+    if (error) {
+      toast.error(error?.message || 'Sorry, something went wrong');
+      return;
+    }
+
+    // hard redirect to file structure
+    window.location.href = cleanURL(constants.path.fileStructure).toString();
+  };
 
   return (
     <div className="px-2.5 pt-3 cursor-default">
@@ -134,7 +149,9 @@ export const StoragePage = observer((): React.JSX.Element => {
         </Button>
 
         {/* TODO */}
-        <Button className="ml-3">Clean up space</Button>
+        <Button className="ml-3" onClick={cleanUp}>
+          Clean up space
+        </Button>
       </div>
 
       {/* <div className="mt-10">

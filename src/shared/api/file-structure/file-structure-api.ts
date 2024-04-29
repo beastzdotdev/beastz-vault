@@ -282,7 +282,17 @@ export class FileStructureApiService {
 
   async deleteForeverFromBin(id: number): Promise<AxiosApiResponse<void>> {
     try {
-      await api.patch<void>(`file-structure/delete-forever-from-bin/${id}`);
+      await api.delete<void>(`file-structure/delete-forever-from-bin/${id}`);
+
+      return {};
+    } catch (e: unknown) {
+      return { error: e as ClientApiError };
+    }
+  }
+
+  async cleanUpSpace(): Promise<AxiosApiResponse<void>> {
+    try {
+      await api.delete<void>(`file-structure/clean-up-space`);
 
       return {};
     } catch (e: unknown) {
