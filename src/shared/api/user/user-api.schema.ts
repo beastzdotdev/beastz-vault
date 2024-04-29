@@ -8,4 +8,12 @@ export class UserResponseDto {
   gender: Gender;
   createdAt: Date;
   isOnline: boolean;
+  profileImagePath: string | null;
+  profileFullImagePath: string | null;
+}
+
+export class UpdateUserDetailsDto {
+  userName?: string;
+  birthDate?: Date;
+  gender?: Gender;
 }

@@ -6,7 +6,7 @@ export const FileStructureBreadcrumb = (): React.JSX.Element => {
   return (
     <Breadcrumbs
       className="max-w-sm"
-      items={[{ icon: 'cloud', text: 'cloud', href: constants.path.fileStructure }]}
+      items={[{ icon: 'cloud', text: 'Vault', href: constants.path.fileStructure }]}
     />
   );
 };

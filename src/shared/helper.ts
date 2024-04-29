@@ -238,21 +238,29 @@ export const readTextFromFile = (file: File): Promise<string> => {
   });
 };
 
-// function readFileAsBytes(file: File): Promise<Uint8Array | null> {
-//   return new Promise((resolve, reject) => {
-//     const reader = new FileReader();
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const differentiateObj = <T>(obj: any, compareObj: any): { obj: T; isEmpty: boolean } => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const updateProps: any = {};
 
-//     reader.onload = function (event) {
-//       resolve(new Uint8Array(event.target?.result as ArrayBuffer));
-//     };
+  // get different values
+  for (const key in obj) {
+    const bothKeyExists = key in obj && key in compareObj;
 
-//     reader.onerror = function (event) {
-//       console.log('='.repeat(20));
-//       console.log(event.target?.error);
+    if (!bothKeyExists) {
+      continue;
+    }
 
-//       reject(null);
-//     };
+    const newValue = obj?.[key];
+    const oldValue = compareObj?.[key];
 
-//     reader.readAsArrayBuffer(file);
-//   });
-// }
+    if (newValue !== oldValue) {
+      updateProps[key] = newValue;
+    }
+  }
+
+  return {
+    obj,
+    isEmpty: Object.keys(updateProps).length === 0,
+  };
+};

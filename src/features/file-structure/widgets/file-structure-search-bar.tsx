@@ -103,8 +103,8 @@ export const FileStructureSearchBar = observer((): React.JSX.Element => {
             onClick={handleClick} // buble up events
             onFocus={handleFocus} // buble up events
             roleStructure="menuitem"
-            label={item?.fileExstensionRaw ?? ''}
-            text={item.title}
+            label={item.mimeTypeRaw ?? 'Folder'}
+            text={item.title + (item?.fileExstensionRaw ?? '')}
           />
         )}
       >

@@ -1,9 +1,5 @@
-import { Suspense, lazy } from 'react';
 import { Button, Menu, MenuItem, Popover } from '@blueprintjs/core';
 import { FileStructureSearchBar } from './file-structure-search-bar';
-
-const DobermanLogo = lazy(() => import('../../../assets/svg/misc/doberman.svg?react'));
-const ScarabLogo = lazy(() => import('../../../assets/svg/misc/scarab.svg?react'));
 
 export const FileStructureTopBar = (): React.JSX.Element => {
   return (
@@ -12,27 +8,12 @@ export const FileStructureTopBar = (): React.JSX.Element => {
         <FileStructureSearchBar />
 
         <div className="whitespace-nowrap">
-          {/* TODO: Notification */}
-          {/* <Button minimal icon="notifications" intent="none" /> */}
+          {/* TODO: Better UI */}
           <Popover
             content={
               <Menu>
-                <MenuItem
-                  text="Scarab doc (coming soon)"
-                  icon={
-                    <Suspense fallback={<div></div>}>
-                      <ScarabLogo />
-                    </Suspense>
-                  }
-                />
-                <MenuItem
-                  text="Dober helper (coming soon)"
-                  icon={
-                    <Suspense fallback={<div></div>}>
-                      <DobermanLogo />
-                    </Suspense>
-                  }
-                />
+                <MenuItem text="Doc (soon)" icon="document" intent="success" />
+                <MenuItem text="Util (soon)" icon="wrench" intent="primary" />
               </Menu>
             }
             placement="right-start"
