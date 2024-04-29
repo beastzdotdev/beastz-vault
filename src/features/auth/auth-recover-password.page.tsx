@@ -15,7 +15,7 @@ import { constants } from '../../shared/constants';
 import { FormErrorMessage } from '../../components/form-error-message';
 import { zodFormikErrorAdapter, fields } from '../../shared/helper';
 import { AuthController } from './state/auth.controller';
-import { verifyFieldsSchema } from './validation/auth-verify-validation-schema';
+import { authRecoverPasswordValidationSchema } from './validation/auth-recover-password-validation-schema';
 
 export const AuthRecoverPasswordPage = (): React.JSX.Element => {
   const authController = useInjection(AuthController);
@@ -25,7 +25,7 @@ export const AuthRecoverPasswordPage = (): React.JSX.Element => {
       email: '',
     },
     validateOnChange: true,
-    validationSchema: zodFormikErrorAdapter(verifyFieldsSchema),
+    validationSchema: zodFormikErrorAdapter(authRecoverPasswordValidationSchema),
     onSubmit: async (values, { resetForm }) => {
       resetForm();
       authController.recoverPassword({ email: values.email });
