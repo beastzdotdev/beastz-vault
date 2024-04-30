@@ -1,4 +1,4 @@
-# 🦍 Welcome to Beastz Vault
+# Welcome to Beastz Vault
 
 #### Unleash the power of secure file storage and sharing with Beastz Vault React App – your go-to solution inspired by the user-friendliness of Google Drive, enhanced with robust features like encryption, public file sharing, and customizable folder colors.
 
