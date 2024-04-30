@@ -5,6 +5,7 @@ import { MobxTreeModel } from '@pulexui/core';
 import { FileMimeType } from '../enum/file-mimte-type.enum';
 import { BasicFileStructureResponseDto } from '../api';
 import { Combine } from '../types';
+import { fields } from '../helper';
 
 export class RootFileStructure
   implements Combine<BasicFileStructureResponseDto, MobxTreeModel<number>>
@@ -33,11 +34,14 @@ export class RootFileStructure
   mimeTypeRaw: string | null;
   mimeType: FileMimeType | null;
   isEditable: boolean | null;
+  isEncrypted: boolean | null;
+  isLocked: boolean | null;
   rootParentId: number | null;
   parentId: number | null;
+  absRelativePath: string | null;
 
   //! New
-  link?: string;
+  link: string;
   activeIcon: IconName | 'spinner';
 
   setActiveIcon(icon: IconName | 'spinner') {
@@ -70,14 +74,8 @@ export class RootFileStructure
     this.hasCaret = value;
   }
 
-  recusive(node: RootFileStructure[], callback?: (node: RootFileStructure) => void): void {
-    for (let i = 0; i < node?.length; i++) {
-      callback?.(node[i]);
-
-      if (node[i].children !== undefined) {
-        this.recusive(node[i].children, callback);
-      }
-    }
+  addChild(data: RootFileStructure) {
+    this.children.push(data);
   }
 
   addChildren(data: RootFileStructure[]) {
@@ -103,6 +101,8 @@ export class RootFileStructure
           : `/file-structure?id=${data.id}&root_parent_id=${data.id}&path=${encodeURIComponent(
               data.path
             )}`;
+      } else {
+        newItem.link = '';
       }
 
       if (data?.children?.length) {
@@ -114,4 +114,23 @@ export class RootFileStructure
       return newItem;
     });
   }
+
+  copyIgnoreChildren() {
+    const keys = Object.keys(this);
+    keys.splice(keys.indexOf(RootFsFields.children), 1); // remove children key
+
+    const newFs = new RootFileStructure();
+
+    keys.forEach(k => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-expect-error
+      newFs[k] = this[k];
+    });
+
+    newFs.children = []; // set as empty
+
+    return newFs;
+  }
 }
+
+const RootFsFields = fields<RootFileStructure>();

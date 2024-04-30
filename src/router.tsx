@@ -2,7 +2,6 @@ import { createBrowserRouter } from 'react-router-dom';
 import { App } from './features/app';
 import { Root } from './features/root/root.page';
 import { ErrorPage } from './features/error/error.page';
-import { appLoader } from './features/app-loader';
 import { TableTestPage } from './features/experimental/table-test.page';
 import { AuthSignUpPage } from './features/auth/auth-sign-up.page';
 import { ProfilePage } from './features/profile/profile.page';
@@ -10,7 +9,7 @@ import { TreeNodesTestPage } from './features/experimental/tree-node-test.page';
 import { AuthUserNotVerifiedPage } from './features/auth/auth-user-not-verified.page';
 import { AuthUserBlockedPage } from './features/auth/auth-user-blocked.page';
 import { AuthUserLockedPage } from './features/auth/auth-user-locked.page';
-import { SupportPage } from './features/support/support.page';
+import { UserSupportPage } from './features/user-support/user-support.page';
 import { AuthVerifyPage } from './features/auth/auth-verify.page';
 import { AuthRecoverPasswordPage } from './features/auth/auth-recover-password.page';
 import { OopsPage } from './features/auth/oops.page';
@@ -21,9 +20,17 @@ import { rootLoader } from './features/root/root-loader';
 import { TestRefreshFlowPage } from './features/experimental/test-refresh-flow.page';
 import { FileStructurePage } from './features/file-structure/file-strucutre.page';
 import { GuidePage } from './features/guide/guide.page';
-// import { fileStructureLoader } from './features/file-structure/file-structure.loader';
 import { CardListLoaderTestPage } from './features/experimental/card-list-loader-test-page';
 import { constants } from './shared/constants';
+import { StoragePage } from './features/storage/storage.page';
+import { BinPage } from './features/bin/bin.page';
+import { binLoader } from './features/bin/bin-loader';
+import { appLoader } from './features/app-loaders';
+import { UserSupportTicketDetailPage } from './features/user-support/user-support-ticket-detail.page';
+import { UserSupportTicketCreatePage } from './features/user-support/user-support-ticket-create.page';
+import { userSupportTicketDetailLoader } from './features/user-support/user-support-ticket-detail-loader';
+import { userSupportTicketLoader } from './features/user-support/user-support-ticket-loader';
+import { OpenEncryptionPage } from './features/open-encryption/open-encryption.page';
 
 export const router = createBrowserRouter([
   // under / every page is under auth protection
@@ -44,11 +51,34 @@ export const router = createBrowserRouter([
       {
         path: constants.path.fileStructure,
         element: <FileStructurePage />,
-        // loader: fileStructureLoader,
+      },
+      {
+        path: constants.path.storage,
+        element: <StoragePage />,
       },
       {
         path: constants.path.guide,
         element: <GuidePage />,
+      },
+      {
+        path: constants.path.bin,
+        element: <BinPage />,
+        loader: binLoader,
+      },
+      {
+        loader: userSupportTicketLoader,
+        path: constants.path.support,
+        element: <UserSupportPage />,
+      },
+      {
+        path: constants.path.supportTicketCreate,
+        element: <UserSupportTicketCreatePage />,
+      },
+
+      {
+        loader: userSupportTicketDetailLoader,
+        path: constants.path.supportTicketDetail,
+        element: <UserSupportTicketDetailPage />,
       },
       {
         path: '/check-error',
@@ -57,6 +87,8 @@ export const router = createBrowserRouter([
       },
     ],
   },
+
+  // auth
   {
     path: constants.path.signIn,
     element: <AuthSignInPage />,
@@ -85,10 +117,18 @@ export const router = createBrowserRouter([
     path: constants.path.authRecoverPassword,
     element: <AuthRecoverPasswordPage />,
   },
+
+  // open encryption
   {
-    path: constants.path.support,
-    element: <SupportPage />,
+    path: constants.path.openEncryption.full,
+    element: <OpenEncryptionPage />,
   },
+  {
+    path: constants.path.openEncryption.mini,
+    element: <OpenEncryptionPage />,
+  },
+
+  // error
   {
     path: constants.path.oops,
     element: <OopsPage />,

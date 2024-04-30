@@ -1,9 +1,14 @@
 import { Button, Intent } from '@blueprintjs/core';
-import { useRouteError } from 'react-router-dom';
-import { router } from '../../router';
+import { useEffect } from 'react';
+import { useNavigate, useRouteError } from 'react-router-dom';
 
 export const ErrorPage = (): React.JSX.Element => {
   const error = useRouteError();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log(error);
+  }, [error]);
 
   if (error instanceof Error) {
     return (
@@ -19,7 +24,7 @@ export const ErrorPage = (): React.JSX.Element => {
             outlined
             text="Go Home"
             intent={Intent.WARNING}
-            onClick={() => router.navigate('/')}
+            onClick={() => navigate('/')}
           />
         </div>
       </div>
@@ -38,7 +43,7 @@ export const ErrorPage = (): React.JSX.Element => {
           outlined
           text="Go Home"
           intent={Intent.WARNING}
-          onClick={() => router.navigate('/')}
+          onClick={() => navigate('/')}
         />
       </div>
     </div>

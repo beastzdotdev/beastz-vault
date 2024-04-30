@@ -21,7 +21,7 @@ import {
 import { FileStructureApiService } from '../../../../shared/api';
 import { zodFormikErrorAdapter } from '../../../../shared/helper';
 
-export const CreateFolderDialogWidget = ({
+export const CreateFolderDialog = ({
   isOpen,
   setIsOpen,
 }: {
@@ -46,11 +46,13 @@ export const CreateFolderDialogWidget = ({
         return;
       }
 
-      const { data: duplData, error: duplError } = await fileStructureApiService.detectDuplicate({
-        titles: [values.folderName],
-        isFile: false,
-        parentId,
-      });
+      const { data: duplData, error: duplError } = await fileStructureApiService.getDuplicateStatus(
+        {
+          items: [{ title: values.folderName }],
+          isFile: false,
+          parentId,
+        }
+      );
 
       if (duplError) {
         throw new Error('Something unexpected happend');
@@ -111,7 +113,6 @@ export const CreateFolderDialogWidget = ({
               <InputGroup
                 autoFocus
                 tabIndex={1}
-                className="clear-start"
                 intent={
                   folderNameForm.errors.folderName && showErrorMessage ? Intent.DANGER : Intent.NONE
                 }

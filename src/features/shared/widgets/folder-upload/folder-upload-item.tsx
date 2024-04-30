@@ -51,6 +51,8 @@ export const FolderUploadItem = observer(
       const queueForBFS: WBKTreeNode[] = [];
       const visited: Set<string> = new Set();
 
+      let rootNode: RootFileStructure | undefined;
+
       // Add the top-level nodes to the queue
       for (const node of folderUploadAtomicStore.data) {
         queueForBFS.push(node);
@@ -82,9 +84,9 @@ export const FolderUploadItem = observer(
           if (currentNode.children?.length) {
             const { data, error } = await fileStructureApiService.createFolder({
               name: currentNode.name,
-              rootParentId: rootParentId ?? foundParent?.id,
-              parentId: currentNode.generatedParentId === null ? parentId : foundParent?.id,
               keepBoth: isFirstNode ? folderUploadAtomicStore.keepBoth : false,
+              parentId: currentNode.generatedParentId === null ? parentId : foundParent?.id,
+              rootParentId: rootParentId ?? rootNode?.id,
             });
 
             // For debug purposes only
@@ -101,6 +103,12 @@ export const FolderUploadItem = observer(
 
               if (isFirstNode) {
                 isFirstNode = false;
+                rootNode = data; // <- this is root node for first time
+
+                // stop whole thing if first node has error on upload
+                if (error) {
+                  throw new Error('Error while uploading');
+                }
               }
 
               // update in state
@@ -112,8 +120,9 @@ export const FolderUploadItem = observer(
           } else {
             const { data, error } = await fileStructureApiService.uploadFile({
               file: currentNode.file!,
-              rootParentId: rootParentId ?? foundParent?.id,
               parentId: foundParent?.id,
+              rootParentId: rootParentId ?? rootNode?.id,
+
               // in folder upload file will always be inside or rather created first time
               // so this params can always be false
               keepBoth: false,
@@ -210,8 +219,8 @@ export const FolderUploadItem = observer(
         folderUploadAtomicStore.setFiles(tree);
         folderUploadAtomicStore.setTotalLength(totalLength);
 
-        const { data: duplicateData, error } = await fileStructureApiService.detectDuplicate({
-          titles: [tree[0].name],
+        const { data: duplicateData, error } = await fileStructureApiService.getDuplicateStatus({
+          items: [{ title: tree[0].name }],
           isFile: false,
           parentId,
         });

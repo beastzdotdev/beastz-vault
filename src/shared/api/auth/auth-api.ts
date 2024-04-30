@@ -1,7 +1,7 @@
 import { AxiosResponse } from 'axios';
 import { api } from '..';
 import { AxiosApiResponse } from '../../types';
-import { SignInAndSignUpResponse } from './auth-api-schema';
+import { RecoverPasswordSendDto, SignInAndSignUpResponse } from './auth-api-schema';
 import { ClientApiError } from '../../errors/client-error.schema';
 import { Singleton } from '../../ioc';
 
@@ -36,9 +36,27 @@ export class AuthApiService {
     }
   }
 
+  async signOut(): Promise<AxiosApiResponse<void>> {
+    try {
+      const result: AxiosResponse = await api.post('auth/sign-out');
+      return { data: result.data };
+    } catch (e: unknown) {
+      return { error: e as ClientApiError };
+    }
+  }
+
   async verify(params: { email: string }): Promise<AxiosApiResponse<void>> {
     try {
       const result: AxiosResponse = await api.post('auth/account-verify/send', params);
+      return { data: result.data };
+    } catch (e: unknown) {
+      return { error: e as ClientApiError };
+    }
+  }
+
+  async recoverPassword(params: RecoverPasswordSendDto): Promise<AxiosApiResponse<void>> {
+    try {
+      const result: AxiosResponse = await api.post('auth/recover-password/send', params);
       return { data: result.data };
     } catch (e: unknown) {
       return { error: e as ClientApiError };

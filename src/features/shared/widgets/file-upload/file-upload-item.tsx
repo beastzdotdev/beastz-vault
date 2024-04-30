@@ -224,8 +224,11 @@ export const FileUploadItem = observer(
 
         fileUploadAtomicStore.setFiles(sanitizedFiles);
 
-        const { data: duplicateData, error } = await fileStructureApiService.detectDuplicate({
-          titles: sanitizedFiles.map(e => e.file.name),
+        const { data: duplicateData, error } = await fileStructureApiService.getDuplicateStatus({
+          items: sanitizedFiles.map(e => ({
+            title: e.file.name,
+            mimeTypeRaw: e.file.type,
+          })),
           isFile: true,
           parentId,
         });

@@ -214,12 +214,12 @@ export const AuthSignUpPage = (): React.JSX.Element => {
           </Link>
         </p>
 
-        <p className="mt-2 ml-auto bp5-text-muted">
+        {/* <p className="mt-2 ml-auto bp5-text-muted">
           Need help ? contact our{' '}
           <Link to={constants.path.support} className="font-bold">
             Support
           </Link>
-        </p>
+        </p> */}
       </ControlGroup>
     </div>
   );

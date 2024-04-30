@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, MenuItem } from '@blueprintjs/core';
+import { Button, ButtonProps, MenuItem } from '@blueprintjs/core';
 import { Select } from '@blueprintjs/select';
 
 interface AdvancedSelectParams {
@@ -8,6 +8,8 @@ interface AdvancedSelectParams {
   className?: string;
   placeholder?: string;
   value?: AdvancedSelectItem | null;
+  disabled?: boolean;
+  buttonProps?: ButtonProps;
   handleSelect?: (value: AdvancedSelectItem) => void;
   onSearch?: (value: string) => void;
   onFilter?: (value: string) => void;
@@ -24,6 +26,8 @@ export const AdvancedSelect = ({
   placeholder,
   value,
   className,
+  disabled,
+  buttonProps,
   handleSelect,
   onSearch,
   onFilter,
@@ -41,6 +45,7 @@ export const AdvancedSelect = ({
   return (
     <>
       <Select<AdvancedSelectItem>
+        disabled={disabled}
         className={`w-fit ${className ?? ''}`}
         items={items}
         onItemSelect={handleSelectOnItem}
@@ -60,7 +65,12 @@ export const AdvancedSelect = ({
           />
         )}
       >
-        <Button fill text={selectedItem?.text ?? placeholder} rightIcon="caret-down" />
+        <Button
+          {...buttonProps}
+          fill
+          text={selectedItem?.text ?? placeholder}
+          rightIcon="caret-down"
+        />
       </Select>
     </>
   );

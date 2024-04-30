@@ -1,7 +1,9 @@
 import queryString from 'query-string';
 
 import { ZodError, z } from 'zod';
-import { FormikValidationError } from './types';
+import { FormikValidationError, GeneralFileType } from './types';
+import { constants } from './constants';
+import { FileMimeType } from './enum/file-mimte-type.enum';
 
 export const stringEncode = (text: string): Uint8Array => new TextEncoder().encode(text);
 export const stringDecode = (buffer: ArrayBuffer): string => new TextDecoder().decode(buffer);
@@ -49,7 +51,7 @@ export const zodFormikErrorAdapter = <T>(
         };
 
         if (error instanceof ZodError) {
-          console.warn('Custom: Firing zod formik errors', error.formErrors.fieldErrors);
+          // console.warn('Custom: Firing zod formik errors', error.formErrors.fieldErrors);
 
           errInstance.inner = error.errors.map(e => ({
             message: e.message,
@@ -75,23 +77,44 @@ export const isUUID = (value: string) => {
   return uuidRegex.test(value);
 };
 
-export const formatFileSize = (size: number | null): string => {
-  if (size === null) {
+export const formatSizeRaw = (sizeInBytes: number | null): number => {
+  if (!sizeInBytes) {
+    return 0;
+  }
+
+  if (sizeInBytes < constants.SIZE) {
+    return sizeInBytes;
+  } else if (sizeInBytes < constants.SIZE ** 2) {
+    return parseFloat((sizeInBytes / constants.SIZE).toFixed(2));
+  } else if (sizeInBytes < constants.SIZE ** 3) {
+    return parseFloat((sizeInBytes / constants.SIZE ** 2).toFixed(2));
+  } else {
+    return parseFloat((sizeInBytes / constants.SIZE ** 3).toFixed(2));
+  }
+};
+
+export const getColorByBgColor = (bgColor: string | null) => {
+  if (!bgColor) {
+    return null;
+  }
+
+  return parseInt(bgColor.replace('#', ''), 16) > 0xffffff / 2 ? '#000' : '#fff';
+};
+
+export const formatSize = (sizeInBytes: number | null): string => {
+  if (!sizeInBytes) {
     return '';
   }
 
-  const units: string[] = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-  const threshold = 1024;
-  let i = 0; // Start from 0 for correct unit selection
-
-  while (size >= threshold && i < units.length - 1) {
-    size /= threshold;
-    ++i;
+  if (sizeInBytes < constants.SIZE) {
+    return sizeInBytes + ' bytes';
+  } else if (sizeInBytes < constants.SIZE ** 2) {
+    return (sizeInBytes / constants.SIZE).toFixed(2) + ' KB';
+  } else if (sizeInBytes < constants.SIZE ** 3) {
+    return (sizeInBytes / constants.SIZE ** 2).toFixed(2) + ' MB';
+  } else {
+    return (sizeInBytes / constants.SIZE ** 3).toFixed(2) + ' GB';
   }
-
-  const formattedSize = Math.max(size, 0.1).toFixed(1);
-
-  return `${formattedSize} ${units[i]}`;
 };
 
 /**
@@ -127,3 +150,117 @@ export const classNames = (
 };
 
 export const sleep = (ms: number = 1000) => new Promise(f => setTimeout(f, ms));
+
+export const cleanURL = (
+  pathName: string,
+  params?: Record<string, string | number | boolean>
+): URL => {
+  const url = new URL(window.location.href);
+  url.pathname = pathName;
+
+  const urlSearchParams = new URLSearchParams();
+
+  for (const key in params) {
+    urlSearchParams.set(key, params[key].toString());
+  }
+
+  url.search = urlSearchParams.toString();
+
+  return url;
+};
+
+//TODO: not supported yet
+/**
+ * FileMimeType.TEXT_MARKDOWN
+ * FileMimeType.APPLICATION_JSON
+ * FileMimeType.APPLICATION_XML
+ * FileMimeType.APPLICATION_PDF
+ * FileMimeType.APPLICATION_OCTET_STREAM
+ * @param value
+ * @returns
+ */
+export const differentiate = (value: FileMimeType | null): GeneralFileType => {
+  if (!value) {
+    return 'other';
+  }
+
+  switch (value) {
+    case FileMimeType.TEXT_PLAIN:
+      return 'text';
+    case FileMimeType.APPLICATION_OCTET_STREAM:
+      return 'byte';
+    case FileMimeType.IMAGE_JPG:
+    case FileMimeType.IMAGE_PNG:
+    case FileMimeType.IMAGE_GIF:
+    case FileMimeType.IMAGE_WEBP:
+    case FileMimeType.IMAGE_BMP:
+    case FileMimeType.IMAGE_SVG:
+      return 'image';
+    case FileMimeType.AUDIO_MPEG:
+    case FileMimeType.AUDIO_WAV:
+      return 'audio';
+    case FileMimeType.VIDEO_MP4:
+    case FileMimeType.VIDEO_MPEG:
+    case FileMimeType.VIDEO_WEBM:
+    case FileMimeType.VIDEO_QUICKTIME:
+      return 'video';
+    default:
+      return 'other';
+  }
+};
+
+export const download = (obj: Blob | MediaSource, title: string) => {
+  const url = window.URL.createObjectURL(obj);
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', title);
+  document.body.appendChild(link);
+  link.click();
+};
+
+export const openLink = (path?: string | null) => {
+  path ? window.open(path, '_blank') : null;
+};
+
+export const readTextFromFile = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = e => {
+      resolve(e.target?.result as string);
+    };
+
+    reader.onerror = () => {
+      reject(null);
+    };
+
+    reader.readAsText(file);
+  });
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const differentiateObj = <T>(obj: any, compareObj: any): { obj: T; isEmpty: boolean } => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const updateProps: any = {};
+
+  // get different values
+  for (const key in obj) {
+    const bothKeyExists = key in obj && key in compareObj;
+
+    if (!bothKeyExists) {
+      continue;
+    }
+
+    const newValue = obj?.[key];
+    const oldValue = compareObj?.[key];
+
+    if (newValue !== oldValue) {
+      updateProps[key] = newValue;
+    }
+  }
+
+  return {
+    obj,
+    isEmpty: Object.keys(updateProps).length === 0,
+  };
+};

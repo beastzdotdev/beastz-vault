@@ -4,11 +4,14 @@
 
 @import './variables.scss';
 
-@import 'normalize.css';
+@import 'normalize.css/normalize.css';
+
 @import '@blueprintjs/core/lib/css/blueprint.css';
 @import '@blueprintjs/colors/lib/scss/colors';
 @import '@blueprintjs/core/src/common/variables';
 @import '@blueprintjs/core/src/common/mixins';
+
+// @import '@blueprintjs/select';
 
 @import '@blueprintjs/table/lib/css/table.css';
 @import '@blueprintjs/datetime2/src/blueprint-datetime2.scss';
@@ -58,7 +61,7 @@ body {
   outline: none;
 }
 
-.bp5-input {
+input {
   box-shadow: none !important;
   border: 1px solid rgba($input-border-color, 0.2);
 
@@ -102,10 +105,10 @@ body {
   border: 1px solid rgba(231, 106, 110, 0.5);
 }
 
-.gorilla-sidebar {
+.beastz-vault-sidebar {
   $sidebar-font-size: 13px;
 
-  .gorilla-profile {
+  .beastz-vault-profile {
     border-radius: $global-border-radius;
 
     &:hover {
@@ -117,14 +120,14 @@ body {
     }
   }
 
-  .gorilla-sidebar-buttons {
+  .beastz-vault-sidebar-buttons {
     .bp5-button {
       font-size: $sidebar-font-size;
       border-radius: $global-border-radius;
     }
   }
 
-  .gorilla-sidebar-tree-node {
+  .beastz-vault-sidebar-tree-node {
     border-radius: $global-border-radius;
     font-size: $sidebar-font-size;
     margin: 1px 0;
@@ -162,19 +165,19 @@ body {
   }
 }
 
-.gorilla-file-structure {
-  .gorilla-file-structure-item {
+.beastz-vault-file-structure {
+  .beastz-vault-file-structure-item {
     @apply w-full rounded-none cursor-default select-none flex;
     // transition-colors duration-75 ease-linear <- can bee added for animation
 
     background-color: $dark-gray3;
 
-    &:not(.gorilla-file-structure-item-selected):hover {
+    &:not(.beastz-vault-file-structure-item-selected):hover {
       background-color: $main-white-color-hover;
     }
   }
 
-  .gorilla-file-structure-item-selected {
+  .beastz-vault-file-structure-item-selected {
     background: $main-white-color;
   }
 }
@@ -190,13 +193,27 @@ body {
   }
 }
 
-.gorilla-global-alert {
+.beastz-vault-global-alert {
   .bp5-alert-contents {
     flex: 1;
   }
 }
 
-// .pulexui-mobx-tree-node {
-//   display: flex !important;
-//   flex-direction: column;
-// }
+.beastz-vault-popover-override {
+  .bp5-popover-content {
+    background-color: $dark-gray4 !important;
+    color: $light-gray3 !important;
+  }
+
+  .bp5-popover-arrow path {
+    fill: $dark-gray4 !important;
+  }
+}
+
+.active-color {
+  @apply border-white border-solid scale-125;
+}
+
+.float-button {
+  @apply cursor-pointer fixed bottom-5 right-5 rounded-full w-10 h-10  bg-gray-400 border-[0.5px] border-solid border-white border-opacity-35 hover:scale-105 transition-transform transform active:scale-100 active:duration-75;
+}

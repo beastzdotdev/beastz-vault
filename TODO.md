@@ -1,3 +1,10 @@
+TODO reafactor all window.location.reload();
+TODO get inspirations from here https://en.eagle.cool/
+
+TODO update pulex/core sidebar tree needs color addition
+
+TODO set title of page to node.title or nav link not just vault
+
 TODO Global
   remove searchbar and add omnibar bnut save searchbar as backup will be needed in future like settings search
 
@@ -15,7 +22,7 @@ TODO ProfilePage:
   sign out not implemented
 
 TODO Sidebar:
-  router.navigate(constants.path.fileStructure) <- is temporary
+  navigate(constants.path.fileStructure) <- is temporary
 
 
 //TODO on every unauthenticated routes like auth/ needs to be checks user identity status
@@ -65,6 +72,8 @@ TODO calculate upload time (approximate) https://www.google.com/search?q=how+doe
 
 TODO create intro website and could use this lib: https://ui.aceternity.com/components
 
+TODO I think it would be best to move all navigate() -> const navigate = useNavigate() and navigate('/...')
+
 
 TODO right now folder and files upload works only on at a time if you want to upload another folder or files while others are uploading than u need to implement like drive does just run another start function and add toasts to main toast (reset must be adjusted) 
 
@@ -75,10 +84,38 @@ TODO checkout this https://million.dev/lint
 TODO checkout this https://www.google.com/search?q=blocknote&oq=blocknote&gs_lcrp=EgZjaHJvbWUqDggAEEUYJxg7GIAEGIoFMg4IABBFGCcYOxiABBiKBTIGCAEQRRhAMgcIAhAAGIAEMgcIAxAAGIAEMgcIBBAAGIAEMgYIBRBFGDwyBggGEEUYPDIGCAcQRRg80gEIMTQ2OWowajmoAgCwAgE&sourceid=chrome&ie=UTF-8
 
 
+//TODO download folder
+// const [progress, setProgress] = useState(0);
+// onDownloadProgress: progressEvent => {
+//   const { loaded, total } = progressEvent;
+//   const percentCompleted = Math.round((loaded * 100) / total);
+//   setProgress(percentCompleted);
+// }
+
+
+
+//TODO https://uiwjs.github.io/react-codemirror/#/
 
 
 
 
+TODO get more storage
+
+TODO at the end move some stuff to shared library from backend and frontend
+TODO copy path
+TODO copy color
+TODO public link
+TODO open encryption
+
+TODO in future i think it would be better to move all opening modal into signal like event emitter or event bus
+TODO reset password page
+
+TODO breadcrumb
+TODO create custom portal and modal for file view do not like blueprint version or just update
+TODO finish storage page
+TODO custom pagination component
+TODO [custom pagination component](https://styled-icons.dev/?s=binard)
 
 
-
+for readme
+https://github.com/othneildrew/Best-README-Template

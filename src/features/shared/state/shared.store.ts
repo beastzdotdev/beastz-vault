@@ -1,22 +1,17 @@
 import { makeAutoObservable } from 'mobx';
 import { Singleton } from '../../../shared/ioc';
 import { RootFileStructure } from '../../../shared/model';
+import { GetGeneralInfoResponseDto } from '../../../shared/api';
 
 @Singleton
 export class SharedStore {
-  private _activeId: number | 'root';
-  private _activeRootParentId?: number;
-  private _activePath?: string;
-
   private _shouldRender: boolean;
   private _activeRootFileStructure: RootFileStructure[];
+  private _activeBodyFileStructure: RootFileStructure[];
+  private _generalInfo: GetGeneralInfoResponseDto;
 
   constructor() {
     makeAutoObservable(this);
-  }
-
-  get isRoot(): boolean {
-    return this._activeId === 'root';
   }
 
   get shouldRender(): boolean {
@@ -27,16 +22,12 @@ export class SharedStore {
     return this._activeRootFileStructure;
   }
 
-  get activeId(): number | 'root' {
-    return this._activeId;
+  get activeBodyFileStructure(): RootFileStructure[] {
+    return this._activeBodyFileStructure;
   }
 
-  get activeRootParentId(): number | undefined {
-    return this._activeRootParentId;
-  }
-
-  get activePath(): string | undefined {
-    return this._activePath;
+  get generalInfo(): GetGeneralInfoResponseDto {
+    return this._generalInfo;
   }
 
   //====================================================
@@ -51,15 +42,17 @@ export class SharedStore {
     this._activeRootFileStructure = value;
   }
 
+  setGeneralInfo(value: GetGeneralInfoResponseDto) {
+    this._generalInfo = value;
+  }
+
+  setActiveBodyFileStructure(value: RootFileStructure[]) {
+    this._activeBodyFileStructure = value;
+  }
+
   //====================================================
   // Additional methods
   //====================================================
-
-  setRouterParams(activeId: number | 'root', rootParentId?: number, path?: string) {
-    this._activeId = activeId;
-    this._activeRootParentId = rootParentId;
-    this._activePath = path;
-  }
 
   pushActiveRootFileStructure(value: RootFileStructure) {
     this._activeRootFileStructure.push(value);
@@ -95,7 +88,7 @@ export class SharedStore {
     id: number,
     parents: RootFileStructure[] = []
   ): RootFileStructure[] | null {
-    for (let i = 0; i < nodes.length; i++) {
+    for (let i = 0; i < nodes?.length; i++) {
       const node = nodes[i];
       const updatedParents = parents.concat(node);
 

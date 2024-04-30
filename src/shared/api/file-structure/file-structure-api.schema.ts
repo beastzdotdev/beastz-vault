@@ -20,7 +20,22 @@ export class BasicFileStructureResponseDto {
   children: BasicFileStructureResponseDto[] | null;
 }
 
-export class DetectDuplicateResponseDto {
+export class GetDuplicateStatusResponseDto {
   title: string;
   hasDuplicate: boolean;
+}
+
+export class GetGeneralInfoResponseDto {
+  totalSize: number;
+}
+
+class DuplChecker {
+  title: string;
+  mimeTypeRaw?: string;
+}
+
+export class GetDuplicateStatusQueryDto {
+  items: DuplChecker[];
+  isFile: boolean;
+  parentId?: number;
 }

@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import ReactDOM from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
 import { FocusStyleManager, HotkeysProvider, OverlaysProvider } from '@blueprintjs/core';
 import { Provider } from 'inversify-react';
@@ -13,17 +13,24 @@ import './index.scss';
 import './declares/declares.d.ts';
 import './declares/declares.d.tsx';
 
+//!!!!====================================
+//!!!!====================================
+//!!!!====================================
+//!!!!====================================
+//!!!!====================================
+//TODO: add middleware for auth pages redirect back to main page if authentcated use pureApi
+
 // misc
 FocusStyleManager.onlyShowFocusOnTabs();
 
 configure({
-  enforceActions: 'always',
+  enforceActions: 'observed',
   useProxies: 'always',
   computedRequiresReaction: true,
   reactionRequiresObservable: true,
 });
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+createRoot(document.getElementById('root')!).render(
   <Provider container={ioc.getContainer()}>
     <OverlaysProvider>
       <HotkeysProvider>

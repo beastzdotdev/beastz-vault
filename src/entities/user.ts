@@ -8,4 +8,6 @@ export class User {
   gender: Gender;
   createdAt: Date;
   isOnline: boolean;
+  profileImagePath: string | null;
+  profileFullImagePath: string | null;
 }

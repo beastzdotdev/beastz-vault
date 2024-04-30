@@ -1,114 +1,22 @@
-import { runInAction, toJS } from 'mobx';
-import { SharedStore } from './shared.store';
+import { runInAction } from 'mobx';
 import { Singleton, Inject } from '../../../shared/ioc';
 import { RootFileStructure } from '../../../shared/model';
-import { getFileStructureUrlParams } from '../helper/get-url-params';
-import { FSQueryParams } from '../../file-structure/file-structure.loader';
-import { FileStructureApiService } from '../../../shared/api';
+import { SharedStore } from './shared.store';
+import { getFsUrlParamsLite } from '../helper/get-url-params';
 
 @Singleton
 export class SharedController {
   @Inject(SharedStore)
   private readonly sharedStore: SharedStore;
 
-  @Inject(FileStructureApiService)
-  private readonly fileStructureApiService: FileStructureApiService;
-
-  async createFileStructureInState(data: RootFileStructure, isReplaced: boolean) {
+  selectFolderSidebar(id: number, path: string) {
     runInAction(() => {
-      if (data.parentId) {
-        const node = this.sharedStore.searchNode(
-          this.sharedStore.activeRootFileStructure,
-          data.parentId
-        );
+      const found = this.sharedStore.searchNode(this.sharedStore.activeRootFileStructure, id);
 
-        // if not found just ignore
-        if (!node) {
-          return;
-        }
-
-        if (isReplaced) {
-          const index = node?.children.findIndex(e => e.path === data.path);
-          if (index !== -1) {
-            node.children[index] = data;
-          }
-        } else {
-          node.children.push(data);
-        }
-      } else {
-        isReplaced
-          ? this.sharedStore.replaceActiveRootFileStructure(data)
-          : this.sharedStore.pushActiveRootFileStructure(data);
-      }
-    });
-
-    console.log('='.repeat(20));
-    console.log(toJS(this.sharedStore.activeRootFileStructure));
-  }
-
-  findFolderNodeForActiveBody(): RootFileStructure[] {
-    const activeId = this.sharedStore.activeId;
-
-    if (activeId === 'root') {
-      return this.sharedStore.activeRootFileStructure;
-    }
-
-    return (
-      this.sharedStore.searchNode(this.sharedStore.activeRootFileStructure, activeId)?.children ??
-      []
-    );
-  }
-
-  affectHistoryPush(url: string) {
-    const { parentId, rootParentId, folderPath } = getFileStructureUrlParams(
-      new URL('http://localhost' + url).href
-    );
-
-    if (!parentId) {
-      throw new Error('Error causing parent folder');
-    }
-
-    // finally set active route params
-    this.sharedStore.setRouterParams(parentId, rootParentId, folderPath);
-
-    return { parentId, rootParentId };
-  }
-
-  async checkChildrenAndLoad(parentId: number) {
-    // find node based on active
-    const foundNode = this.sharedStore.searchNode(
-      this.sharedStore.activeRootFileStructure,
-      parentId
-    );
-
-    if (!foundNode || foundNode.isFile) {
-      return;
-    }
-
-    if (!foundNode.children.length) {
-      const { data, error } = await this.fileStructureApiService.getContent({
-        parentId: foundNode.id,
-      });
-
-      if (error) {
-        throw new Error('Something went wrong');
+      if (!found) {
+        return;
       }
 
-      if (data) {
-        foundNode.addChildren(data);
-      }
-    }
-  }
-
-  async selectFolder(query: FSQueryParams) {
-    if (query.id === 'root') {
-      // clear all
-      return;
-    }
-
-    const { id, path } = query;
-
-    runInAction(() => {
       this.sharedStore.recusive(this.sharedStore.activeRootFileStructure, node => {
         node.setIsSelected(false); // important for others to not be selected
 
@@ -128,17 +36,63 @@ export class SharedController {
     });
   }
 
-  async pushToHistory(nodeLink: string | undefined) {
-    if (!nodeLink) {
-      throw new Error('Node link not found');
+  async createFileStructureInState(data: RootFileStructure, isReplaced: boolean) {
+    runInAction(() => {
+      this.affectRoot(data, isReplaced);
+      this.affectBody(data, isReplaced);
+    });
+  }
+
+  private affectRoot(data: RootFileStructure, isReplaced: boolean) {
+    if (data.parentId) {
+      const node = this.sharedStore.searchNode(
+        this.sharedStore.activeRootFileStructure,
+        data.parentId
+      );
+
+      // if not found just ignore
+      if (!node) {
+        return;
+      }
+
+      if (isReplaced) {
+        const index = node?.children.findIndex(e => e.path === data.path);
+
+        if (index !== -1) {
+          node.children[index] = data;
+        }
+      } else {
+        node.addChild(data);
+      }
+    } else {
+      isReplaced
+        ? this.sharedStore.replaceActiveRootFileStructure(data)
+        : this.sharedStore.pushActiveRootFileStructure(data);
+    }
+  }
+
+  private affectBody(data: RootFileStructure, isReplaced: boolean) {
+    // base on this params push to active body if necessary
+    const { id, isRoot } = getFsUrlParamsLite();
+
+    const accepted =
+      (isRoot && !data.parentId) || (!isRoot && data.parentId && data.parentId === id);
+
+    if (!accepted) {
+      return;
     }
 
-    // pushState does not cause refresh or fs loader to execute only update path for reload
-    // affect will just set active route params in mobx store
-    // finally checkChildrenAndLoad will just check if children does not exist will load in root fs store
+    if (isReplaced) {
+      const index = this.sharedStore.activeBodyFileStructure.findIndex(e => e.path === data.path);
 
-    window.history.pushState(undefined, '', nodeLink);
-    const { parentId } = this.affectHistoryPush(nodeLink);
-    await this.checkChildrenAndLoad(parentId);
+      if (index !== -1) {
+        this.sharedStore.activeBodyFileStructure[index] = data;
+      }
+    } else {
+      // for relocate safety
+      if (this.sharedStore.activeBodyFileStructure.findIndex(e => e.id === data.id) === -1) {
+        this.sharedStore.activeBodyFileStructure.push(data);
+      }
+    }
   }
 }

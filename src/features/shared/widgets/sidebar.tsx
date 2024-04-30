@@ -10,15 +10,17 @@ import {
 } from '@blueprintjs/core';
 import { useRef, useState } from 'react';
 import { useInjection } from 'inversify-react';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { SidebarTree } from '../../../widgets/sidebar-tree';
-import { router } from '../../../router';
 import { useResize } from '../../../hooks/use-resize.hook';
 import { FileUploadItem } from './file-upload/file-upload-item';
 import { FolderUploadItem } from './folder-upload/folder-upload-item';
-import { CreateFolderDialogWidget } from './create-folder-dialog/create-folder-dialog.widget';
+import { CreateFolderDialog } from './create-folder-dialog/create-folder-dialog';
 import { SharedStore } from '../state/shared.store';
 import { constants } from '../../../shared/constants';
 import { ProfileIcon } from './profile';
+import { StorageLimitIndicator } from './general/storage-limit-indicator';
+import { CreateFileDialog } from './create-file/create-file-dialog';
 
 export const Sidebar = () => {
   const { sidebarRef, sidebarWidth, startResizing } = useResize();
@@ -27,14 +29,17 @@ export const Sidebar = () => {
   const folderUploadRef = useRef<HTMLInputElement>(null);
   const sharedStore = useInjection(SharedStore);
   const [isFolderCreateOpen, setIsFolderCreateOpen] = useState(false);
+  const [isCreateFileOpen, setIsCreateFileOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <div
-      className="gorilla-sidebar bg-zinc-900 h-screen max-w-[600px] min-w-[250px] select-none sticky top-0"
+      className="beastz-vault-sidebar bg-zinc-900 h-screen max-w-[600px] min-w-[250px] select-none sticky top-0"
       ref={sidebarRef}
       style={{ width: sidebarWidth }}
     >
-      <CreateFolderDialogWidget isOpen={isFolderCreateOpen} setIsOpen={setIsFolderCreateOpen} />
+      <CreateFolderDialog isOpen={isFolderCreateOpen} setIsOpen={setIsFolderCreateOpen} />
+      <CreateFileDialog isOpen={isCreateFileOpen} toggleIsOpen={setIsCreateFileOpen} />
 
       <div className="resize-bar" onMouseDown={startResizing}>
         <div className="resize-line"></div>
@@ -42,12 +47,7 @@ export const Sidebar = () => {
 
       <div className="flex flex-col h-full">
         <div className="pt-2">
-          <div
-            className="gorilla-profile flex items-center justify-between py-2 mx-1.5 mb-1 cursor-pointer"
-            onClick={() => router.navigate(constants.path.fileStructure)}
-          >
-            <ProfileIcon />
-          </div>
+          <ProfileIcon />
 
           <div>
             <FileUploadItem inputRef={fileUploadRef} />
@@ -59,19 +59,22 @@ export const Sidebar = () => {
               minimal
               vertical
               alignText="left"
-              className="px-1.5 pb-1.5 gorilla-sidebar-buttons"
+              className="px-1.5 pb-1.5 beastz-vault-sidebar-buttons"
             >
               <Popover
                 content={
                   <Menu>
-                    <MenuItem text="New" icon="document" type="file" />
+                    <MenuItem
+                      text="New"
+                      icon="document"
+                      type="file"
+                      onClick={() => setIsCreateFileOpen(true)}
+                    />
 
                     <MenuItem
                       text="Create"
                       icon="folder-new"
-                      onClick={() => {
-                        setIsFolderCreateOpen(true);
-                      }}
+                      onClick={() => setIsFolderCreateOpen(true)}
                     />
 
                     <MenuDivider />
@@ -86,7 +89,7 @@ export const Sidebar = () => {
                       onClick={() => folderUploadRef.current?.click()}
                     />
                     <MenuDivider />
-                    <MenuItem text="Gorilla doc (coming soon)" icon="application" />
+                    <MenuItem disabled text="beastz-vault doc (coming soon)" icon="application" />
                   </Menu>
                 }
                 placement="right-start"
@@ -94,8 +97,8 @@ export const Sidebar = () => {
                 <Button icon="plus" rightIcon="chevron-right" text="New" />
               </Popover>
 
-              <Button icon="updated" text="Recent" />
-              <Button icon="cog" text="Settings" />
+              <Button icon="updated" text="Recent" disabled />
+              <Button icon="cog" text="Settings" disabled />
             </ButtonGroup>
           </div>
 
@@ -155,7 +158,11 @@ export const Sidebar = () => {
                 hoverOpenDelay={500}
               >
                 <Icon
-                  onClick={() => router.navigate(constants.path.fileStructure)}
+                  onClick={() => {
+                    sharedStore.toggleAllSelected(false);
+                    sharedStore.toggleAllExpand(false);
+                    navigate(constants.path.fileStructure + '?id=root');
+                  }}
                   icon="home"
                   className="!text-zinc-500 hover:bg-zinc-800 active:bg-zinc-700 p-0.5 ml-1 cursor-pointer"
                   size={13}
@@ -174,30 +181,39 @@ export const Sidebar = () => {
               minimal
               vertical
               alignText="left"
-              className="px-1.5 pb-1.5 gorilla-sidebar-buttons"
+              className="px-1.5 pb-1.5 beastz-vault-sidebar-buttons"
             >
-              <Button icon="trash" text="Trash" />
               <Popover
                 content={
                   <Menu>
-                    <MenuItem icon="eye-open" text="Activity" />
-                    <MenuItem icon="people" text="Members" />
-                    <MenuItem icon="inherited-group" text="Shared" />
+                    <MenuItem disabled icon="eye-open" text="Activity" />
+                    <MenuItem disabled icon="people" text="Members" />
+                    <MenuItem disabled icon="inherited-group" text="Shared" />
                     <MenuDivider />
-                    <MenuItem icon="ninja" text="AI" />
+                    <MenuItem disabled icon="ninja" text="AI" />
                   </Menu>
                 }
                 placement="right-start"
               >
                 <Button icon="clean" rightIcon="chevron-right" text="Comming soon" />
               </Popover>
-              <Button icon="data-connection" text="23.45 %" />
-              <Button
-                icon="manual"
-                text="Guide"
-                onClick={() => router.navigate(constants.path.guide)}
-              />
-              <Button icon="help" text="Support & Help" />
+
+              <NavLink to={constants.path.bin}>
+                {params => <Button icon="trash" text="Bin" active={params.isActive} />}
+              </NavLink>
+
+              <NavLink to={constants.path.guide}>
+                {params => <Button icon="manual" text="Guide" active={params.isActive} />}
+              </NavLink>
+
+              <NavLink to={constants.path.support}>
+                {params => <Button icon="help" text="Support & Help" active={params.isActive} />}
+              </NavLink>
+
+              <StorageLimitIndicator />
+              <p className="text-xs text-gray-500 text-muted mx-2.5 mt-1.5">
+                version {constants.VERSION}
+              </p>
             </ButtonGroup>
           </div>
         </div>

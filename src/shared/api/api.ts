@@ -1,5 +1,4 @@
 import axios, { AxiosError, CreateAxiosDefaults, HttpStatusCode } from 'axios';
-import { createSearchParams } from 'react-router-dom';
 import { constants } from '../constants';
 import { bus } from '../bus/bus';
 import { router } from '../../router';
@@ -7,6 +6,8 @@ import { ExceptionSchema } from '../errors/exception.schema';
 import { ExceptionMessageCode } from '../enum/exception-message-code.enum';
 import { ClientApiError } from '../errors/client-error.schema';
 import { HandleRefreshType } from '../types';
+import { cleanURL } from '../helper';
+import { errNetworkText } from '../../features/auth/oops.page';
 
 const axiosConfigs: CreateAxiosDefaults = {
   baseURL: constants.path.backend.url,
@@ -37,12 +38,18 @@ async function handleAxiosResponseError(error: unknown) {
   try {
     if (error instanceof AxiosError) {
       const originalConfig = error.config;
-      const responseBody = error.response?.data;
+      let responseBody = error.response?.data;
+
+      if (responseBody instanceof Blob) {
+        responseBody = JSON.parse(await responseBody.text());
+      }
+
       const exceptionBody = await ExceptionSchema.passthrough().safeParseAsync(responseBody);
 
-      // this should not happen, navigate to oops
+      // this should not happen, router.navigate to oops
       if (!originalConfig) {
-        router.navigate(constants.path.oops);
+        window.location.href = cleanURL(constants.path.oops).toString();
+
         return Promise.reject(
           new ClientApiError(
             HttpStatusCode.InternalServerError,
@@ -86,16 +93,14 @@ async function handleAxiosResponseError(error: unknown) {
       }
 
       if (error.code === AxiosError.ERR_NETWORK) {
-        router.navigate({
-          pathname: constants.path.oops,
-          search: createSearchParams({ text: 'Network error' }).toString(),
-        });
+        // hard refresh on network err
+        window.location.href = cleanURL(constants.path.oops, { text: errNetworkText }).toString();
         return Promise.reject(generalClientError);
       }
     }
 
     // unknown error, navigate to oops
-    router.navigate({ pathname: constants.path.oops });
+    window.location.href = cleanURL(constants.path.oops).toString();
     return Promise.reject(generalClientError);
   } catch (error) {
     console.log(error);
