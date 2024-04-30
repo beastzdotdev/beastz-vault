@@ -105,10 +105,10 @@ input {
   border: 1px solid rgba(231, 106, 110, 0.5);
 }
 
-.gorilla-sidebar {
+.beastz-vault-sidebar {
   $sidebar-font-size: 13px;
 
-  .gorilla-profile {
+  .beastz-vault-profile {
     border-radius: $global-border-radius;
 
     &:hover {
@@ -120,14 +120,14 @@ input {
     }
   }
 
-  .gorilla-sidebar-buttons {
+  .beastz-vault-sidebar-buttons {
     .bp5-button {
       font-size: $sidebar-font-size;
       border-radius: $global-border-radius;
     }
   }
 
-  .gorilla-sidebar-tree-node {
+  .beastz-vault-sidebar-tree-node {
     border-radius: $global-border-radius;
     font-size: $sidebar-font-size;
     margin: 1px 0;
@@ -165,19 +165,19 @@ input {
   }
 }
 
-.gorilla-file-structure {
-  .gorilla-file-structure-item {
+.beastz-vault-file-structure {
+  .beastz-vault-file-structure-item {
     @apply w-full rounded-none cursor-default select-none flex;
     // transition-colors duration-75 ease-linear <- can bee added for animation
 
     background-color: $dark-gray3;
 
-    &:not(.gorilla-file-structure-item-selected):hover {
+    &:not(.beastz-vault-file-structure-item-selected):hover {
       background-color: $main-white-color-hover;
     }
   }
 
-  .gorilla-file-structure-item-selected {
+  .beastz-vault-file-structure-item-selected {
     background: $main-white-color;
   }
 }
@@ -193,13 +193,13 @@ input {
   }
 }
 
-.gorilla-global-alert {
+.beastz-vault-global-alert {
   .bp5-alert-contents {
     flex: 1;
   }
 }
 
-.gorilla-popover-override {
+.beastz-vault-popover-override {
   .bp5-popover-content {
     background-color: $dark-gray4 !important;
     color: $light-gray3 !important;

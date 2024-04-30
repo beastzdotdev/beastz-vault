@@ -123,12 +123,12 @@ export const StoragePage = observer((): React.JSX.Element => {
           animate={false}
           stripes={false}
           intent={'warning'}
-          className="h-3 gorilla-page-storage-indicator"
+          className="h-3 beastz-vault-page-storage-indicator"
         />
       </div>
       <div className="w-full mt-3 flex">
         <Tooltip
-          popoverClassName="gorilla-popover-override"
+          popoverClassName="beastz-vault-popover-override"
           usePortal
           placement="bottom-start"
           intent="none"
@@ -146,7 +146,7 @@ export const StoragePage = observer((): React.JSX.Element => {
 
         <Tooltip
           disabled // TODO this is upcoming feature
-          popoverClassName="gorilla-popover-override"
+          popoverClassName="beastz-vault-popover-override"
           usePortal
           placement="bottom-start"
           intent="none"

@@ -235,7 +235,7 @@ export const TextFileEditor = observer((params: Params) => {
 
 //           <MenuDivider className="mx-1" />
 
-//           <MenuItem text="Gorilla doc (coming soon)" disabled />
+//           <MenuItem text="beastz-vault doc (coming soon)" disabled />
 //         </>
 //       }
 //     >

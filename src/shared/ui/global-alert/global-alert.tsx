@@ -14,7 +14,7 @@ const GlobalAlert = ({
 }) => {
   return (
     <Alert
-      className="max-w-none gorilla-global-alert"
+      className="max-w-none beastz-vault-global-alert"
       isOpen={isOpen}
       onClose={onClose}
       intent={Intent.NONE}

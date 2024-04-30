@@ -87,7 +87,7 @@ export const FileStructureFiles = observer((): React.JSX.Element => {
   );
 
   return (
-    <div className="gorilla-file-structure">
+    <div className="beastz-vault-file-structure">
       <SafeRenderArray
         data={sharedStore.activeBodyFileStructure}
         renderChild={node => {

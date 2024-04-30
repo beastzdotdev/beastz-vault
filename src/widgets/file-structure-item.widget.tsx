@@ -183,8 +183,8 @@ export const FileStuructureFileItem = observer(
     return (
       <ContextMenu content={contextMenu}>
         <div
-          className={`gorilla-file-structure-item group/gorilla-item  ${
-            params.isSelected ? 'gorilla-file-structure-item-selected' : ''
+          className={`beastz-vault-file-structure-item group/beastz-vault-item  ${
+            params.isSelected ? 'beastz-vault-file-structure-item-selected' : ''
           }`}
           onClick={() => params.onSelected(params.node)}
           onDoubleClick={() => params.onDoubleClick(params.node)}
@@ -222,33 +222,33 @@ export const FileStuructureFileItem = observer(
               <Button
                 icon="cloud-download"
                 minimal
-                className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
+                className="transition-all duration-100 ease-linear opacity-0 group-hover/beastz-vault-item:opacity-100"
                 onClick={() => params.onDownload?.(params.node)}
               />
               {params.node.isFile && (
                 <Button
                   icon="shield"
                   minimal
-                  className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
+                  className="transition-all duration-100 ease-linear opacity-0 group-hover/beastz-vault-item:opacity-100"
                   onClick={() => params.onEncrypt?.(params.node)}
                 />
               )}
               <Button
                 icon="info-sign"
                 minimal
-                className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
+                className="transition-all duration-100 ease-linear opacity-0 group-hover/beastz-vault-item:opacity-100"
                 onClick={() => params.onDetails?.(params.node)}
               />
               <Button
                 icon="tint"
                 minimal
-                className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
+                className="transition-all duration-100 ease-linear opacity-0 group-hover/beastz-vault-item:opacity-100"
                 onClick={() => params.onColorChange?.(params.node)}
               />
               <Button
                 icon="trash"
                 minimal
-                className="transition-all duration-100 ease-linear opacity-0 group-hover/gorilla-item:opacity-100"
+                className="transition-all duration-100 ease-linear opacity-0 group-hover/beastz-vault-item:opacity-100"
                 onClick={() => params.onMoveToBin?.(params.node)}
               />
             </div>

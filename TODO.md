@@ -3,7 +3,7 @@ TODO get inspirations from here https://en.eagle.cool/
 
 TODO update pulex/core sidebar tree needs color addition
 
-TODO set title of page to node.title or nav link not just Gorilla vault
+TODO set title of page to node.title or nav link not just vault
 
 TODO Global
   remove searchbar and add omnibar bnut save searchbar as backup will be needed in future like settings search
@@ -115,3 +115,7 @@ TODO create custom portal and modal for file view do not like blueprint version 
 TODO finish storage page
 TODO custom pagination component
 TODO [custom pagination component](https://styled-icons.dev/?s=binard)
+
+
+for readme
+https://github.com/othneildrew/Best-README-Template

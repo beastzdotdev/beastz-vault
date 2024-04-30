@@ -34,7 +34,7 @@ export const Sidebar = () => {
 
   return (
     <div
-      className="gorilla-sidebar bg-zinc-900 h-screen max-w-[600px] min-w-[250px] select-none sticky top-0"
+      className="beastz-vault-sidebar bg-zinc-900 h-screen max-w-[600px] min-w-[250px] select-none sticky top-0"
       ref={sidebarRef}
       style={{ width: sidebarWidth }}
     >
@@ -59,7 +59,7 @@ export const Sidebar = () => {
               minimal
               vertical
               alignText="left"
-              className="px-1.5 pb-1.5 gorilla-sidebar-buttons"
+              className="px-1.5 pb-1.5 beastz-vault-sidebar-buttons"
             >
               <Popover
                 content={
@@ -89,7 +89,7 @@ export const Sidebar = () => {
                       onClick={() => folderUploadRef.current?.click()}
                     />
                     <MenuDivider />
-                    <MenuItem disabled text="Gorilla doc (coming soon)" icon="application" />
+                    <MenuItem disabled text="beastz-vault doc (coming soon)" icon="application" />
                   </Menu>
                 }
                 placement="right-start"
@@ -181,7 +181,7 @@ export const Sidebar = () => {
               minimal
               vertical
               alignText="left"
-              className="px-1.5 pb-1.5 gorilla-sidebar-buttons"
+              className="px-1.5 pb-1.5 beastz-vault-sidebar-buttons"
             >
               <Popover
                 content={

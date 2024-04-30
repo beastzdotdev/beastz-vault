@@ -1,6 +1,6 @@
-# 🦍 Welcome to Gorilla Vault (React app)
+# 🦍 Welcome to Beastz Vault
 
-#### Unleash the power of secure file storage and sharing with Gorilla Vault React App – your go-to solution inspired by the user-friendliness of Google Drive, enhanced with robust features like encryption, public file sharing, and customizable folder colors.
+#### Unleash the power of secure file storage and sharing with Beastz Vault React App – your go-to solution inspired by the user-friendliness of Google Drive, enhanced with robust features like encryption, public file sharing, and customizable folder colors.
 
 * 🔒 Advanced Encryption: Protect your files with top-notch encryption capabilities seamlessly integrated into your browser.
 * 🌐 Effortless Sharing: Share files and folders effortlessly with others using private or public sharing options.
@@ -17,4 +17,4 @@ Empowered by cutting-edge technologies:
 * Formik
 * Zod
 
-#### Experience the next level of file management with Gorilla Vault 🚀
+#### Experience the next level of file management with Beastz Vault 🚀

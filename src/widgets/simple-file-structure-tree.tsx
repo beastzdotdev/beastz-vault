@@ -127,7 +127,7 @@ export const SimpleFileStructureTree = observer(({ className, onSelect }: Props)
       <MobxTree<number, RootFileStructure>
         compact={false}
         nodes={localStore.data}
-        nodeClassName="gorilla-sidebar-tree-node"
+        nodeClassName="beastz-vault-sidebar-tree-node"
         className={className ?? ''}
         onToggle={({ node, value }) => handleNodeToggle(node, value)}
         onClick={({ node }) => handleNodeClick(node)}

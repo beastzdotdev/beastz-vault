@@ -115,7 +115,7 @@ export const BinPage = observer((): React.JSX.Element => {
         />
       </div> */}
 
-      <div className="gorilla-file-structure mt-5">
+      <div className="beastz-vault-file-structure mt-5">
         <SafeRenderArray
           data={binStore.data}
           renderChild={binNode => {

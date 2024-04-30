@@ -12,7 +12,7 @@ export const ProfileIcon = observer(() => {
 
   return (
     <NavLink to={constants.path.profile} style={{ all: 'unset' }}>
-      <div className="gorilla-profile flex items-center justify-between py-2 mx-1.5 mb-1 cursor-pointer">
+      <div className="beastz-vault-profile flex items-center justify-between py-2 mx-1.5 mb-1 cursor-pointer">
         <div className="flex items-center">
           <Suspense>
             {profileStore.user.profileFullImagePath ? (
