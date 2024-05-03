@@ -21,8 +21,6 @@ export class AuthApiService {
 
   async signUp(params: {
     userName: string;
-    firstName: string;
-    lastName: string;
     email: string;
     birthDate: string;
     gender: string;

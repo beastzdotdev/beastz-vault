@@ -15,7 +15,7 @@ import { useState } from 'react';
 import { useFormik } from 'formik';
 import { useInjection } from 'inversify-react';
 import { DateInput3 } from '@blueprintjs/datetime2';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FormErrorMessage } from '../../components/form-error-message';
 import { signUpFieldsSchema } from './validation/auth-sign-up-validation-schema';
 import { AuthController } from './state/auth.controller';
@@ -25,6 +25,7 @@ import { zodFormikErrorAdapter, fields } from '../../shared/helper';
 
 export const AuthSignUpPage = (): React.JSX.Element => {
   const authController = useInjection(AuthController);
+  const navigate = useNavigate();
 
   const userForm = useFormik({
     initialValues: {
@@ -32,8 +33,6 @@ export const AuthSignUpPage = (): React.JSX.Element => {
       password: '',
       repeatPassword: '',
       userName: '',
-      firstName: '',
-      lastName: '',
       birthDate: '',
       gender: '',
     },
@@ -41,9 +40,16 @@ export const AuthSignUpPage = (): React.JSX.Element => {
     validationSchema: zodFormikErrorAdapter(signUpFieldsSchema),
     onSubmit: async (values, { resetForm }) => {
       const { repeatPassword: _, ...data } = values;
-      resetForm();
 
-      authController.signUp(data);
+      const response = await authController.signUp(data);
+
+      if (response !== 'err') {
+        resetForm();
+      }
+
+      if (response === 'redirect') {
+        navigate('/');
+      }
     },
   });
 
@@ -107,30 +113,6 @@ export const AuthSignUpPage = (): React.JSX.Element => {
             rightElement={lockButton}
           />
           {showErrorMessage && <FormErrorMessage message={userForm.errors.repeatPassword} />}
-        </FormGroup>
-
-        <br />
-        <FormGroup label="First name" labelInfo="(required)">
-          <InputGroup
-            intent={userForm.errors.firstName && showErrorMessage ? Intent.DANGER : Intent.NONE}
-            placeholder="Enter first name"
-            name={userFormFields.firstName}
-            value={userForm.values.firstName}
-            onChange={userForm.handleChange}
-          />
-          {showErrorMessage && <FormErrorMessage message={userForm.errors.firstName} />}
-        </FormGroup>
-
-        <br />
-        <FormGroup label="Last name" labelInfo="(required)">
-          <InputGroup
-            intent={userForm.errors.lastName && showErrorMessage ? Intent.DANGER : Intent.NONE}
-            placeholder="Enter last name"
-            name={userFormFields.lastName}
-            value={userForm.values.lastName}
-            onChange={userForm.handleChange}
-          />
-          {showErrorMessage && <FormErrorMessage message={userForm.errors.lastName} />}
         </FormGroup>
 
         <br />
