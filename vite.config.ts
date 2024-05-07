@@ -17,6 +17,11 @@ export default defineConfig({
       overlay: false,
     }),
   ],
+  esbuild: {
+    supported: {
+      'top-level-await': true, //browsers can handle top-level-await features
+    },
+  },
   build: {
     sourcemap: true,
   },
