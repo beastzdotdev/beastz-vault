@@ -5,8 +5,6 @@ import { Gender } from '../../../shared/enum';
 export const signUpFieldsSchema = z
   .object({
     userName: z.string({ required_error: 'Field required' }).max(255),
-    firstName: z.string({ required_error: 'Field required' }).max(255),
-    lastName: z.string({ required_error: 'Field required' }).max(255),
     email: z.string({ required_error: 'Field required' }).email().max(255),
     birthDate: z.string({ required_error: 'Field required' }).max(255),
     repeatPassword: z.string({ required_error: 'Field required' }).max(255),

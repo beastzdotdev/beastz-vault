@@ -39,8 +39,6 @@ export class AuthController {
 
   async signUp(params: {
     userName: string;
-    firstName: string;
-    lastName: string;
     email: string;
     birthDate: string;
     gender: string;
@@ -51,16 +49,18 @@ export class AuthController {
     if (error) {
       if (error.message === ExceptionMessageCode.USER_EMAIL_EXISTS) {
         toast.error('User email already exists');
-        return;
+        return 'err';
       }
 
       toast.error('Error on sign up');
+      return 'err';
     }
 
     if (data && data.isAccountVerified) {
-      router.navigate('/');
+      return 'redirect';
     } else {
       bus.emit('show-alert', { message: 'We have sent you account verification on you email' });
+      return 'ok';
     }
   }
 
