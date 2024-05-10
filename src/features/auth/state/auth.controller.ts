@@ -12,7 +12,7 @@ export class AuthController {
   private readonly authApiService: AuthApiService;
 
   async demoSignIn() {
-    await this.signIn({ email: 'demo@gmail.com', password: 'jsbyangtjt37*', isDemo: true });
+    await this.signIn({ email: 'demo@demo.com', password: 'demo123@', isDemo: true });
   }
 
   async signIn(params: { email: string; password: string; isDemo?: boolean }) {
