@@ -3,6 +3,7 @@ import { Alert, Intent } from '@blueprintjs/core';
 import { BusMessageType } from '../../bus/bus.schema';
 import { bus } from '../../bus/bus';
 
+//TODO: I think this is huge perfomance hazard one global alert will cause a lot of rerenders
 const GlobalAlert = ({
   isOpen,
   message,

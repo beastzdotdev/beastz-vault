@@ -114,7 +114,11 @@ export const FileStructureSearchBar = observer((): React.JSX.Element => {
           onChange={e => setValue(e.target.value)}
           leftIcon="search"
           placeholder="Search content"
-          rightElement={<Tag minimal={true}>/</Tag>}
+          rightElement={
+            <Tag className="text-center" minimal={true}>
+              /
+            </Tag>
+          }
         />
       </Select>
     </>

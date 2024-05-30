@@ -57,7 +57,7 @@ export const FileStuructureContextMenu = (params: {
         <>
           {/* TODO */}
           {/* <MenuItem
-            text={params.node.isEditable ? 'Diable editing' : 'Make editable'}
+            text={params.node.isEditable ? 'Disable editing' : 'Make editable'}
             icon={params.node.isEditable ? 'cross' : 'edit'}
           />
 
@@ -85,7 +85,7 @@ export const FileStuructureContextMenu = (params: {
 
       <MenuDivider />
       <MenuItem text="Coming soon" icon="clean">
-        <MenuItem disabled text="Diable editing" icon="cross" />
+        <MenuItem disabled text="Disable editing" icon="cross" />
         <MenuItem disabled text="Lock" icon="lock" />
 
         <MenuItem disabled text="Public link" icon="link" />

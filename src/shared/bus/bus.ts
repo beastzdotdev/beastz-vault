@@ -22,6 +22,7 @@ class BusContainer {
     return this.bus as Nanobus<T>;
   }
 }
+
 /**
  * @example
  *
