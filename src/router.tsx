@@ -31,6 +31,7 @@ import { UserSupportTicketCreatePage } from './features/user-support/user-suppor
 import { userSupportTicketDetailLoader } from './features/user-support/user-support-ticket-detail-loader';
 import { userSupportTicketLoader } from './features/user-support/user-support-ticket-loader';
 import { OpenEncryptionPage } from './features/open-encryption/open-encryption.page';
+import { ModalTestPage } from './features/experimental/modal-test-page';
 
 export const router = createBrowserRouter([
   // under / every page is under auth protection
@@ -156,6 +157,10 @@ export const router = createBrowserRouter([
       {
         path: 'test-card-list-loader',
         element: <CardListLoaderTestPage />,
+      },
+      {
+        path: 'modal-test',
+        element: <ModalTestPage />,
       },
     ],
   },

@@ -27,6 +27,9 @@ export const ExperimentalRootPage = (): React.JSX.Element => {
           <Card>
             <Link to="/experimental/test-card-list-loader">Card list loader test page</Link>
           </Card>
+          <Card>
+            <Link to="/experimental/modal-test">Modal test</Link>
+          </Card>
         </CardList>
       </div>
 

@@ -13,13 +13,6 @@ import './index.scss';
 import './declares/declares.d.ts';
 import './declares/declares.d.tsx';
 
-//!!!!====================================
-//!!!!====================================
-//!!!!====================================
-//!!!!====================================
-//!!!!====================================
-//TODO: add middleware for auth pages redirect back to main page if authentcated use pureApi
-
 // misc
 FocusStyleManager.onlyShowFocusOnTabs();
 

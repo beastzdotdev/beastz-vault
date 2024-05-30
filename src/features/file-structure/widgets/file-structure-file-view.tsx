@@ -1,17 +1,15 @@
 import {
   Button,
-  Dialog,
   DialogBody,
   FormGroup,
   H2,
-  H3,
   Icon,
   InputGroup,
   NonIdealState,
   NonIdealStateIconSize,
 } from '@blueprintjs/core';
 import { observer, useLocalObservable } from 'mobx-react-lite';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useInjection } from 'inversify-react';
 import { RootFileStructure } from '../../../shared/model';
 import { constants } from '../../../shared/constants';
@@ -22,6 +20,8 @@ import { toast } from '../../../shared/ui';
 import { SharedController } from '../../shared/state/shared.controller';
 import { encryption } from '../../../shared/encryption';
 import { FormErrorMessage } from '../../../components/form-error-message';
+import { FileStructureViewModalWidget } from '../../../widgets/file-structure-view-modal.widget';
+import { GeneralFileType } from '../../../shared/types';
 
 type Params = {
   selectedNode: RootFileStructure;
@@ -30,13 +30,35 @@ type Params = {
   isInBin: boolean;
 };
 
+type Store = {
+  url: string;
+  secret: string;
+  isEncryptedViewActive: boolean | null;
+  setUrl(url: string): void;
+  setSecret(secret: string): void;
+  setIsEncryptedViewActive(value: boolean): void;
+  clear(): void;
+};
+
+type TextStore = {
+  text: string;
+  loading: boolean;
+  forceShowText: boolean;
+  encryptErrorMessage: string | null;
+  setText(text: string): void;
+  setLoading(value: boolean): void;
+  setForceShowText(value: boolean): void;
+  setEncryptErrorMessage(value: string | null): void;
+  clear(): void;
+  setTextInitial(): Promise<void>;
+};
+
 export const FileStructureFileView = observer(
   ({ selectedNode, isOpen, toggleIsOpen, isInBin }: Params) => {
     const fileStructureApiService = useInjection(FileStructureApiService);
-    const sharedController = useInjection(SharedController);
     const type = differentiate(selectedNode?.mimeType);
 
-    const store = useLocalObservable(() => ({
+    const store = useLocalObservable<Store>(() => ({
       url: selectedNode.absRelativePath ?? '',
       secret: '',
       isEncryptedViewActive: selectedNode.isEncrypted,
@@ -61,7 +83,7 @@ export const FileStructureFileView = observer(
     }));
 
     //TODO need backup mimetype in backend and remove forceShow text and allow other types of file to be encrypted
-    const textStore = useLocalObservable(() => ({
+    const textStore = useLocalObservable<TextStore>(() => ({
       text: '',
       loading: false,
       forceShowText: false,
@@ -129,6 +151,77 @@ export const FileStructureFileView = observer(
       }
     }, [isOpen, store, textStore, type]);
 
+    const onDownload = async () => {
+      const { error } = await fileStructureApiService.downloadById(selectedNode.id);
+      if (error) {
+        toast.error(error?.message ?? 'Sorry, something went wrong');
+        return;
+      }
+    };
+
+    const onLink = () => {
+      openLink(selectedNode.absRelativePath);
+    };
+
+    const onPrint = () => {
+      window.print();
+    };
+
+    const title = useMemo(() => {
+      console.log(123);
+
+      return (
+        selectedNode.title + (selectedNode?.fileExstensionRaw ?? '') + (isInBin ? ' - Bin' : '')
+      );
+    }, [isInBin, selectedNode?.fileExstensionRaw, selectedNode.title]);
+
+    return (
+      <>
+        <FileStructureViewModalWidget
+          isOpen={isOpen}
+          setIsOpen={toggleIsOpen}
+          onClose={() => closeDialog()}
+          title={title}
+          showPrintButton={type === 'image'}
+          showDownloadButton={!isInBin}
+          showLinkButton={!isInBin}
+          onPrint={onPrint}
+          onDownload={onDownload}
+          onLink={onLink}
+        >
+          <RenderModalBody
+            closeDialog={closeDialog}
+            selectedNode={selectedNode}
+            store={store}
+            textStore={textStore}
+            type={type}
+            isInBin={isInBin}
+          />
+        </FileStructureViewModalWidget>
+      </>
+    );
+  }
+);
+
+const RenderModalBody = observer(
+  ({
+    store,
+    selectedNode,
+    textStore,
+    type,
+    closeDialog,
+    isInBin,
+  }: {
+    store: Store;
+    selectedNode: RootFileStructure;
+    textStore: TextStore;
+    type: GeneralFileType;
+    closeDialog: () => void;
+    isInBin?: boolean;
+  }) => {
+    const fileStructureApiService = useInjection(FileStructureApiService);
+    const sharedController = useInjection(SharedController);
+
     const onDecrypt = async () => {
       if (!selectedNode.absRelativePath) {
         return;
@@ -166,252 +259,152 @@ export const FileStructureFileView = observer(
       }
     };
 
-    return (
-      <>
-        <Dialog
-          isOpen={isOpen}
-          onClose={() => closeDialog()}
-          canOutsideClickClose
-          canEscapeKeyClose
-          shouldReturnFocusOnClose
-          transitionDuration={0}
-          enforceFocus
-          className="shadow-none fixed top-0 left-0 bottom-0 m-0 right-0 w-full h-full !bg-transparent overflow-hidden select-none"
-        >
-          {store.isEncryptedViewActive ? (
-            <DialogBody className="max-h-none flex flex-col">
-              <div className="pb-5 flex justify-between">
-                <div className="flex items-center">
-                  <H3 className="font-extralight m-0 pl-3">
-                    {selectedNode.title + (selectedNode?.fileExstensionRaw ?? '')}
-                    {isInBin && ' - Bin'}
-                  </H3>
-                </div>
+    if (store.isEncryptedViewActive) {
+      return (
+        <DialogBody className="max-h-none flex flex-col">
+          <div className="flex-1 overflow-hidden flex justify-center">
+            <FormGroup label="Secret message" labelInfo="(required)" className="select-none">
+              <InputGroup
+                className="min-w-96 border border-gray-200 border-opacity-40"
+                autoFocus
+                tabIndex={1}
+                inputClassName="select-text"
+                intent="success"
+                name="Secret"
+                value={store.secret}
+                onChange={e => store.setSecret(e.target.value)}
+              />
 
-                <div>
-                  <Button
-                    outlined
-                    className="rounded-full mr-4"
-                    icon="download"
-                    onClick={async () => {
-                      const { error } = await fileStructureApiService.downloadById(selectedNode.id);
-                      if (error) {
-                        toast.error(error?.message ?? 'Sorry, something went wrong');
-                        return;
-                      }
-                    }}
-                  >
-                    Download
-                  </Button>
-                  <Button
-                    icon="link"
-                    className="rounded-full mr-2"
-                    outlined
-                    onClick={() => openLink(selectedNode.absRelativePath)}
-                  />
-                  <Button
-                    icon="cross"
-                    className="rounded-full"
-                    outlined
-                    onClick={() => closeDialog()}
-                  />
-                </div>
-              </div>
+              {textStore.encryptErrorMessage && (
+                <FormErrorMessage message={textStore.encryptErrorMessage} />
+              )}
 
-              <div className="flex-1 overflow-hidden flex justify-center">
-                <FormGroup label="Secret message" labelInfo="(required)" className="select-none">
-                  <InputGroup
-                    className="min-w-96 border border-gray-200 border-opacity-40"
-                    autoFocus
-                    tabIndex={1}
-                    inputClassName="select-text"
-                    intent="success"
-                    name="Secret"
-                    value={store.secret}
-                    onChange={e => store.setSecret(e.target.value)}
-                  />
+              <Button className="mt-5" text="Decrypt" onClick={onDecrypt} />
+            </FormGroup>
+          </div>
+        </DialogBody>
+      );
+    }
 
-                  {textStore.encryptErrorMessage && (
-                    <FormErrorMessage message={textStore.encryptErrorMessage} />
-                  )}
+    if (type === 'image') {
+      return (
+        <img
+          id="focused-for-print"
+          src={store.url}
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            objectFit: 'cover',
+            objectPosition: 'center',
+            maxWidth: '100%',
+            maxHeight: '100%',
+            aspectRatio: '16 / 9',
+          }}
+          crossOrigin="use-credentials"
+          alt="Image not loaded, sorry"
+        />
+      );
+    }
 
-                  <Button className="mt-5" text="Decrypt" onClick={onDecrypt} />
-                </FormGroup>
-              </div>
-            </DialogBody>
-          ) : (
-            <DialogBody className="max-h-none flex flex-col">
-              <div className="pb-5 flex justify-between">
-                <div className="flex items-center">
-                  <H3 className="font-extralight m-0 pl-3">
-                    {selectedNode.title + (selectedNode?.fileExstensionRaw ?? '')}
-                    {isInBin && ' - Bin'}
-                  </H3>
-                </div>
+    if (type === 'other') {
+      return <RenderNonIdealState selectedNode={selectedNode} />;
+    }
 
-                <div>
-                  {type === 'image' && (
-                    <Button
-                      outlined
-                      className="rounded-full mr-4"
-                      icon="print"
-                      onClick={() => window.print()}
-                    >
-                      Print
-                    </Button>
-                  )}
+    if (type === 'audio') {
+      return (
+        <div className="w-[500px]">
+          <audio controls src={store.url} style={{ width: '100%' }} />
+        </div>
+      );
+    }
 
-                  <Button
-                    outlined
-                    className="rounded-full mr-4"
-                    icon="download"
-                    onClick={async () => {
-                      const { error } = await fileStructureApiService.downloadById(selectedNode.id);
-                      if (error) {
-                        toast.error(error?.message ?? 'Sorry, something went wrong');
-                        return;
-                      }
-                    }}
-                  >
-                    Download
-                  </Button>
-                  <Button
-                    icon="link"
-                    className="rounded-full mr-2"
-                    outlined
-                    onClick={() => openLink(selectedNode.absRelativePath)}
-                  />
-                  <Button
-                    icon="cross"
-                    className="rounded-full"
-                    outlined
-                    onClick={() => closeDialog()}
-                  />
-                </div>
-              </div>
+    if (type === 'video') {
+      return (
+        <video
+          className="max-w-2xl h-auto"
+          controls
+          controlsList="nodownload noplaybackrate"
+          src={store.url}
+          disablePictureInPicture
+        />
+      );
+    }
 
-              <div
-                className="flex-1 overflow-hidden flex justify-center"
-                onClick={() => {
-                  if (type === 'image' || type === 'other') {
-                    closeDialog();
-                  }
-                }}
-              >
-                {/* Start */}
+    if (type === 'text' || textStore.forceShowText) {
+      return (
+        <div className="w-[900px]">
+          <TextFileEditor
+            hideNewInMenu
+            hideReplaceSwitch
+            disableTitleEdit
+            hideFooter={textStore.forceShowText || isInBin}
+            readOnly={textStore.forceShowText || isInBin}
+            title={selectedNode.title}
+            text={textStore.text}
+            loading={textStore.loading}
+            onSave={async ({ text }) => {
+              console.log(text === textStore.text);
 
-                {type === 'other' && (
-                  <NonIdealState
-                    title={
-                      <H2 className="font-extralight !text-neutral-50">
-                        Sorry, file type not supported
-                      </H2>
-                    }
-                    className="xxxs"
-                    layout="horizontal"
-                    iconMuted={false}
-                    description={
-                      <div>
-                        <p>Try in another link</p>
+              if (text === textStore.text) {
+                return;
+              }
 
-                        <Button
-                          outlined
-                          className="rounded-full mt-4"
-                          icon="link"
-                          onClick={() => openLink(selectedNode.absRelativePath)}
-                          text="Open"
-                        />
-                      </div>
-                    }
-                    icon={
-                      <Icon
-                        icon="issue"
-                        size={NonIdealStateIconSize.STANDARD}
-                        className="text-neutral-50"
-                      />
-                    }
-                  />
-                )}
+              textStore.setLoading(true);
 
-                {type === 'image' && (
-                  <img
-                    id="focused-for-print"
-                    style={{
-                      objectFit: 'contain',
-                      maxWidth: '100%',
-                      maxHeight: '100%',
-                      aspectRatio: '16 / 9',
-                    }}
-                    crossOrigin="use-credentials"
-                    src={store.url}
-                    alt="Image not loaded, sorry"
-                  />
-                )}
+              const startTime = new Date(); // Start time
+              const { data, error } = await fileStructureApiService.replaceTextById(
+                selectedNode.id,
+                {
+                  text,
+                }
+              );
+              const endTime = new Date();
 
-                {type === 'audio' && (
-                  <div className="flex items-center">
-                    <audio controls src={store.url} />
-                  </div>
-                )}
+              // this is necessary because if axios took less than 200ms animation seems weird
+              if (endTime.getTime() - startTime.getTime() < 200) {
+                // add another 400 ms waiting
+                await sleep(400);
+              }
 
-                {type === 'video' && <video controls src={store.url} disablePictureInPicture />}
+              textStore.setLoading(false);
 
-                {(type === 'text' || textStore.forceShowText) && (
-                  <>
-                    <div className="w-[900px]">
-                      <TextFileEditor
-                        hideNewInMenu
-                        hideReplaceSwitch
-                        disableTitleEdit
-                        hideFooter={textStore.forceShowText}
-                        readOnly={textStore.forceShowText}
-                        title={selectedNode.title}
-                        text={textStore.text}
-                        loading={textStore.loading}
-                        onSave={async ({ text }) => {
-                          console.log(text === textStore.text);
+              if (error || !data) {
+                toast.error(error?.message || 'Sorry, something went wrong');
+                return;
+              }
 
-                          if (text === textStore.text) {
-                            return;
-                          }
-
-                          textStore.setLoading(true);
-
-                          const startTime = new Date(); // Start time
-                          const { data, error } = await fileStructureApiService.replaceTextById(
-                            selectedNode.id,
-                            { text }
-                          );
-                          const endTime = new Date();
-
-                          // this is necessary because if axios took less than 200ms animation seems weird
-                          if (endTime.getTime() - startTime.getTime() < 200) {
-                            // add another 400 ms waiting
-                            await sleep(400);
-                          }
-
-                          textStore.setLoading(false);
-
-                          if (error || !data) {
-                            toast.error(error?.message || 'Sorry, something went wrong');
-                            return;
-                          }
-
-                          sharedController.createFileStructureInState(data, true);
-                          closeDialog();
-                        }}
-                        onClose={() => closeDialog()}
-                      />
-                    </div>
-                  </>
-                )}
-
-                {/* End */}
-              </div>
-            </DialogBody>
-          )}
-        </Dialog>
-      </>
-    );
+              sharedController.createFileStructureInState(data, true);
+              closeDialog();
+            }}
+            onClose={() => closeDialog()}
+          />
+        </div>
+      );
+    }
   }
+);
+
+const RenderNonIdealState = ({ selectedNode }: { selectedNode: RootFileStructure }) => (
+  <NonIdealState
+    title={<H2 className="font-extralight !text-neutral-50">Sorry, file type not supported</H2>}
+    className="xxxs"
+    layout="horizontal"
+    iconMuted={false}
+    description={
+      <div>
+        <p>Try opening using link button (support will be added soon)</p>
+
+        <Button
+          outlined
+          className="rounded-full mt-4"
+          icon="link"
+          onClick={() => openLink(selectedNode.absRelativePath)}
+          text="Open"
+        />
+      </div>
+    }
+    icon={<Icon icon="issue" size={NonIdealStateIconSize.STANDARD} className="text-neutral-50" />}
+  />
 );
