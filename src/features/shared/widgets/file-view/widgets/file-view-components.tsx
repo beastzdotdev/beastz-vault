@@ -1,11 +1,17 @@
-import { Button, H2, Icon, NonIdealState, NonIdealStateIconSize } from '@blueprintjs/core';
+import { Button, Icon, NonIdealState, NonIdealStateIconSize } from '@blueprintjs/core';
+import { useEffect } from 'react';
+import { useInjection } from 'inversify-react';
+import { observer } from 'mobx-react-lite';
 import { openLink } from '../../../../../shared/helper';
 import { RootFileStructure } from '../../../../../shared/model';
+import { TextFileEditor } from '../../../../../widgets/text-editor';
+import { FileViewController } from '../file-view.controller';
+import { FileViewStore } from '../file-view-store';
 
 export const FileViewNonIdealState = ({ item }: { item: RootFileStructure }) => (
   <NonIdealState
-    title={<H2 className="font-extralight !text-neutral-50">Sorry, file type not supported</H2>}
-    className="xxxs"
+    title="Sorry, file type not supported"
+    className="custom-non-ideal-state"
     layout="horizontal"
     iconMuted={false}
     description={
@@ -81,52 +87,32 @@ export const FileViewVideo = ({ item }: { item: RootFileStructure }) => {
   );
 };
 
-export const FileViewText = ({ item }: { item: RootFileStructure }) => {
+export const FileViewText = observer(({ item }: { item: RootFileStructure }) => {
+  const fileViewController = useInjection(FileViewController);
+  const fileViewStore = useInjection(FileViewStore);
+
+  useEffect(
+    () => {
+      fileViewController.setTextInitial(item);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
   return (
     <div className="w-[900px]">
-      <p>text {item.title}</p>
-      {/* <TextFileEditor
+      <TextFileEditor
         hideNewInMenu
         hideReplaceSwitch
         disableTitleEdit
-        hideFooter={textStore.forceShowText || isInBin}
-        readOnly={textStore.forceShowText || isInBin}
+        hideFooter={fileViewStore.isTextReadonly || fileViewStore.isInBin}
+        readOnly={fileViewStore.isTextReadonly || fileViewStore.isInBin}
         title={item?.title}
-        text={textStore.text}
-        loading={textStore.loading}
-        onSave={async ({ text }) => {
-          console.log(text === textStore.text);
-
-          if (text === textStore.text) {
-            return;
-          }
-
-          textStore.setLoading(true);
-
-          const startTime = new Date(); // Start time
-          const { data, error } = await fileStructureApiService.replaceTextById(item.id, {
-            text,
-          });
-          const endTime = new Date();
-
-          // this is necessary because if axios took less than 200ms animation seems weird
-          if (endTime.getTime() - startTime.getTime() < 200) {
-            // add another 400 ms waiting
-            await sleep(400);
-          }
-
-          textStore.setLoading(false);
-
-          if (error || !data) {
-            toast.error(error?.message || 'Sorry, something went wrong');
-            return;
-          }
-
-          sharedController.createFileStructureInState(data, true);
-          closeDialog();
-        }}
-        onClose={() => closeDialog()}
-      /> */}
+        text={fileViewStore.text}
+        textSaveLoading={fileViewStore.textSaveLoading}
+        onSave={({ text }) => fileViewController.saveText(item, text)}
+        onClose={() => fileViewStore.setIsModalOpen(false)}
+      />
     </div>
   );
-};
+});

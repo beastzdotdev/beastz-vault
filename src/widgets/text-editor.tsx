@@ -19,7 +19,7 @@ export type Params = {
   text?: string;
   title?: string;
   replace?: boolean;
-  loading?: boolean;
+  textSaveLoading?: boolean;
 
   readOnly?: boolean;
   hideReplaceSwitch?: boolean;
@@ -198,7 +198,7 @@ export const TextFileEditor = observer((params: Params) => {
           )}
           <Button
             text="Save"
-            loading={params?.loading}
+            loading={params?.textSaveLoading}
             disabled={store.isDisabled}
             className="px-5"
             onClick={() =>

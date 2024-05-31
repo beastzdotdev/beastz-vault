@@ -39,65 +39,12 @@ export const FileViewModalBody = observer(({ item }: { item: RootFileStructure }
       this.isEncryptedViewActive = false;
     },
   }));
-  const textStore = useLocalObservable(() => ({
-    text: '',
-    loading: false,
-    forceShowText: false,
-    encryptErrorMessage: null as string | null,
-
-    setText(text: string) {
-      this.text = text;
-    },
-
-    setLoading(value: boolean) {
-      this.loading = value;
-    },
-
-    setForceShowText(value: boolean) {
-      this.forceShowText = value;
-    },
-
-    setEncryptErrorMessage(value: string | null) {
-      this.encryptErrorMessage = value;
-    },
-
-    clear() {
-      this.text = '';
-      this.forceShowText = false;
-      this.loading = false;
-      this.encryptErrorMessage = null;
-    },
-
-    async setTextInitial(): Promise<void> {
-      if (item.isEncrypted) {
-        return;
-      }
-
-      let finalText = '';
-
-      try {
-        if (type === 'text' && item.absRelativePath) {
-          const url = item.absRelativePath.replace(constants.path.backend.url, '');
-          const textResponse = await api.get(url, { responseType: 'text' });
-
-          finalText = textResponse.data;
-        }
-      } catch (error) {
-        finalText = '';
-      }
-
-      this.setText(finalText);
-    },
-  }));
 
   useEffect(
     () => {
-      if (type === 'text') {
-        textStore.setTextInitial();
-      }
-
       if (!fileViewStore.isModalOpen) {
-        textStore.clear();
+        fileViewStore.clear();
+        encryptionStore.clear();
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -118,7 +65,7 @@ export const FileViewModalBody = observer(({ item }: { item: RootFileStructure }
         .catch(() => null);
 
       if (!decryptedFile) {
-        textStore.setEncryptErrorMessage('Sorry, incorrect password');
+        fileViewStore.setEncryptErrorMessage('Sorry, incorrect password');
         return;
       }
 
@@ -128,9 +75,9 @@ export const FileViewModalBody = observer(({ item }: { item: RootFileStructure }
 
       console.log(text);
 
-      textStore.setText(text);
+      fileViewStore.setText(text);
       encryptionStore.setIsEncryptedViewActive(false);
-      textStore.setForceShowText(true);
+      fileViewStore.setIsTextReadonly(true);
 
       //TODO this will be decrypted url for img and other
       // store.setUrl(URL.createObjectURL(file));
@@ -157,8 +104,8 @@ export const FileViewModalBody = observer(({ item }: { item: RootFileStructure }
               onChange={e => encryptionStore.setSecret(e.target.value)}
             />
 
-            {textStore.encryptErrorMessage && (
-              <FormErrorMessage message={textStore.encryptErrorMessage} />
+            {fileViewStore.encryptErrorMessage && (
+              <FormErrorMessage message={fileViewStore.encryptErrorMessage} />
             )}
 
             <Button className="mt-5" text="Decrypt" onClick={onDecrypt} />
@@ -171,6 +118,7 @@ export const FileViewModalBody = observer(({ item }: { item: RootFileStructure }
   switch (type) {
     case 'image':
       return <FileViewImg item={item} />;
+    case 'byte':
     case 'other':
       return <FileViewNonIdealState item={item} />;
     case 'audio':

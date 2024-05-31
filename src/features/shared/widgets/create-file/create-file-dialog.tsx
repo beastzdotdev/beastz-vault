@@ -109,7 +109,11 @@ export const CreateFileDialog = observer(({ isOpen, toggleIsOpen }: Params) => {
         enforceFocus
         className="!shadow-none relative w-[900px]"
       >
-        <TextFileEditor loading={store.loading} onSave={saveFile} onClose={() => closeDialog()} />
+        <TextFileEditor
+          textSaveLoading={store.loading}
+          onSave={saveFile}
+          onClose={() => closeDialog()}
+        />
       </Dialog>
     </>
   );
