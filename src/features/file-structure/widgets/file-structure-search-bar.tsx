@@ -40,7 +40,7 @@ export const FileStructureSearchBar = observer((): React.JSX.Element => {
             return;
           }
 
-          console.log(data);
+          // console.log(data);
           store.setItem(data);
         } else {
           store.clear();
@@ -71,12 +71,10 @@ export const FileStructureSearchBar = observer((): React.JSX.Element => {
     _event?: React.SyntheticEvent<HTMLElement>
   ) => {
     if (item.isFile) {
-      bus.emit('show-file', { fs: item });
+      bus.emit('show-file', { item, isInBin: false });
     } else {
       navigate(item.link);
     }
-
-    console.log('select', item);
 
     store.clear();
     setValue('');

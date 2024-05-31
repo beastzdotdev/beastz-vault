@@ -10,12 +10,13 @@ export const ModalTestPage = () => {
       <Button onClick={() => setIsOpen(true)}>Open modal</Button>
 
       <FileStructureViewModalWidget
+        item={{} as object}
         isOpen={isOpen}
-        setIsOpen={setIsOpen}
         title={'Hello'}
         showPrintButton
         showDownloadButton
         showLinkButton
+        onClose={() => setIsOpen(false)}
       >
         <img
           id="focused-for-print"

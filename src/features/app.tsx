@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { useInjection } from 'inversify-react';
 import { SharedStore } from './shared/state/shared.store';
 import { Sidebar } from './shared/widgets/sidebar';
+import { FileViewModalListener } from './shared/widgets/file-view/file-view-page';
 
 export const App = observer((): React.JSX.Element => {
   const sharedStore = useInjection(SharedStore);
@@ -14,6 +15,8 @@ export const App = observer((): React.JSX.Element => {
     <>
       {sharedStore.shouldRender && (
         <>
+          <FileViewModalListener />
+
           <div className="flex h-full">
             <Sidebar />
 

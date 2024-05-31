@@ -1,8 +1,8 @@
+import { useState } from 'react';
 import { Button, Intent, NonIdealState, NonIdealStateIconSize } from '@blueprintjs/core';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { useInjection } from 'inversify-react';
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
 import { FileStuructureFileItem } from '../../../widgets/file-structure-item.widget';
 import { SafeRenderArray } from '../../../components/safe-render-array';
 import { SharedStore } from '../../shared/state/shared.store';
@@ -11,7 +11,6 @@ import { toast } from '../../../shared/ui';
 import { ChangeColor } from './change-color';
 import { RootFileStructure } from '../../../shared/model';
 import { FileStructureDetails } from './file-structure-details';
-import { FileStructureFileView } from './file-structure-file-view';
 import { FileStructureEncrypt } from './file-structure-encrypt/file-structure-encrypt';
 import { bus } from '../../../shared/bus';
 
@@ -21,7 +20,6 @@ export const FileStructureFiles = observer((): React.JSX.Element => {
   const fileStructureApiService = useInjection(FileStructureApiService);
   const [isChangeColorOpen, setChangeColorOpen] = useState(false);
   const [isDetailsOpen, setDetailsOpen] = useState(false);
-  const [isFileViewOpen, setFileViewOpen] = useState(false);
   const [isFileStructureEncryptOpen, setFileStructureEncryptOpen] = useState(false);
 
   const localSelectedStore = useLocalObservable(() => ({
@@ -66,25 +64,13 @@ export const FileStructureFiles = observer((): React.JSX.Element => {
         setDetailsOpen(finalValue);
         break;
       case 'file-view':
-        setFileViewOpen(finalValue);
+        bus.emit('show-file', { item: [...localSelectedStore.selectedNodes][0], isInBin: false });
         break;
       case 'encrypt':
         setFileStructureEncryptOpen(finalValue);
         break;
     }
   };
-
-  useEffect(
-    () => {
-      bus.addListener('show-file', ({ fs }) => {
-        localSelectedStore.setSelectedSingle(fs);
-        toggleOpen(true, 'file-view');
-      });
-    },
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  );
 
   return (
     <div className="beastz-vault-file-structure">
@@ -171,15 +157,6 @@ export const FileStructureFiles = observer((): React.JSX.Element => {
               selectedNodes={[...localSelectedStore.selectedNodes]}
               isOpen={isDetailsOpen}
               toggleIsOpen={value => toggleOpen(value, 'details')}
-              isInBin={false}
-            />
-          )}
-
-          {isFileViewOpen && (
-            <FileStructureFileView
-              selectedNode={[...localSelectedStore.selectedNodes][0]}
-              isOpen={isFileViewOpen}
-              toggleIsOpen={value => toggleOpen(value, 'file-view')}
               isInBin={false}
             />
           )}

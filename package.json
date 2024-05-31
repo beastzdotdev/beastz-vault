@@ -19,7 +19,8 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "modules:update:check": "npx npm-check-updates",
     "modules:update": "npx npm-check-updates -u",
-    "use:nvm": "source ~/.nvm/nvm.sh && nvm use"
+    "use:nvm": "source ~/.nvm/nvm.sh && nvm use",
+    "vite:cache:clear": "rm -rf ./node_modules/.vite"
   },
   "dependencies": {
     "@blueprintjs/core": "^5.10.2",

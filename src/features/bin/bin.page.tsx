@@ -11,8 +11,8 @@ import { DeleteForeverBin } from './widgets/delete-forever-bin';
 import { toast } from '../../shared/ui';
 import { FileStructureDetails } from '../file-structure/widgets/file-structure-details';
 import { RootFileStructure } from '../../shared/model';
-import { FileStructureFileView } from '../file-structure/widgets/file-structure-file-view';
 import { Bin } from './model/bin.model';
+import { bus } from '../../shared/bus';
 
 // const typeItems: AdvancedSelectItem[] = [
 //   { key: uuid(), text: 'Images' },
@@ -35,12 +35,11 @@ import { Bin } from './model/bin.model';
 // ];
 
 export const BinPage = observer((): React.JSX.Element => {
+  // const [selectedType, setSelectedType] = useState<AdvancedSelectItem | null>(null);
+
   const navigate = useNavigate();
   const binStore = useInjection(BinStore);
-  // const [selectedType, setSelectedType] = useState<AdvancedSelectItem | null>(null);
-  // const [modifiedType, setModifiedType] = useState<AdvancedSelectItem | null>(null);
   const [isDeleteForeverOpen, setDeleteForeverOpen] = useState(false);
-  const [isFileViewOpen, setFileViewOpen] = useState(false);
   const [isRestoreOpen, setRestoreOpen] = useState(false);
   const [isDetailsOpen, setDetailsOpen] = useState(false);
 
@@ -87,7 +86,7 @@ export const BinPage = observer((): React.JSX.Element => {
         setDetailsOpen(finalValue);
         break;
       case 'file-view':
-        setFileViewOpen(finalValue);
+        bus.emit('show-file', { item: localSelectedStore.nodes[0], isInBin: true });
         break;
     }
   };
@@ -183,15 +182,6 @@ export const BinPage = observer((): React.JSX.Element => {
               selectedNodes={localSelectedStore.nodes}
               isOpen={isDetailsOpen}
               toggleIsOpen={value => toggleOpen(value, 'details')}
-              isInBin={true}
-            />
-          )}
-
-          {isFileViewOpen && (
-            <FileStructureFileView
-              selectedNode={localSelectedStore.nodes[0]}
-              isOpen={isFileViewOpen}
-              toggleIsOpen={value => toggleOpen(value, 'file-view')}
               isInBin={true}
             />
           )}

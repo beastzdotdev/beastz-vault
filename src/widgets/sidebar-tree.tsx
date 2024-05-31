@@ -13,7 +13,7 @@ import { toast } from '../shared/ui';
 import { ChangeColor } from '../features/file-structure/widgets/change-color';
 import { FileStructureDetails } from '../features/file-structure/widgets/file-structure-details';
 import { FileStructureEncrypt } from '../features/file-structure/widgets/file-structure-encrypt/file-structure-encrypt';
-import { FileStructureFileView } from '../features/file-structure/widgets/file-structure-file-view';
+import { bus } from '../shared/bus';
 
 export const SidebarTree = observer(({ className }: { className?: string }) => {
   const sharedStore = useInjection(SharedStore);
@@ -23,7 +23,6 @@ export const SidebarTree = observer(({ className }: { className?: string }) => {
   //TODO duplication resolve !!!
   const [isChangeColorOpen, setChangeColorOpen] = useState(false);
   const [isDetailsOpen, setDetailsOpen] = useState(false);
-  const [isFileViewOpen, setFileViewOpen] = useState(false);
   const [isFileStructureEncryptOpen, setFileStructureEncryptOpen] = useState(false);
 
   //TODO duplication resolve !!!
@@ -41,7 +40,7 @@ export const SidebarTree = observer(({ className }: { className?: string }) => {
 
   //TODO duplication resolve !!!
   const toggleOpen = useCallback(
-    (value: boolean, type: 'change-color' | 'details' | 'file-view' | 'encrypt') => {
+    (value: boolean, type: 'change-color' | 'details' | 'encrypt') => {
       const finalValue = value;
 
       // is closing
@@ -55,9 +54,6 @@ export const SidebarTree = observer(({ className }: { className?: string }) => {
           break;
         case 'details':
           setDetailsOpen(finalValue);
-          break;
-        case 'file-view':
-          setFileViewOpen(finalValue);
           break;
         case 'encrypt':
           setFileStructureEncryptOpen(finalValue);
@@ -87,7 +83,7 @@ export const SidebarTree = observer(({ className }: { className?: string }) => {
   const handleNodeClick = useCallback(
     async (node: RootFileStructure) => {
       if (node.isFile) {
-        //TODO
+        bus.emit('show-file', { item: node, isInBin: false });
         return;
       }
 
@@ -233,15 +229,6 @@ export const SidebarTree = observer(({ className }: { className?: string }) => {
               selectedNodes={[store.selectedNode]}
               isOpen={isDetailsOpen}
               toggleIsOpen={value => toggleOpen(value, 'details')}
-              isInBin={false}
-            />
-          )}
-
-          {isFileViewOpen && (
-            <FileStructureFileView
-              selectedNode={[store.selectedNode][0]}
-              isOpen={isFileViewOpen}
-              toggleIsOpen={value => toggleOpen(value, 'file-view')}
               isInBin={false}
             />
           )}

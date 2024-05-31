@@ -1,44 +1,44 @@
 import { Button, Dialog, H3 } from '@blueprintjs/core';
 
-type Params = {
+type Params<T> = {
+  item: T;
   isOpen: boolean;
-  setIsOpen: (value: boolean) => void;
-
   title: string;
   children: JSX.Element;
+  onClose: (item: T) => void;
 
+  // optionals
   className?: string;
   showPrintButton?: boolean;
   showDownloadButton?: boolean;
   showLinkButton?: boolean;
-
-  onClose?: () => void;
-  onPrint?: () => void;
-  onDownload?: () => void;
-  onLink?: () => void;
+  onPrint?: (item: T) => void;
+  onDownload?: (item: T) => void;
+  onLink?: (item: T) => void;
 };
 
-export const FileStructureViewModalWidget = (params: Params) => {
+export const FileStructureViewModalWidget = <T,>(params: Params<T>) => {
   const {
+    item,
     isOpen,
-    setIsOpen,
-    onClose,
-    onDownload,
-    onLink,
-    onPrint,
     title,
+    children,
+    onClose,
+
     showDownloadButton,
     showLinkButton,
     showPrintButton,
-    children,
     className,
+    onDownload,
+    onLink,
+    onPrint,
   } = params;
 
   return (
     <>
       <Dialog
         isOpen={isOpen}
-        onClose={onClose}
+        onClose={() => onClose(item)}
         usePortal
         canOutsideClickClose
         canEscapeKeyClose
@@ -58,7 +58,7 @@ export const FileStructureViewModalWidget = (params: Params) => {
                 outlined
                 icon="print"
                 className="rounded-full mr-2"
-                onClick={() => onPrint?.()}
+                onClick={() => onPrint?.(item)}
                 text="Print"
               />
             )}
@@ -68,7 +68,7 @@ export const FileStructureViewModalWidget = (params: Params) => {
                 outlined
                 icon="download"
                 className="rounded-full mr-2"
-                onClick={() => onDownload?.()}
+                onClick={() => onDownload?.(item)}
               />
             )}
 
@@ -77,16 +77,9 @@ export const FileStructureViewModalWidget = (params: Params) => {
                 outlined
                 icon="link"
                 className="rounded-full mr-2"
-                onClick={() => onLink?.()}
+                onClick={() => onLink?.(item)}
               />
             )}
-
-            <Button
-              icon="cross"
-              className="rounded-full"
-              outlined
-              onClick={() => setIsOpen(false)}
-            />
           </div>
         </div>
 
