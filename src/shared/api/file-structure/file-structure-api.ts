@@ -5,7 +5,7 @@ import { Singleton } from '../../ioc';
 import { RootFileStructure } from '../../model';
 import {
   BasicFileStructureResponseDto,
-  GetDuplicateStatusQueryDto,
+  GetDuplicateStatusDto,
   GetDuplicateStatusResponseDto,
   GetGeneralInfoResponseDto,
 } from './file-structure-api.schema';
@@ -43,12 +43,12 @@ export class FileStructureApiService {
   }
 
   async getDuplicateStatus(
-    params: GetDuplicateStatusQueryDto
+    dto: GetDuplicateStatusDto
   ): Promise<AxiosApiResponse<GetDuplicateStatusResponseDto[]>> {
     try {
-      const result = await api.get<GetDuplicateStatusResponseDto[]>(
+      const result = await api.post<GetDuplicateStatusResponseDto[]>(
         `file-structure/duplicate-status`,
-        { params }
+        dto
       );
 
       return { data: result.data };

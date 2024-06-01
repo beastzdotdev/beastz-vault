@@ -34,7 +34,7 @@ class DuplChecker {
   mimeTypeRaw?: string;
 }
 
-export class GetDuplicateStatusQueryDto {
+export class GetDuplicateStatusDto {
   items: DuplChecker[];
   isFile: boolean;
   parentId?: number;
