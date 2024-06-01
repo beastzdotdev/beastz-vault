@@ -1,0 +1,90 @@
+.small-device-notification-overlay {
+  display: none;
+}
+
+@media only screen and (max-width: 960px) {
+  body {
+    overflow: hidden;
+  }
+  .small-device-notification-overlay {
+    z-index: 10;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #0f1214;
+    color: white;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+
+    h1 {
+      font-size: 24px !important;
+      padding: 0 30px;
+      max-width: 700px;
+      text-align: center;
+    }
+
+    button {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+
+      align-items: center;
+      appearance: none;
+      background-color: rgb(33, 93, 175, 0.85);
+      border-radius: 4px;
+      border-width: 0;
+      box-sizing: border-box;
+      color: #36395a;
+      color: white;
+      cursor: pointer;
+      display: inline-flex;
+      font-family: 'JetBrains Mono', monospace;
+      height: 30px;
+      justify-content: center;
+      line-height: 1;
+      list-style: none;
+      overflow: hidden;
+      padding-left: 16px;
+      padding-right: 16px;
+      text-align: left;
+      text-decoration: none;
+      transition:
+        box-shadow 0.15s,
+        transform 0.15s;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+      white-space: nowrap;
+      will-change: box-shadow, transform;
+      font-size: 16px;
+      box-shadow: rgb(0, 97, 232) 0 -2px 0 inset;
+
+      &:hover {
+        transform: translateY(-2px);
+      }
+
+      &:active {
+        box-shadow: rgba(33, 92, 175, 0.585) 0 3px 7px inset;
+        transform: translateY(2px);
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 960px) {
+  .small-device-notification-overlay {
+    h1 {
+      font-size: 19px !important;
+      padding: 0 15px;
+    }
+
+    button {
+      height: 25px;
+      font-size: 14px;
+    }
+  }
+}

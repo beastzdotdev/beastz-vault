@@ -114,7 +114,7 @@ export const Sidebar = () => {
                 className="hover:bg-zinc-800 active:bg-zinc-700 w-fit ml-2"
                 onClick={() => setShowFiles(!showFiles)}
               >
-                <p className="text-xs text-zinc-500 font-bold cursor-pointer">Files</p>
+                <p className="text-xs text-zinc-500 font-bold cursor-pointer rounded-sm">Files</p>
               </div>
 
               <Tooltip
@@ -128,7 +128,7 @@ export const Sidebar = () => {
                 <Icon
                   onClick={() => sharedStore.toggleAllExpand(true)}
                   icon="expand-all"
-                  className="!text-zinc-500 hover:bg-zinc-800 active:bg-zinc-700 p-0.5 ml-2 cursor-pointer"
+                  className="!text-zinc-500 hover:bg-zinc-800 active:bg-zinc-700 p-0.5 ml-2 cursor-pointerk rounded-sm"
                   size={13}
                 />
               </Tooltip>
@@ -144,7 +144,7 @@ export const Sidebar = () => {
                 <Icon
                   onClick={() => sharedStore.toggleAllExpand(false)}
                   icon="collapse-all"
-                  className="!text-zinc-500 hover:bg-zinc-800 active:bg-zinc-700 p-0.5 ml-1 cursor-pointer"
+                  className="!text-zinc-500 hover:bg-zinc-800 active:bg-zinc-700 p-0.5 ml-1 cursor-pointer rounded-sm"
                   size={13}
                 />
               </Tooltip>
@@ -164,7 +164,7 @@ export const Sidebar = () => {
                     navigate(constants.path.fileStructure + '?id=root');
                   }}
                   icon="home"
-                  className="!text-zinc-500 hover:bg-zinc-800 active:bg-zinc-700 p-0.5 ml-1 cursor-pointer"
+                  className="!text-zinc-500 hover:bg-zinc-800 active:bg-zinc-700 p-0.5 ml-1 cursor-pointer rounded-sm"
                   size={13}
                 />
               </Tooltip>

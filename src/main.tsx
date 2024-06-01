@@ -12,6 +12,7 @@ import { GlobalAlertProvider } from './shared/ui/index.ts';
 import './index.scss';
 import './declares/declares.d.ts';
 import './declares/declares.d.tsx';
+import { SmallDeviceAlert } from './features/small-device-alert/small-device-alert.tsx';
 
 // misc
 FocusStyleManager.onlyShowFocusOnTabs();
@@ -28,7 +29,10 @@ createRoot(document.getElementById('root')!).render(
     <OverlaysProvider>
       <HotkeysProvider>
         <GlobalAlertProvider>
-          <RouterProvider router={router} />
+          <>
+            <SmallDeviceAlert />
+            <RouterProvider router={router} />
+          </>
         </GlobalAlertProvider>
       </HotkeysProvider>
     </OverlaysProvider>
