@@ -12,6 +12,7 @@
   },
   "type": "module",
   "scripts": {
+    "dev": "vite --open",
     "start": "vite --open",
     "start:dev": "vite --open",
     "build": "tsc && vite build",
@@ -28,6 +29,7 @@
     "@blueprintjs/select": "^5.1.4",
     "@blueprintjs/table": "^5.1.4",
     "@codemirror/commands": "^6.5.0",
+    "@million/lint": "^1.0.0-rc.19",
     "@pulexui/core": "^0.0.23",
     "@total-typescript/ts-reset": "^0.5.1",
     "@typescript-eslint/eslint-plugin": "^7.8.0",

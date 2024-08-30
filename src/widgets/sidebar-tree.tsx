@@ -20,10 +20,13 @@ export const SidebarTree = observer(({ className }: { className?: string }) => {
   const fileStructureApiService = useInjection(FileStructureApiService);
   const navigate = useNavigate();
 
-  //TODO duplication resolve !!!
+  //TODO: duplication resolve !!!
+  // someasijaosid
   const [isChangeColorOpen, setChangeColorOpen] = useState(false);
   const [isDetailsOpen, setDetailsOpen] = useState(false);
   const [isFileStructureEncryptOpen, setFileStructureEncryptOpen] = useState(false);
+
+  const x = [1, 2, true];
 
   //TODO duplication resolve !!!
   const store = useLocalObservable(() => ({
