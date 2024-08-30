@@ -26,7 +26,7 @@ export const SidebarTree = observer(({ className }: { className?: string }) => {
   const [isDetailsOpen, setDetailsOpen] = useState(false);
   const [isFileStructureEncryptOpen, setFileStructureEncryptOpen] = useState(false);
 
-  const x = [1, 2, true];
+  // const x = [1, 2, true];
 
   //TODO duplication resolve !!!
   const store = useLocalObservable(() => ({
