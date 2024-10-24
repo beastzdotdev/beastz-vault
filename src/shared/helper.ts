@@ -1,17 +1,19 @@
-import queryString from 'query-string';
+import queryString from "query-string";
 
-import { ZodError, z } from 'zod';
-import { FormikValidationError, GeneralFileType } from './types';
-import { constants } from './constants';
-import { FileMimeType } from './enum/file-mimte-type.enum';
+import { ZodError, z } from "zod";
+import { FormikValidationError, GeneralFileType } from "./types";
+import { constants } from "./constants";
+import { FileMimeType } from "./enum/file-mimte-type.enum";
 
-export const stringEncode = (text: string): Uint8Array => new TextEncoder().encode(text);
-export const stringDecode = (buffer: ArrayBuffer): string => new TextDecoder().decode(buffer);
+export const stringEncode = (text: string): Uint8Array =>
+  new TextEncoder().encode(text);
+export const stringDecode = (buffer: ArrayBuffer): string =>
+  new TextDecoder().decode(buffer);
 export const base64Decode = (t: string) => {
   return new Uint8Array(
     atob(t)
-      .split('')
-      .map(c => c.charCodeAt(0))
+      .split("")
+      .map((c) => c.charCodeAt(0))
   );
 };
 
@@ -47,15 +49,15 @@ export const zodFormikErrorAdapter = <T>(
       } catch (error: unknown) {
         const errInstance: FormikValidationError = {
           inner: [],
-          name: 'ValidationError',
+          name: "ValidationError",
         };
 
         if (error instanceof ZodError) {
           // console.warn('Custom: Firing zod formik errors', error.formErrors.fieldErrors);
 
-          errInstance.inner = error.errors.map(e => ({
+          errInstance.inner = error.errors.map((e) => ({
             message: e.message,
-            path: e.path.join('.'),
+            path: e.path.join("."),
           }));
         }
 
@@ -66,7 +68,7 @@ export const zodFormikErrorAdapter = <T>(
 };
 
 export const isUUID = (value: string) => {
-  if (typeof value !== 'string') {
+  if (typeof value !== "string") {
     return false;
   }
 
@@ -98,22 +100,24 @@ export const getColorByBgColor = (bgColor: string | null) => {
     return null;
   }
 
-  return parseInt(bgColor.replace('#', ''), 16) > 0xffffff / 2 ? '#000' : '#fff';
+  return parseInt(bgColor.replace("#", ""), 16) > 0xffffff / 2
+    ? "#000"
+    : "#fff";
 };
 
 export const formatSize = (sizeInBytes: number | null): string => {
   if (!sizeInBytes) {
-    return '';
+    return "";
   }
 
   if (sizeInBytes < constants.SIZE) {
-    return sizeInBytes + ' bytes';
+    return sizeInBytes + " bytes";
   } else if (sizeInBytes < constants.SIZE ** 2) {
-    return (sizeInBytes / constants.SIZE).toFixed(2) + ' KB';
+    return (sizeInBytes / constants.SIZE).toFixed(2) + " KB";
   } else if (sizeInBytes < constants.SIZE ** 3) {
-    return (sizeInBytes / constants.SIZE ** 2).toFixed(2) + ' MB';
+    return (sizeInBytes / constants.SIZE ** 2).toFixed(2) + " MB";
   } else {
-    return (sizeInBytes / constants.SIZE ** 3).toFixed(2) + ' GB';
+    return (sizeInBytes / constants.SIZE ** 3).toFixed(2) + " GB";
   }
 };
 
@@ -130,15 +134,21 @@ export const formatSize = (sizeInBytes: number | null): string => {
  * classNames(null, false, 'bar', undefined, 0, 1, { baz: null }, '') // => 'bar 1'
  */
 export const classNames = (
-  ...args: (string | { [className: string]: boolean } | boolean | undefined | null)[]
+  ...args: (
+    | string
+    | { [className: string]: boolean }
+    | boolean
+    | undefined
+    | null
+  )[]
 ): string => {
   const classes: string[] = [];
 
-  args.forEach(arg => {
-    if (typeof arg === 'string') {
+  args.forEach((arg) => {
+    if (typeof arg === "string") {
       classes.push(arg);
-    } else if (typeof arg === 'object' && arg !== null) {
-      Object.keys(arg).forEach(key => {
+    } else if (typeof arg === "object" && arg !== null) {
+      Object.keys(arg).forEach((key) => {
         if (arg[key]) {
           classes.push(key);
         }
@@ -146,10 +156,11 @@ export const classNames = (
     }
   });
 
-  return classes.join(' ');
+  return classes.join(" ");
 };
 
-export const sleep = (ms: number = 1000) => new Promise(f => setTimeout(f, ms));
+export const sleep = (ms: number = 1000) =>
+  new Promise((f) => setTimeout(f, ms));
 
 export const cleanURL = (
   pathName: string,
@@ -181,52 +192,55 @@ export const cleanURL = (
  */
 export const differentiate = (value: FileMimeType | null): GeneralFileType => {
   if (!value) {
-    return 'other';
+    return "other";
   }
 
   switch (value) {
     case FileMimeType.TEXT_PLAIN:
-      return 'text';
+      return "text";
     case FileMimeType.APPLICATION_OCTET_STREAM:
-      return 'byte';
+      return "byte";
     case FileMimeType.IMAGE_JPG:
     case FileMimeType.IMAGE_PNG:
     case FileMimeType.IMAGE_GIF:
     case FileMimeType.IMAGE_WEBP:
     case FileMimeType.IMAGE_BMP:
     case FileMimeType.IMAGE_SVG:
-      return 'image';
+      return "image";
     case FileMimeType.AUDIO_MPEG:
     case FileMimeType.AUDIO_WAV:
-      return 'audio';
+      return "audio";
     case FileMimeType.VIDEO_MP4:
     case FileMimeType.VIDEO_MPEG:
     case FileMimeType.VIDEO_WEBM:
     case FileMimeType.VIDEO_QUICKTIME:
-      return 'video';
+      return "video";
     default:
-      return 'other';
+      return "other";
   }
 };
 
 export const download = (obj: Blob | MediaSource, title: string) => {
   const url = window.URL.createObjectURL(obj);
-  const link = document.createElement('a');
+  const link = document.createElement("a");
   link.href = url;
-  link.setAttribute('download', title);
+  link.setAttribute("download", title);
   document.body.appendChild(link);
   link.click();
 };
 
 export const openLink = (path?: string | null) => {
-  path ? window.open(path, '_blank') : null;
+  path ? window.open(path, "_blank") : null;
+};
+export const openLinkSelf = (path?: string | null) => {
+  path ? window.open(path, "_self") : null;
 };
 
 export const readTextFromFile = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
 
-    reader.onload = e => {
+    reader.onload = (e) => {
       resolve(e.target?.result as string);
     };
 
@@ -239,7 +253,10 @@ export const readTextFromFile = (file: File): Promise<string> => {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const differentiateObj = <T>(obj: any, compareObj: any): { obj: T; isEmpty: boolean } => {
+export const differentiateObj = <T>(
+  obj: any,
+  compareObj: any
+): { obj: T; isEmpty: boolean } => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const updateProps: any = {};
 
