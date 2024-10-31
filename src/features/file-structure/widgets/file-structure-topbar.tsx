@@ -1,5 +1,7 @@
-import { Button, Menu, MenuItem, Popover } from '@blueprintjs/core';
-import { FileStructureSearchBar } from './file-structure-search-bar';
+import { Button } from "@blueprintjs/core";
+import { FileStructureSearchBar } from "./file-structure-search-bar";
+import { openLink } from "../../../shared/helper";
+import { constants } from "../../../shared/constants";
 
 export const FileStructureTopBar = (): React.JSX.Element => {
   return (
@@ -8,18 +10,11 @@ export const FileStructureTopBar = (): React.JSX.Element => {
         <FileStructureSearchBar />
 
         <div className="whitespace-nowrap">
-          {/* TODO: Better UI */}
-          <Popover
-            content={
-              <Menu>
-                <MenuItem text="Doc (soon)" icon="document" intent="success" />
-                <MenuItem text="Util (soon)" icon="wrench" intent="primary" />
-              </Menu>
-            }
-            placement="right-start"
-          >
-            <Button minimal icon="layout-grid" intent="none" />
-          </Popover>
+          <Button
+            icon="book"
+            intent="success"
+            onClick={() => openLink(constants.external.document.home)}
+          />
         </div>
       </div>
     </>

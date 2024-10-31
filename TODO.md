@@ -1,3 +1,5 @@
+TODO storage refresh button get up to date
+
 TODO reafactor all window.location.reload();
 TODO get inspirations from here https://en.eagle.cool/
 

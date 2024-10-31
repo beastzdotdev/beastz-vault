@@ -7,14 +7,15 @@ import {
   MenuDivider,
   MenuItem,
   Popover,
-} from '@blueprintjs/core';
-import { observer } from 'mobx-react-lite';
-import { useInjection } from 'inversify-react';
-import { useMemo } from 'react';
-import { differentiate, formatSize } from '../shared/helper';
-import { RootFileStructure } from '../shared/model';
-import { ProfileStore } from '../features/profile/state/profile.store';
-import { FileMimeType } from '../shared/enum/file-mimte-type.enum';
+} from "@blueprintjs/core";
+import { observer } from "mobx-react-lite";
+import { useInjection } from "inversify-react";
+import { useMemo } from "react";
+import { differentiate, formatSize, openLink } from "../shared/helper";
+import { RootFileStructure } from "../shared/model";
+import { ProfileStore } from "../features/profile/state/profile.store";
+import { FileMimeType } from "../shared/enum/file-mimte-type.enum";
+import { constants } from "../shared/constants";
 
 interface FileStuructureFileItemParams {
   isFromBin?: boolean;
@@ -41,9 +42,27 @@ export const FileStuructureContextMenu = (params: {
   onDownload?: (node: RootFileStructure) => void;
   onEncrypt?: (node: RootFileStructure) => void;
 }) => {
+  const canBeOpenedInDocument =
+    params.node.mimeType === FileMimeType.TEXT_PLAIN ||
+    params.node.mimeType === FileMimeType.TEXT_MARKDOWN;
+
+  const redirectToDocument = (item: RootFileStructure) => {
+    const ext = item.mimeType === FileMimeType.TEXT_PLAIN ? ".txt" : ".md";
+    const url = constants.external.document.document(
+      item.id,
+      `${item.title}${ext}`
+    );
+
+    openLink(url);
+  };
+
   return (
     <Menu>
-      <MenuItem text="Copy tittle" icon="duplicate" onClick={() => params.onCopy?.(params.node)} />
+      <MenuItem
+        text="Copy tittle"
+        icon="duplicate"
+        onClick={() => params.onCopy?.(params.node)}
+      />
 
       <MenuDivider />
       <MenuItem
@@ -51,7 +70,11 @@ export const FileStuructureContextMenu = (params: {
         icon="tint"
         onClick={() => params.onColorChange?.(params.node)}
       />
-      <MenuItem text="Details" icon="info-sign" onClick={() => params.onDetails?.(params.node)} />
+      <MenuItem
+        text="Details"
+        icon="info-sign"
+        onClick={() => params.onDetails?.(params.node)}
+      />
 
       {params.node.isFile && (
         <>
@@ -83,6 +106,15 @@ export const FileStuructureContextMenu = (params: {
         onClick={() => params.onDownload?.(params.node)}
       />
 
+      {canBeOpenedInDocument && (
+        <MenuItem
+          text="Open in Document"
+          icon="book"
+          intent="success"
+          onClick={() => redirectToDocument(params.node)}
+        />
+      )}
+
       <MenuDivider />
       <MenuItem text="Coming soon" icon="clean">
         <MenuItem disabled text="Disable editing" icon="cross" />
@@ -96,7 +128,11 @@ export const FileStuructureContextMenu = (params: {
         <MenuItem disabled text="Activity" icon="list-detail-view" />
         <MenuItem disabled text="Open in editor" icon="code" />
       </MenuItem>
-      <MenuItem text="Move to bin" icon="trash" onClick={() => params.onMoveToBin?.(params.node)} />
+      <MenuItem
+        text="Move to bin"
+        icon="trash"
+        onClick={() => params.onMoveToBin?.(params.node)}
+      />
     </Menu>
   );
 };
@@ -110,10 +146,22 @@ const FileStuructureFromBinContextMenu = (params: {
 }) => {
   return (
     <Menu>
-      <MenuItem text="Copy tittle" icon="duplicate" onClick={() => params.onCopy?.(params.node)} />
-      <MenuItem text="Details" icon="info-sign" onClick={() => params.onDetails?.(params.node)} />
+      <MenuItem
+        text="Copy tittle"
+        icon="duplicate"
+        onClick={() => params.onCopy?.(params.node)}
+      />
+      <MenuItem
+        text="Details"
+        icon="info-sign"
+        onClick={() => params.onDetails?.(params.node)}
+      />
       <MenuDivider />
-      <MenuItem text="Restore" icon="history" onClick={() => params.onRestore?.(params.node)} />
+      <MenuItem
+        text="Restore"
+        icon="history"
+        onClick={() => params.onRestore?.(params.node)}
+      />
       <MenuItem
         text="Delete forever"
         intent="danger"
@@ -130,7 +178,7 @@ export const FileStuructureFileItem = observer(
 
     const fsIconResolved = useMemo((): IconName => {
       if (!params.node.mimeType) {
-        return 'folder-close';
+        return "folder-close";
       }
 
       //* some other icon option
@@ -142,24 +190,23 @@ export const FileStuructureFileItem = observer(
       // application
 
       switch (differentiate(params.node.mimeType)) {
-        case 'text':
-          return 'document';
-        case 'audio':
-          return 'music';
-        case 'image':
-          return 'media';
-        case 'video':
-          return 'video';
+        case "text":
+          return "document";
+        case "audio":
+          return "music";
+        case "image":
+          return "media";
+        case "video":
+          return "video";
 
         // all other
-        case 'byte':
-        case 'other':
+        case "byte":
+        case "other":
         default:
-          return 'square';
+          return "square";
       }
     }, [params.node.mimeType]);
 
-    //
     const contextMenu = params.isFromBin ? (
       <FileStuructureFromBinContextMenu
         node={params.node}
@@ -184,7 +231,7 @@ export const FileStuructureFileItem = observer(
       <ContextMenu content={contextMenu}>
         <div
           className={`beastz-vault-file-structure-item group/beastz-vault-item  ${
-            params.isSelected ? 'beastz-vault-file-structure-item-selected' : ''
+            params.isSelected ? "beastz-vault-file-structure-item-selected" : ""
           }`}
           onClick={() => params.onSelected(params.node)}
           onDoubleClick={() => params.onDoubleClick(params.node)}
@@ -192,7 +239,10 @@ export const FileStuructureFileItem = observer(
         >
           {/*//! width 100px behaves like min-width:100px */}
           <div className="flex items-center pl-3 pr-5 flex-grow w-[100px]">
-            <Icon icon={fsIconResolved} color={params.node.color ?? undefined} />
+            <Icon
+              icon={fsIconResolved}
+              color={params.node.color ?? undefined}
+            />
 
             <p className="pl-2 truncate">
               {params.node.isFile
@@ -205,7 +255,9 @@ export const FileStuructureFileItem = observer(
             <div className="flex items-center justify-start w-[200px] pr-5">
               <Icon icon="user" />
 
-              <p className="truncate max-w-[170px] block pl-2">{profileStore.user.userName}</p>
+              <p className="truncate max-w-[170px] block pl-2">
+                {profileStore.user.userName}
+              </p>
             </div>
 
             <div className="flex items-center justify-start w-[200px] pr-5">
